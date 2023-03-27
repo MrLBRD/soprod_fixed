@@ -1,0 +1,85 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        body {
+            width: 480px;
+        }
+        ul li {
+            font-size: 14px;
+        }
+        ul li h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+        }
+        .ai-bl {
+            align-items: baseline;
+        }
+        #image-container {
+            width: 25%;
+            padding: 0 16px 0 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #image-container img {
+            width: 100%;
+        }
+        #headinfo-container {
+            align-items: stretch;
+            flex-grow: 1;
+        }
+        #headinfo-container h1 {
+            margin: 0;
+        }
+        #headinfo-container p {
+            margin: 0;
+        }
+        #headinfo-container>div {
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-row">
+        <div id="image-container">
+            <img src="128.png">
+        </div>
+        <div id="headinfo-container">
+            <div class="flex-row ai-bl">
+                <h1>SoProd en mieux</h1>
+                <p>v1.3.3</p>
+            </div>
+            <p>Amélioration afin d'optimiser l'utilisation de SoProd. Dédié à l'utilisation du logiciel par l'équipe Maintenance Réactivité Premium/Essentiel</p>
+        </div>
+    </div>
+
+    <ul>
+        <li>
+            <h2>Correction de l'affichage des mots-clés</h2>
+            Le bloc des mots-clés s'affiche sur toute la largeur du container afin d'avoir une meilleure visibilité du mot-clé.
+        </li>
+        <li>
+            <h2>Modèles de commentaire</h2>
+            Ajout de divers boutons dans la zone de commentaire qui charge des modèles de commentaire : clôture de fiche, injoignable et appel classique.
+        </li>
+        <li>
+            <h2>CTRL+ENTRER = Poster le commentaire</h2>
+            En étant dans le champ de commentaire, avec la combinaison de touche contrôle et entré, le commentaire sera publié de la même manière qu'au clic sur le bouton publier.
+        </li>
+        <li>
+            <h2>Sauvegarde du commentaire en cours</h2>
+            Le commentaire en cours de rédaction est automatiquement sauvegardé dans une mémoire. Il est possible de le récupérer même après le rechargement de la page.
+        </li>
+        <li>
+            <h2>Affichage d'une horloge Dom-Tom</h2>
+            Si le client est localisé dans un Dom-Tom alors une horloge est affiché avec l'heure chez le client.
+        </li>
+    </ul>
+</body>
+</html>

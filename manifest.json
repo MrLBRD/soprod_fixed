@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "SoProd en mieux",
+    "description": "Amélioration afin d'optimiser l'utilisation de SoProd. Dédié à l'utilisation du logiciel par l'équipe Maintenance Réactivité Premium/Essentiel",
+    "version": "1.4",
+    "icons": {
+        "128": "128.png"
+    },
+    "action": {
+        "default_popup": "news.html",
+        "default_icon": {
+            "128": "128.png"
+        }
+    },
+    "permissions": [
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://soprod.solocalms.fr/*"],
+            "js": ["modify-css.js"]
+        }
+    ],
+    "host_permissions": [
+        "https://soprod.solocalms.fr/*"
+    ]
+}
