@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "SoProd en mieux",
     "description": "Amélioration afin d'optimiser l'utilisation de SoProd. Dédié à l'utilisation du logiciel par l'équipe Maintenance Réactivité Premium/Essentiel",
-    "version": "1.4",
+    "version": "1.5.0",
     "icons": {
         "128": "128.png"
     },

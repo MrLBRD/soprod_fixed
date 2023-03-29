@@ -27,7 +27,10 @@ function changeKeysContainerCss() {
             }
             runChangeCss = false
             addBtnSchema()
-            addClock()
+            const testClock = document.querySelector('div#horloge')
+            if(!testClock) {
+                addClock()
+            }
         }, 1000)
     }
 }
@@ -47,34 +50,46 @@ function addStyle(styles) {
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: absolute; padding: 8px 12px; background: rgba(230, 30, 30, 0.2); border-radius: 4px; top: 8px; left: 20%; backdrop-filter: blur(1.5px); }';
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; }';
 
 window.onload = function() {
-    setTimeout(() => {
-        addStyle(styles)
-        changeKeysContainerCss()
-
-        var tabContent = document.querySelector('.tab-content');
-        if (tabContent) {
-            var observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                        changeKeysContainerCss()
-                    }
+    const pathUrl = window.location.pathname.split('/');
+    if((pathUrl[1] == "Operator" && pathUrl[2] == "Record") || (pathUrl[1] == "Consultation" && pathUrl[2] == "Record")) {
+        setTimeout(() => {
+            const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+            console.log("check modif btn : ", checkModifBtn)
+            if (checkModifBtn) {
+                checkModifBtn.click()
+            }
+            addStyle(styles)
+            changeKeysContainerCss()
+    
+            var tabContent = document.querySelector('.tab-content');
+            if (tabContent) {
+                var observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            changeKeysContainerCss()
+                        }
+                    });
                 });
-            });
-    
-            // Configuration de l'observation
-            var config = {
-                attributes: true,
-                childList: true,
-                subtree: true,
-            };
-    
-            // Lancement de l'observation
-            observer.observe(tabContent, config);
-        }
-    }, 1000)
+        
+                // Configuration de l'observation
+                var config = {
+                    attributes: true,
+                    childList: true,
+                    subtree: true,
+                };
+        
+                // Lancement de l'observation
+                observer.observe(tabContent, config);
+            }
+        }, 1000)
+    } else if(pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+        setTimeout(() => {
+            checkTableRequests()
+        }, 1000)
+    }
 };
 
 const btnsList = {
@@ -135,7 +150,6 @@ function addBtnSchema() {
                     }
                     
                     if (commentInStore) {
-                        console.log('Commentaire dans le stockage : ', commentInStore)
                         var newBtnDiv = document.createElement('div');
                         newBtnDiv.className = 'btn btn-outline icon-custombtn';
                         newBtnDiv.id = 'getAddStoredMessage';
@@ -215,48 +229,139 @@ function addBtnSchema() {
     }
 }
 
-function displayCurrentTime(horlogeContainer) {
+const timeZoneOffsets = {
+    971: -4,
+    972: -4,
+    973: -3,
+    974: 4,
+    975: -2,
+    976: 3,
+    984: 5,
+    986: 12,
+    987: -10,
+    988: 11
+};
+
+function displayCurrentTime(horlogeContainer, x) {
     const offset = timeZoneOffsets[x];
     const currentDate = new Date();
     const localOffset = currentDate.getTimezoneOffset() / 60;
     const targetOffset = localOffset + offset;
     const targetDate = new Date(currentDate.getTime() + targetOffset * 60 * 60 * 1000);
   
-    horlogeContainer.innerText = (targetDate.toLocaleTimeString()).substr(0,5)
+    horlogeContainer.innerText = (targetDate.toLocaleTimeString().substr(0,5))
+}
+
+
+function updateClock(horlogeContainer, x) {
+    displayCurrentTime(horlogeContainer, x);
+    setTimeout(() => {
+        updateClock(horlogeContainer, x);
+    }, 30000); // Met à jour l'horloge toutes les 10 secondes
 }
 
 function addClock() {
-    const labels = document.querySelectorAll('label');
+    const labels = document.querySelectorAll('label.control-label');
     const label = Array.from(labels).find(l => l.textContent.trim() === 'CodePostal');
-    console.log(label) // il va peut être falloir gérer si on ne trouve pas de label code postal
     const parentElement = label && label.parentNode;
-    const input = parentElement.querySelector('input').value
+    const inputValue = parentElement.querySelector('input').value
     
-    const x = input.substr(0, 3);
-    
-    const timeZoneOffsets = {
-        971: -4,
-        972: -4,
-        973: -3,
-        974: 4,
-        975: -2,
-        976: 3,
-        984: 5,
-        986: 12,
-        987: -10,
-        988: 11
-    };
+    const x = inputValue.substr(0, 3);
     
     if (timeZoneOffsets.hasOwnProperty(x)) {
         let horlogeDiv = document.createElement('div');
         horlogeDiv.id = "horloge";
+
+        const parentOfPage = document.querySelector("div.operator-content.masterPage");
         
-        document.body.appendChild(horlogeDiv)
+        parentOfPage.appendChild(horlogeDiv)
         
         const horlogeContainer = document.querySelector('div#horloge')
-        
-        displayCurrentTime(horlogeContainer);
-        
-        setInterval(displayCurrentTime(horlogeContainer), 60000);
+                        
+        updateClock(horlogeContainer, x);
     }
+}
+
+//for test https://soprod.solocalms.fr/Consultation/Record/296804
+
+let lastDetection = true
+
+function changeEventTagDashboard() {
+    if(lastDetection) {
+        lastDetection = false
+        const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+        
+        const allTdInTableRqts = tableRqtContainer.querySelectorAll('td');
+        const tdCheckModif = Array.from(allTdInTableRqts).filter(l => l.textContent.trim() === 'MODIFICATION TRAITEE');
+        tdCheckModif.forEach((el) => {
+            const parentTr = el.parentNode
+            const parentChildren = parentTr.querySelectorAll('td')
+            const lastChild = parentChildren[parentChildren.length - 1]
+            lastChild.style.backgroundColor = "#e96c1b"
+            lastChild.style.color = "#ffffff"
+            lastChild.style.textAlign = "center"
+            lastChild.style.fontSize = "16px"
+            lastChild.style.lineHeight = (lastChild.clientHeight - 16)+"px"
+            lastChild.style.fontWeight = "700"
+            lastChild.innerText = "A CLOTURER"
+        })
+    
+        const labelsEventRqt = tableRqtContainer.querySelectorAll('span.eventType')
+        labelsEventRqt.forEach((el) => {
+            switch (el.innerText) {
+                case "RELANCE MODIFICATION":
+                    el.style.backgroundColor = "#824ac9"
+                    break;
+                case "RELANCE POUR INJOIGNABLE EN MODIF":
+                    el.style.backgroundColor = "#a49cc7"
+                    break;
+                // case "RDV POUR MODIF":
+                //     el.style.backgroundColor = "#824ac9"
+                //     break;
+                default:
+                    break;
+            }
+        })
+        setTimeout(() => {
+            console.log('Fin modification');
+            lastDetection = true
+        }, 3000);
+    }
+}
+
+function checkTableRequests() {
+    const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+    console.log(tableRqtContainer)
+
+    
+    let finishLoadTimeout;
+
+    const scheduleFinishLoad = () => {
+        if (finishLoadTimeout) {
+            clearTimeout(finishLoadTimeout);
+        }
+        finishLoadTimeout = setTimeout(() => {
+            console.log('Dernier element chargé ?');
+            changeEventTagDashboard()
+        }, 300);
+    };
+
+    var observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+                console.log('Mutation Detected: A child node has been added or removed.');
+                scheduleFinishLoad()
+            }
+        });
+    });
+
+    // Configuration de l'observation
+    var config = {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    };
+
+    // Lancement de l'observation
+    observer.observe(tableRqtContainer, config);
 }
