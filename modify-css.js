@@ -50,7 +50,7 @@ function addStyle(styles) {
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; }';
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; }';
 
 window.onload = function() {
     const pathUrl = window.location.pathname.split('/');
@@ -59,7 +59,16 @@ window.onload = function() {
             const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
             console.log("check modif btn : ", checkModifBtn)
             if (checkModifBtn) {
+                let lastComment = (document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]).querySelector('div')
                 checkModifBtn.click()
+                let newDiv = document.createElement('div')
+                newDiv.className = "modifOk-comment"
+                newDiv.appendChild(lastComment.cloneNode(true))
+                setTimeout(() => {
+                    const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content>div.modal-body')
+                    console.log(confirmModal)
+                    confirmModal.appendChild(newDiv)
+                }, 500)
             }
             addStyle(styles)
             changeKeysContainerCss()
@@ -331,8 +340,6 @@ function changeEventTagDashboard() {
 
 function checkTableRequests() {
     const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-    console.log(tableRqtContainer)
-
     
     let finishLoadTimeout;
 
