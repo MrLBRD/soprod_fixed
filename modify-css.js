@@ -65,9 +65,23 @@ window.onload = function() {
                 newDiv.className = "modifOk-comment"
                 newDiv.appendChild(lastComment.cloneNode(true))
                 setTimeout(() => {
-                    const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content>div.modal-body')
+                    const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content')
+                    console.log("regarder cet élément s'il s'est update au click sur ok ↓↓↓")
                     console.log(confirmModal)
-                    confirmModal.appendChild(newDiv)
+                    const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
+                    bodyConfirmModal.appendChild(newDiv)
+                    const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
+                    okBtnConfirmModal.addEventListener('click', () => {
+                        console.log('clicked ok btn')
+                        window.localStorage.removeItem('comment-'+pathUrl[3])
+                        setTimeout(() => {
+                            const confirmActionModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content>div.modal-footer>button.btn.btn-primary[type="button"]')
+                            console.log(confirmActionModal)
+                            if (confirmActionModal.innerText == "Page operatuer") {
+                                confirmActionModal.click()
+                            }
+                        }, 1000)
+                    })
                 }, 500)
             }
             addStyle(styles)
@@ -331,10 +345,11 @@ function changeEventTagDashboard() {
                     break;
             }
         })
+        console.log('End changed await switch last detection');
         setTimeout(() => {
-            console.log('Fin modification');
+            console.log('End and switch to true');
             lastDetection = true
-        }, 3000);
+        }, 5000);
     }
 }
 
@@ -350,7 +365,7 @@ function checkTableRequests() {
         finishLoadTimeout = setTimeout(() => {
             console.log('Dernier element chargé ?');
             changeEventTagDashboard()
-        }, 300);
+        }, 500);
     };
 
     var observer = new MutationObserver((mutations) => {
