@@ -2,29 +2,69 @@ console.log('HELLO WOLRD !')
 
 let runChangeCss = false
 
+function keywordsBetterView() {
+    runChangeCss = true
+    var keywordsGroupContainers = document.querySelectorAll('.KeywordsFormGroup');
+    if (keywordsGroupContainers) {
+        for (const keywordsGroupContainer of keywordsGroupContainers) {
+            keywordsGroupContainer.style.display = 'flex'
+            keywordsGroupContainer.style.flexDirection = 'column'
+
+            var keywordsContainer = document.querySelector("[id^='keywordsContainer']");
+            if (keywordsContainer) {
+                keywordsContainer.style.width = '100%'
+            }
+            var addKeywordsElement = document.querySelector("[id^='addKeywords']");
+            if (addKeywordsElement) {
+                addKeywordsElement.style.width = 'fit-content'
+                addKeywordsElement.style.marginTop = '16px'
+                addKeywordsElement.style.alignSelf = 'center'
+                addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
+            }
+        }
+    } else {
+        setTimeout(() => {
+            keywordsBetterView()
+        }, 200)
+    }
+}
+
+function addExternalLink() {
+    const externalLinks = document.querySelector('div.webPage div.externalPortlet[id^="external_"]>div.portlet-body>div.row>div')
+    if (externalLinks) {
+        if ((externalLinks.querySelector('a[href^="https://www.portailroi.solocalgroup.com/stats/"]'))) {
+            console.log("Link Portail ROI exist")
+        } else {
+            const recordName = (document.querySelector('div.page-content div.recordNames>span.recordId>span')).innerText.split(' ').reverse()[0]
+            console.log(recordName)
+            if (recordName == "PREMIUM") {
+                const labels = document.querySelectorAll('label.control-label');
+                const label = Array.from(labels).find(l => l.textContent.trim() === 'CodeClient');
+                const parentElement = label && label.parentNode;
+                const EPJ = parentElement.querySelector('input').value
+                console.log(EPJ)
+                if (EPJ) {
+                    console.log(externalLinks)
+                    let portailRoiLink = document.createElement('a')
+                    portailRoiLink.href = `https://www.portailroi.solocalgroup.com/stats/par-produit/${EPJ}`
+                    portailRoiLink.setAttribute('target', '_blank')
+                    portailRoiLink.innerHTML = '<div class="WebLinks badge" id="linkref-36671" style="background-color:#f00ece"><i class="fa fa-play"></i>PORTAIL ROI</div>'
+                    externalLinks.appendChild(portailRoiLink)
+                }
+            } else {
+                console.log("else")
+                console.log(recordName)
+            }
+        }
+    }
+}
+
 function changeKeysContainerCss() {
     if (!runChangeCss) {
         runChangeCss = true
+        keywordsBetterView()
+        addExternalLink()
         setTimeout(() => {
-            var keywordsGroupContainers = document.querySelectorAll('.KeywordsFormGroup');
-            if (keywordsGroupContainers) {
-                for (const keywordsGroupContainer of keywordsGroupContainers) {
-                    keywordsGroupContainer.style.display = 'flex'
-                    keywordsGroupContainer.style.flexDirection = 'column'
-
-                    var keywordsContainer = document.querySelector("[id^='keywordsContainer']");
-                    if (keywordsContainer) {
-                        keywordsContainer.style.width = '100%'
-                    }
-                    var addKeywordsElement = document.querySelector("[id^='addKeywords']");
-                    if (addKeywordsElement) {
-                        addKeywordsElement.style.width = 'fit-content'
-                        addKeywordsElement.style.marginTop = '16px'
-                        addKeywordsElement.style.alignSelf = 'center'
-                        addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
-                    }
-                }
-            }
             runChangeCss = false
             addBtnSchema()
             const testClock = document.querySelector('div#horloge')
@@ -52,49 +92,21 @@ function addStyle(styles) {
 
 var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; }';
 
-function exitPageAfterCheckOk() {
-    const allModale = document.querySelectorAll('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog')
-    console.log(allModale)
-    const confirmActionModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content>div.modal-footer>button.btn.btn-primary[type="button"]')
-    if (modal) {
-        console.log(confirmActionModal)
-        if (confirmActionModal.innerText == "Page operateur") {
-            confirmActionModal.click()
-        } else {
-            setTimeout(() => {
-                exitPageAfterCheckOk()
-            }, 300)
-        }
-    } else {
-        setTimeout(() => {
-            exitPageAfterCheckOk()
-        }, 300)
-    }
-}
-
-function getLastMessageForCheckOk() {
-    
-}
-
 function displayConfirmOkModal(lastComment) {
     let newDiv = document.createElement('div')
     newDiv.className = "modifOk-comment"
     newDiv.appendChild(lastComment.cloneNode(true))
     setTimeout(() => {
-        const allModal = document.querySelectorAll('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog')
-        console.log(allModal)
         const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content')
-        console.log("regarder cet élément s'il s'est update au click sur ok ↓↓↓")
-        console.log(confirmModal)
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
         okBtnConfirmModal.addEventListener('click', () => {
-            console.log('clicked ok btn')
+            const pathUrl = window.location.pathname.split('/');
             window.localStorage.removeItem('comment-' + pathUrl[3])
-            setTimeout(() => {
-                exitPageAfterCheckOk()
-            }, 1000)
+            window.location.replace(
+                "https://soprod.solocalms.fr/Operator/Dashboard"
+            );
         })
     }, 500)
 }
@@ -172,6 +184,13 @@ const btnsList = {
         'id': 'addBasicSchemaBtn',
         'message': 'Appel client : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
         'height': '114px'
+    },
+    'sendViewLink': {
+        'text': 'Envoi lien',
+        'class': 'btn purple',
+        'id' : 'addSendViewLinkSchemaBtn',
+        'message': 'Envoi lien de prévisualisation',
+        'height': '36px'
     }
 }
 
@@ -316,7 +335,7 @@ function updateClock(horlogeContainer, x) {
     displayCurrentTime(horlogeContainer, x);
     setTimeout(() => {
         updateClock(horlogeContainer, x);
-    }, 30000); // Met à jour l'horloge toutes les 10 secondes
+    }, 30000); // Met à jour l'horloge toutes les 30 secondes
 }
 
 function addClock() {
@@ -381,9 +400,7 @@ function changeEventTagDashboard() {
                     break;
             }
         })
-        console.log('End changed await switch last detection');
         setTimeout(() => {
-            console.log('End and switch to true');
             lastDetection = true
         }, 5000);
     }
@@ -399,7 +416,6 @@ function checkTableRequests() {
             clearTimeout(finishLoadTimeout);
         }
         finishLoadTimeout = setTimeout(() => {
-            console.log('Dernier element chargé ?');
             changeEventTagDashboard()
         }, 500);
     };
@@ -407,7 +423,6 @@ function checkTableRequests() {
     var observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === 'childList') {
-                console.log('Mutation Detected: A child node has been added or removed.');
                 scheduleFinishLoad()
             }
         });
