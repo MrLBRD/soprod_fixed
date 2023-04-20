@@ -21,5 +21,7 @@ qualif: `info qualif` =>
     - toClose → clic btn modif ok et affiche dernier commentaire dans la modal
     - rdv → /IDEA/ affiche un compte à rebours ou une info du prochain évènement à l'écran
 
+Bug avec le message dans le storage au niveau du height
+
 -->
 récupérer l'epj de chaque ligne

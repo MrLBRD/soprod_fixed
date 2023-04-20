@@ -18,7 +18,9 @@
     "content_scripts": [
         {
             "matches": ["https://soprod.solocalms.fr/*"],
-            "js": ["modify-css.js"]
+            "js": [
+                "modify-css.js"
+            ]
         }
     ],
     "host_permissions": [

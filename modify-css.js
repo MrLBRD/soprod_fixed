@@ -126,40 +126,42 @@ window.onload = function () {
     const pathUrl = window.location.pathname.split('/');
     if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record") || (pathUrl[1] == "Consultation" && pathUrl[2] == "Record")) {
         setTimeout(() => {
-            const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-            console.log("check modif btn : ", checkModifBtn)
-            if (checkModifBtn) {
-                checkModifBtn.click()
-                getModalConfirmInfo()
-            }
             addStyle(styles)
-            changeKeysContainerCss()
-
-            var tabContent = document.querySelector('.tab-content');
-            if (tabContent) {
-                var observer = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                            changeKeysContainerCss()
-                        }
+            let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+            if(itemStored.qualif === 'doneModif') {
+                const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                console.log("check modif btn : ", checkModifBtn)
+                if (checkModifBtn) {
+                    checkModifBtn.click()
+                    getModalConfirmInfo()
+                }
+            } else {
+                changeKeysContainerCss()
+    
+                var tabContent = document.querySelector('.tab-content');
+                if (tabContent) {
+                    var observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                changeKeysContainerCss()
+                            }
+                        });
                     });
-                });
-
-                // Configuration de l'observation
-                var config = {
-                    attributes: true,
-                    childList: true,
-                    subtree: true,
-                };
-
-                // Lancement de l'observation
-                observer.observe(tabContent, config);
+    
+                    // Configuration de l'observation
+                    var config = {
+                        attributes: true,
+                        childList: true,
+                        subtree: true,
+                    };
+    
+                    // Lancement de l'observation
+                    observer.observe(tabContent, config);
+                }
             }
         }, 1000)
     } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
-        setTimeout(() => {
-            checkTableRequests()
-        }, 1000)
+        checkTableRequests()
     }
 };
 
@@ -195,11 +197,14 @@ const btnsList = {
 }
 
 function addBtnSchema() {
+    // Modif à apporter =>
+    // - regarder quel onglet est actif -> si "production" alors exécuter la suite
+    // - boucler sur les commentsAreaDivs si aucune de trouver alors relancer après x milliseconde
     var pathArray = window.location.pathname.split('/');
     let idPath = pathArray.reverse()[0]
     let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
 
-    let commentInStore = window.localStorage.getItem('comment-' + idPath)
+    let idInfos = JSON.parse(window.localStorage.getItem('soprod-' + idPath))
 
     if (commentsAreaDivs) {
         commentsAreaDivs.forEach((commentsAreaDiv) => {
@@ -227,7 +232,7 @@ function addBtnSchema() {
                         newBtnsContainer.appendChild(newBtnDiv);
                     }
 
-                    if (commentInStore) {
+                    if (idInfos.lastComment.text) {
                         var newBtnDiv = document.createElement('div');
                         newBtnDiv.className = 'btn btn-outline icon-custombtn';
                         newBtnDiv.id = 'getAddStoredMessage';
@@ -249,13 +254,13 @@ function addBtnSchema() {
                             });
                         }
                     }
-                    if (commentInStore) {
+                    if (idInfos.lastComment.text) {
                         let btnElement = document.getElementById('getAddStoredMessage')
                         if (btnElement) {
                             btnElement.addEventListener('click', () => {
                                 if (addCommentMessage.value == '') {
-                                    addCommentMessage.value = commentInStore
-                                    // addCommentMessage.style.height = value.height
+                                    addCommentMessage.value = idInfos.lastComment.text
+                                    addCommentMessage.style.height = idInfos.lastComment.height
                                 }
                             });
                         }
@@ -285,14 +290,18 @@ function addBtnSchema() {
                     });
                     let storage = ''
                     addCommentMessage.addEventListener("input", (e) => {
-                        if ((addCommentMessage.value).length - storage.length > 10 || (addCommentMessage.value).length - storage.length < -10) {
-                            storage = addCommentMessage.value
-                            localStorage.setItem('comment-' + idPath, storage);
+                        if ((addCommentMessage.value).length - storage.length > 3 || (addCommentMessage.value).length - storage.length < -3) {
+                            idInfos.lastComment.text = addCommentMessage.value
+                            idInfos.lastComment.height = addCommentMessage.clientHeight
+                            localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
                         }
                     });
                     addCommentMessage.addEventListener("focusout", (e) => {
-                        storage = addCommentMessage.value
-                        localStorage.setItem('comment-' + idPath, storage);
+                        if (addCommentMessage.value !== '') {
+                            idInfos.lastComment.text = addCommentMessage.value
+                            idInfos.lastComment.height = addCommentMessage.clientHeight
+                            localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                        }
                     });
                 } else {
                     if (containersBtns.length > 1) {
@@ -364,17 +373,30 @@ function addClock() {
 
 let lastDetection = true
 
-function changeEventTagDashboard() {
-    if (lastDetection) {
-        lastDetection = false
-        const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-
-        const allTdInTableRqts = tableRqtContainer.querySelectorAll('td');
-        const tdCheckModif = Array.from(allTdInTableRqts).filter(l => l.textContent.trim() === 'MODIFICATION TRAITEE');
-        tdCheckModif.forEach((el) => {
-            const parentTr = el.parentNode
-            const parentChildren = parentTr.querySelectorAll('td')
-            const lastChild = parentChildren[parentChildren.length - 1]
+function qualifInfo(qualCell, trTarget) {
+    switch (qualCell.innerText) {
+        case 'RDV POUR MODIF':
+            labelEvent = trTarget.querySelector('td span.eventType')
+            if (labelEvent) {
+                // labelEvent.style.backgroundColor = "#824ac9"
+                return 'rdvModif'
+            } else {
+                return 'afterRdvModif'
+            }
+        case 'RELANCE POUR MODIFICATION':
+            labelEvent = trTarget.querySelector('td span.eventType')
+            if (labelEvent) {
+                labelEvent.style.backgroundColor = "#824ac9"
+                return 'relaunchModif'
+            } else {
+                return 'encours'
+            }
+        case 'RELANCE MODIFICATION':
+            labelEvent = trTarget.querySelector('td span.eventType')
+            labelEvent.style.backgroundColor = "#a49cc7"
+            return 'lastRelaunchModif'
+        case 'MODIFICATION TRAITEE':
+            let lastChild = trTarget.querySelectorAll('td').reverse()[0]
             lastChild.style.backgroundColor = "#e96c1b"
             lastChild.style.color = "#ffffff"
             lastChild.style.textAlign = "center"
@@ -382,32 +404,77 @@ function changeEventTagDashboard() {
             lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
             lastChild.style.fontWeight = "700"
             lastChild.innerText = "A CLOTURER"
+            return 'doneModif'
+        default:
+            return 'encours'
+    }
+    // MODIF FAITE ENVOI EN CONTRÔLE FINAL
+    // RETOUR EN MODIFICATION
+}
+
+function changeEventTagDashboard() {
+    if (lastDetection) {
+        lastDetection = false
+        const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+
+        const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
+        allTrTableRqts.forEach((tr) => {
+            const tdInTrTableRqts = tr.querySelectorAll('td')
+            
+            let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
+            console.log('itemStored')
+            console.log(itemStored)
+
+            const rqtInformations = {
+                'epj': tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
+                'gamme': tdInTrTableRqts[5].innerText.substr(6),
+                'lastComment': {
+                    'text': !itemStored ? null : itemStored.lastComment.text,
+                    'height': !itemStored ? undefined : itemStored.lastComment.height
+                },
+                'jetlag': {
+                    'statu': itemStored ? itemStored.jetlag.statu : null,
+                    'diff': itemStored ? itemStored.jetlag.diff : undefined
+                },
+                'qualif': qualifInfo(tdInTrTableRqts[7], tr)
+            }
+            console.log(rqtInformations)
+            localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
         })
 
-        const labelsEventRqt = tableRqtContainer.querySelectorAll('span.eventType')
-        labelsEventRqt.forEach((el) => {
-            switch (el.innerText) {
-                case "RELANCE MODIFICATION":
-                    el.style.backgroundColor = "#824ac9"
-                    break;
-                case "RELANCE POUR INJOIGNABLE EN MODIF":
-                    el.style.backgroundColor = "#a49cc7"
-                    break;
-                // case "RDV POUR MODIF":
-                //     el.style.backgroundColor = "#824ac9"
-                //     break;
-                default:
-                    break;
-            }
-        })
+        // const allTdInTableRqts = tableRqtContainer.querySelectorAll('td');
+        // const tdCheckModif = Array.from(allTdInTableRqts).filter(l => l.textContent.trim() === 'MODIFICATION TRAITEE');
+        // tdCheckModif.forEach((el) => {
+        //     const parentTr = el.parentNode
+        //     const parentChildren = parentTr.querySelectorAll('td')
+        //     const lastChild = parentChildren[parentChildren.length - 1]
+        //     lastChild.style.backgroundColor = "#e96c1b"
+        //     lastChild.style.color = "#ffffff"
+        //     lastChild.style.textAlign = "center"
+        //     lastChild.style.fontSize = "16px"
+        //     lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
+        //     lastChild.style.fontWeight = "700"
+        //     lastChild.innerText = "A CLOTURER"
+        // })
         setTimeout(() => {
             lastDetection = true
         }, 5000);
     }
 }
 
+function getQueryTableRequests() {
+    const tableRqtContainer =  document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+    if (!tableRqtContainer) {
+        setTimeout(() => {
+            getQueryTableRequests()
+        }, 200)
+    } else {
+        return tableRqtContainer
+    }
+}
+
 function checkTableRequests() {
-    const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+    const tableRqtContainer = getQueryTableRequests()
 
     let finishLoadTimeout;
 
