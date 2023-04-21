@@ -152,7 +152,7 @@ window.onload = function () {
                 }
             }, 1000)
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
-            checkTableRequests()
+            listenContainerRequestsTable()
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
             // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
             // Réaliser check if in storage
@@ -516,7 +516,7 @@ function getQueryTableRequests() {
     } else {
         setTimeout(() => {
             getQueryTableRequests()
-        }, 300)
+        }, 200)
     }
 }
 
@@ -524,37 +524,84 @@ function checkTableRequests() {
     console.log('RUN CUSTOM TABLE REQUESTS')
     addRefreshCustomTableRequests()
     const tableRqtContainer = getQueryTableRequests()
-    console.log(tableRqtContainer)
-    if (tableRqtContainer === null || tableRqtContainer === undefined) {
-        checkTableRequests()
-    } else {
-        let finishLoadTimeout;
-    
-        const scheduleFinishLoad = () => {
-            if (finishLoadTimeout) {
-                clearTimeout(finishLoadTimeout);
+    // console.log(tableRqtContainer)
+    let finishLoadTimeout;
+
+    const tableRqtsFinishLoad = () => {
+        if (finishLoadTimeout) {
+            clearTimeout(finishLoadTimeout);
+        }
+        finishLoadTimeout = setTimeout(() => {
+            changeEventTagDashboard()
+        }, 500);
+    };
+
+    var observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+                tableRqtsFinishLoad()
             }
-            finishLoadTimeout = setTimeout(() => {
-                changeEventTagDashboard()
-            }, 500);
-        };
-    
-        var observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    scheduleFinishLoad()
-                }
-            });
         });
-    
-        // Configuration de l'observation
-        var config = {
-            attributes: true,
-            childList: true,
-            subtree: true,
-        };
-    
-        // Lancement de l'observation
-        observer.observe(tableRqtContainer, config);
+    });
+
+    // Configuration de l'observation
+    var config = {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    };
+
+    // Lancement de l'observation
+    observer.observe(tableRqtContainer, config);
+}
+
+function getQueryContainerTableRequests() {
+    const containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
+    console.log('containerTableRqts')
+    console.log(containerTableRqts)
+    if (containerTableRqts && containerTableRqts !== null && containerTableRqts !== undefined) {
+        return containerTableRqts
+    } else {
+        setTimeout(() => {
+            getQueryContainerTableRequests()
+        }, 200)
     }
+}
+
+function testFunction() {
+    console.log('FINISH TO LOAD THIS !!!')
+    checkTableRequests()
+}
+
+function listenContainerRequestsTable() {
+    const containerTableRqts = getQueryContainerTableRequests()
+    
+    let finishLoadTimeout;
+    
+    const containerTabRqtsFinishLoad = () => {
+        if (finishLoadTimeout) {
+            clearTimeout(finishLoadTimeout);
+        }
+        finishLoadTimeout = setTimeout(() => {
+            testFunction()
+        }, 500);
+    };
+
+    var observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+                containerTabRqtsFinishLoad()
+            }
+        });
+    });
+
+    // Configuration de l'observation
+    var config = {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    };
+
+    // Lancement de l'observation
+    observer.observe(containerTableRqts, config);
 }
