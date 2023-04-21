@@ -35,26 +35,14 @@ function addExternalLink() {
         if ((externalLinks.querySelector('a[href^="https://www.portailroi.solocalgroup.com/stats/"]'))) {
             console.log("Link Portail ROI exist")
         } else {
-            const recordName = (document.querySelector('div.page-content div.recordNames>span.recordId>span')).innerText.split(' ').reverse()[0]
-            console.log(recordName)
-            if (recordName == "PREMIUM") {
-                const labels = document.querySelectorAll('label.control-label');
-                const label = Array.from(labels).find(l => l.textContent.trim() === 'CodeClient');
-                const parentElement = label && label.parentNode;
-                const EPJ = parentElement.querySelector('input').value
-                console.log(EPJ)
-                if (EPJ) {
-                    console.log(externalLinks)
-                    let portailRoiLink = document.createElement('a')
-                    portailRoiLink.href = `https://www.portailroi.solocalgroup.com/stats/par-produit/${EPJ}`
-                    portailRoiLink.setAttribute('target', '_blank')
-                    portailRoiLink.innerHTML = '<div class="WebLinks badge" id="linkref-36671" style="background-color:#f00ece"><i class="fa fa-play"></i>PORTAIL ROI</div>'
-                    externalLinks.appendChild(portailRoiLink)
-                }
-            } else {
-                console.log("else")
-                console.log(recordName)
-            }
+            const pathUrl = window.location.pathname.split('/');
+            let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+            console.log(externalLinks)
+            let portailRoiLink = document.createElement('a')
+            portailRoiLink.href = `https://www.portailroi.solocalgroup.com/stats/par-produit/${itemStored.epj}`
+            portailRoiLink.setAttribute('target', '_blank')
+            portailRoiLink.innerHTML = '<div class="WebLinks badge" id="linkref-36671" style="background-color:#f00ece"><i class="fa fa-play"></i>PORTAIL ROI</div>'
+            externalLinks.appendChild(portailRoiLink)
         }
     }
 }
@@ -90,7 +78,7 @@ function addStyle(styles) {
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; }';
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } ';
 
 function displayConfirmOkModal(lastComment) {
     let newDiv = document.createElement('div')
@@ -103,7 +91,7 @@ function displayConfirmOkModal(lastComment) {
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
         okBtnConfirmModal.addEventListener('click', () => {
             const pathUrl = window.location.pathname.split('/');
-            window.localStorage.removeItem('comment-' + pathUrl[3])
+            window.localStorage.removeItem('soprod-' + pathUrl[3])
             window.location.replace(
                 "https://soprod.solocalms.fr/Operator/Dashboard"
             );
@@ -124,7 +112,7 @@ function getModalConfirmInfo() {
 
 window.onload = function () {
     const pathUrl = window.location.pathname.split('/');
-    if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record") || (pathUrl[1] == "Consultation" && pathUrl[2] == "Record")) {
+    if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
         setTimeout(() => {
             addStyle(styles)
             let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
@@ -162,6 +150,10 @@ window.onload = function () {
         }, 1000)
     } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
         checkTableRequests()
+    } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
+        // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
+        // Réaliser check if in storage
+        // Else faire sans
     }
 };
 
@@ -277,6 +269,9 @@ function addBtnSchema() {
                             if (e.key == 'Enter' || e.key == 'Control') {
                                 keysActiv[e.key] = true
                                 if (keysActiv.Enter && keysActiv.Control) {
+                                    idInfos.lastComment.text = addCommentMessage.value
+                                    idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                    localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
                                     let sendMessage = document.querySelector('.btn.addComment')
                                     sendMessage.click()
                                 }
@@ -290,16 +285,16 @@ function addBtnSchema() {
                     });
                     let storage = ''
                     addCommentMessage.addEventListener("input", (e) => {
-                        if ((addCommentMessage.value).length - storage.length > 3 || (addCommentMessage.value).length - storage.length < -3) {
+                        if ((addCommentMessage.value).length - storage.length > 5 || (addCommentMessage.value).length - storage.length < -5) {
                             idInfos.lastComment.text = addCommentMessage.value
-                            idInfos.lastComment.height = addCommentMessage.clientHeight
+                            idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
                             localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
                         }
                     });
                     addCommentMessage.addEventListener("focusout", (e) => {
                         if (addCommentMessage.value !== '') {
                             idInfos.lastComment.text = addCommentMessage.value
-                            idInfos.lastComment.height = addCommentMessage.clientHeight
+                            idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
                             localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
                         }
                     });
@@ -329,8 +324,7 @@ const timeZoneOffsets = {
     988: 11
 };
 
-function displayCurrentTime(horlogeContainer, x) {
-    const offset = timeZoneOffsets[x];
+function displayCurrentTime(horlogeContainer, offset) {
     const currentDate = new Date();
     const localOffset = currentDate.getTimezoneOffset() / 60;
     const targetOffset = localOffset + offset;
@@ -340,22 +334,18 @@ function displayCurrentTime(horlogeContainer, x) {
 }
 
 
-function updateClock(horlogeContainer, x) {
-    displayCurrentTime(horlogeContainer, x);
+function updateClock(horlogeContainer, offset) {
+    displayCurrentTime(horlogeContainer, offset);
     setTimeout(() => {
-        updateClock(horlogeContainer, x);
+        updateClock(horlogeContainer, offset);
     }, 30000); // Met à jour l'horloge toutes les 30 secondes
 }
 
 function addClock() {
-    const labels = document.querySelectorAll('label.control-label');
-    const label = Array.from(labels).find(l => l.textContent.trim() === 'CodePostal');
-    const parentElement = label && label.parentNode;
-    const inputValue = parentElement.querySelector('input').value
+    const pathUrl = window.location.pathname.split('/');
+    let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
 
-    const x = inputValue.substr(0, 3);
-
-    if (timeZoneOffsets.hasOwnProperty(x)) {
+    if (itemStored.jetlag.statu) {
         let horlogeDiv = document.createElement('div');
         horlogeDiv.id = "horloge";
 
@@ -365,7 +355,38 @@ function addClock() {
 
         const horlogeContainer = document.querySelector('div#horloge')
 
-        updateClock(horlogeContainer, x);
+        updateClock(horlogeContainer, itemStored.jetlag.diff);
+    } else if (itemStored.jetlag.statu === false) {
+        console.log('no jet lag')
+    } else {
+        const labels = document.querySelectorAll('label.control-label');
+        const label = Array.from(labels).find(l => l.textContent.trim() === 'CodePostal');
+        const parentElement = label && label.parentNode;
+        const inputValue = parentElement.querySelector('input').value
+    
+        const x = inputValue.substr(0, 3);
+
+        if (x) {
+            if (timeZoneOffsets.hasOwnProperty(x)) {
+                let horlogeDiv = document.createElement('div');
+                horlogeDiv.id = "horloge";
+        
+                const parentOfPage = document.querySelector("div.operator-content.masterPage");
+        
+                parentOfPage.appendChild(horlogeDiv)
+        
+                const horlogeContainer = document.querySelector('div#horloge')
+    
+                itemStored.jetlag.statu = true
+                itemStored.jetlag.diff = timeZoneOffsets[x]
+                localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+        
+                updateClock(horlogeContainer, timeZoneOffsets[x]);
+            } else {
+                itemStored.jetlag.statu = false
+                localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+            }
+        }
     }
 }
 
@@ -396,7 +417,9 @@ function qualifInfo(qualCell, trTarget) {
             labelEvent.style.backgroundColor = "#a49cc7"
             return 'lastRelaunchModif'
         case 'MODIFICATION TRAITEE':
-            let lastChild = trTarget.querySelectorAll('td').reverse()[0]
+            let allTdChildren = trTarget.querySelectorAll('td')
+            console.log(allTdChildren)
+            let lastChild = allTdChildren[allTdChildren.length - 1]
             lastChild.style.backgroundColor = "#e96c1b"
             lastChild.style.color = "#ffffff"
             lastChild.style.textAlign = "center"
@@ -416,9 +439,12 @@ function changeEventTagDashboard() {
     if (lastDetection) {
         lastDetection = false
         const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+        console.log(tableRqtContainer)
 
         const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
+        console.log(allTrTableRqts)
         allTrTableRqts.forEach((tr) => {
+            console.log(tr)
             const tdInTrTableRqts = tr.querySelectorAll('td')
             
             let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
@@ -442,66 +468,86 @@ function changeEventTagDashboard() {
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
         })
 
-        // const allTdInTableRqts = tableRqtContainer.querySelectorAll('td');
-        // const tdCheckModif = Array.from(allTdInTableRqts).filter(l => l.textContent.trim() === 'MODIFICATION TRAITEE');
-        // tdCheckModif.forEach((el) => {
-        //     const parentTr = el.parentNode
-        //     const parentChildren = parentTr.querySelectorAll('td')
-        //     const lastChild = parentChildren[parentChildren.length - 1]
-        //     lastChild.style.backgroundColor = "#e96c1b"
-        //     lastChild.style.color = "#ffffff"
-        //     lastChild.style.textAlign = "center"
-        //     lastChild.style.fontSize = "16px"
-        //     lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
-        //     lastChild.style.fontWeight = "700"
-        //     lastChild.innerText = "A CLOTURER"
-        // })
         setTimeout(() => {
             lastDetection = true
         }, 5000);
     }
 }
 
+function addRefreshCustomTableRequests() {
+    const topBarTableRqtsContainer = document.querySelector('div.page-content-wrapper>div.page-content div.recordsPortlet div.portlet.box>div.portlet-title')
+    console.log(topBarTableRqtsContainer)
+    if (topBarTableRqtsContainer) {
+        const btnRefreshExist = topBarTableRqtsContainer.querySelector('div#refreshCustomTable')
+        if (!btnRefreshExist) {
+            let refreshBtn = document.createElement('div')
+            refreshBtn.innerHTML = '<i class="fa fa-repeat"></i>'
+            refreshBtn.id = "refreshCustomTable"
+            // refreshBtn.onclick = checkTableRequests()
+            topBarTableRqtsContainer.appendChild(refreshBtn)
+            const refreshBtnToExecute = document.getElementById('refreshCustomTable')
+            setTimeout(() => {
+                refreshBtnToExecute.addEventListener('click', () => {
+                    console.log('refresh clicked')
+                    changeEventTagDashboard()
+                })
+            }, 2000)
+        }
+    } else {
+        setTimeout(() => {
+            addRefreshCustomTableRequests()
+        }, 200)
+    }
+}
+
 function getQueryTableRequests() {
     const tableRqtContainer =  document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-    if (!tableRqtContainer) {
+    console.log('tableRqtContainer')
+    console.log(tableRqtContainer)
+    if (tableRqtContainer && tableRqtContainer !== null && tableRqtContainer !== undefined) {
+        return tableRqtContainer
+    } else {
         setTimeout(() => {
             getQueryTableRequests()
-        }, 200)
-    } else {
-        return tableRqtContainer
+        }, 300)
     }
 }
 
 function checkTableRequests() {
+    console.log('RUN CUSTOM TABLE REQUESTS')
+    addRefreshCustomTableRequests()
     const tableRqtContainer = getQueryTableRequests()
-
-    let finishLoadTimeout;
-
-    const scheduleFinishLoad = () => {
-        if (finishLoadTimeout) {
-            clearTimeout(finishLoadTimeout);
-        }
-        finishLoadTimeout = setTimeout(() => {
-            changeEventTagDashboard()
-        }, 500);
-    };
-
-    var observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                scheduleFinishLoad()
+    console.log(tableRqtContainer)
+    if (tableRqtContainer === null || tableRqtContainer === undefined) {
+        checkTableRequests()
+    } else {
+        let finishLoadTimeout;
+    
+        const scheduleFinishLoad = () => {
+            if (finishLoadTimeout) {
+                clearTimeout(finishLoadTimeout);
             }
+            finishLoadTimeout = setTimeout(() => {
+                changeEventTagDashboard()
+            }, 500);
+        };
+    
+        var observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    scheduleFinishLoad()
+                }
+            });
         });
-    });
-
-    // Configuration de l'observation
-    var config = {
-        attributes: true,
-        childList: true,
-        subtree: true,
-    };
-
-    // Lancement de l'observation
-    observer.observe(tableRqtContainer, config);
+    
+        // Configuration de l'observation
+        var config = {
+            attributes: true,
+            childList: true,
+            subtree: true,
+        };
+    
+        // Lancement de l'observation
+        observer.observe(tableRqtContainer, config);
+    }
 }
