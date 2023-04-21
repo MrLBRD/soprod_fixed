@@ -63,6 +63,8 @@ function changeKeysContainerCss() {
     }
 }
 
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 10px 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 0 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }';
+
 function addStyle(styles) {
 
     /* Create style document */
@@ -77,8 +79,6 @@ function addStyle(styles) {
     /* Append style to the tag name */
     document.getElementsByTagName("head")[0].appendChild(css);
 }
-
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } ';
 
 function displayConfirmOkModal(lastComment) {
     let newDiv = document.createElement('div')
@@ -115,9 +115,9 @@ window.onload = function () {
     if (!runWinOnLoad) {
         runWinOnLoad = true
         const pathUrl = window.location.pathname.split('/');
+        addStyle(styles)
         if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
             setTimeout(() => {
-                addStyle(styles)
                 let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
                 if(itemStored.qualif === 'doneModif') {
                     const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
@@ -152,6 +152,23 @@ window.onload = function () {
                 }
             }, 1000)
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+            let contextMenuContainer = document.createElement('div')
+            contextMenuContainer.id = "context-menu"
+            let listActionsContextMenu = document.createElement('ul')
+            listActionsContextMenu.className = "menu"
+            let elementListContextMenu = document.createElement('li')
+            elementListContextMenu.className = "menu-item"
+            elementListContextMenu.innerText = "Copier pour excel"
+            elementListContextMenu.id = "copyInformationsForExcel"
+            listActionsContextMenu.appendChild(elementListContextMenu)
+            contextMenuContainer.appendChild(listActionsContextMenu)
+            document.body.appendChild(contextMenuContainer)
+            
+            const copyLi = document.querySelector('div#context-menu ul.menu li#copyInformationsForExcel')
+            copyLi.addEventListener('click', function(event) {
+                copyFolderInformations(event)
+            })
+
             listenContainerRequestsTable()
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
             // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
@@ -446,21 +463,17 @@ function changeEventTagDashboard() {
     if (lastDetection) {
         lastDetection = false
         const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-        console.log(tableRqtContainer)
 
         const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
-        console.log(allTrTableRqts)
         allTrTableRqts.forEach((tr) => {
-            console.log(tr)
             const tdInTrTableRqts = tr.querySelectorAll('td')
             
             let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
-            console.log('itemStored')
-            console.log(itemStored)
 
             const rqtInformations = {
                 'epj': tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
                 'gamme': tdInTrTableRqts[5].innerText.substr(6),
+                'name': tdInTrTableRqts[2].innerText,
                 'lastComment': {
                     'text': !itemStored ? null : itemStored.lastComment.text,
                     'height': !itemStored ? undefined : itemStored.lastComment.height
@@ -471,8 +484,17 @@ function changeEventTagDashboard() {
                 },
                 'qualif': qualifInfo(tdInTrTableRqts[7], tr)
             }
-            console.log(rqtInformations)
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
+
+            tr.addEventListener('click', function(e) {
+                if (e.which == 2) {
+                    e.preventDefault();
+                    window.open("https://soprod.solocalms.fr/Operator/Record/"+tdInTrTableRqts[0].innerText, '_blank')
+                }
+            })
+            tr.addEventListener("contextmenu", function(event) {
+                addListenerDisplayContextMenu(event)
+            })
         })
 
         setTimeout(() => {
@@ -495,7 +517,6 @@ function addRefreshCustomTableRequests() {
             const refreshBtnToExecute = document.getElementById('refreshCustomTable')
             setTimeout(() => {
                 refreshBtnToExecute.addEventListener('click', () => {
-                    console.log('refresh clicked')
                     changeEventTagDashboard()
                 })
             }, 2000)
@@ -521,10 +542,8 @@ function getQueryTableRequests() {
 }
 
 function checkTableRequests() {
-    console.log('RUN CUSTOM TABLE REQUESTS')
     addRefreshCustomTableRequests()
     const tableRqtContainer = getQueryTableRequests()
-    // console.log(tableRqtContainer)
     let finishLoadTimeout;
 
     const tableRqtsFinishLoad = () => {
@@ -557,8 +576,6 @@ function checkTableRequests() {
 
 function getQueryContainerTableRequests() {
     const containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
-    console.log('containerTableRqts')
-    console.log(containerTableRqts)
     if (containerTableRqts && containerTableRqts !== null && containerTableRqts !== undefined) {
         return containerTableRqts
     } else {
@@ -566,11 +583,6 @@ function getQueryContainerTableRequests() {
             getQueryContainerTableRequests()
         }, 200)
     }
-}
-
-function testFunction() {
-    console.log('FINISH TO LOAD THIS !!!')
-    checkTableRequests()
 }
 
 function listenContainerRequestsTable() {
@@ -583,7 +595,7 @@ function listenContainerRequestsTable() {
             clearTimeout(finishLoadTimeout);
         }
         finishLoadTimeout = setTimeout(() => {
-            testFunction()
+            checkTableRequests()
         }, 500);
     };
 
@@ -604,4 +616,60 @@ function listenContainerRequestsTable() {
 
     // Lancement de l'observation
     observer.observe(containerTableRqts, config);
+}
+
+let activRequestTrForContextMenu = null
+
+function addListenerDisplayContextMenu(event) {
+    event.preventDefault();
+
+    activRequestTrForContextMenu = (event.srcElement.parentElement).querySelectorAll('td')[0].innerText
+
+    // On récupère le menu
+    let menu = document.querySelector("#context-menu");
+    
+    // On met ou retire la classe active
+    menu.classList.toggle("active");
+
+    // On ouvre le menu là où se trouve la souris
+    // On récupère les coordonnées de la souris
+    let posX = event.clientX;
+    let posY = event.clientY;
+
+    // On calcule la position du menu pour éviter qu'il dépasse
+    // Position la plus à droite "largeur fenêtre - largeur menu - 25"
+    let maxX = window.innerWidth - menu.clientWidth - 25;
+
+    // Position la plus basse "hauteur fenêtre - hauteur menu - 25"
+    let maxY = window.innerHeight - menu.clientHeight - 25;
+
+    // On vérifie si on dépasse
+    if(posX > maxX){
+        posX = maxX;
+    }
+    if(posY > maxY){
+        posY = maxY;
+    }
+
+    // On positionne le menu
+    menu.style.top = posY + "px";
+    menu.style.left = posX + "px";
+}
+
+function copyFolderInformations(event) {
+    event.preventDefault()
+    
+    // On récupère le menu
+    let menu = document.querySelector("div#context-menu");
+    console.log(menu)
+    
+    // On met ou retire la classe active
+    menu.classList.toggle("active");
+
+    let today = new Date()
+    let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+    
+    let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+activRequestTrForContextMenu))
+    let contentForClypboard = `${itemStored.epj}\t${itemStored.name}\t${dateOfToday}\t${itemStored.gamme}`
+    navigator.clipboard.writeText(contentForClypboard)
 }
