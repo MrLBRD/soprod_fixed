@@ -110,50 +110,57 @@ function getModalConfirmInfo() {
     }
 }
 
+let runWinOnLoad = false
 window.onload = function () {
-    const pathUrl = window.location.pathname.split('/');
-    if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
-        setTimeout(() => {
-            addStyle(styles)
-            let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
-            if(itemStored.qualif === 'doneModif') {
-                const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                console.log("check modif btn : ", checkModifBtn)
-                if (checkModifBtn) {
-                    checkModifBtn.click()
-                    getModalConfirmInfo()
-                }
-            } else {
-                changeKeysContainerCss()
-    
-                var tabContent = document.querySelector('.tab-content');
-                if (tabContent) {
-                    var observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                changeKeysContainerCss()
-                            }
+    if (!runWinOnLoad) {
+        runWinOnLoad = true
+        const pathUrl = window.location.pathname.split('/');
+        if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
+            setTimeout(() => {
+                addStyle(styles)
+                let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+                if(itemStored.qualif === 'doneModif') {
+                    const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                    console.log("check modif btn : ", checkModifBtn)
+                    if (checkModifBtn) {
+                        checkModifBtn.click()
+                        getModalConfirmInfo()
+                    }
+                } else {
+                    changeKeysContainerCss()
+        
+                    var tabContent = document.querySelector('.tab-content');
+                    if (tabContent) {
+                        var observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                    changeKeysContainerCss()
+                                }
+                            });
                         });
-                    });
-    
-                    // Configuration de l'observation
-                    var config = {
-                        attributes: true,
-                        childList: true,
-                        subtree: true,
-                    };
-    
-                    // Lancement de l'observation
-                    observer.observe(tabContent, config);
+        
+                        // Configuration de l'observation
+                        var config = {
+                            attributes: true,
+                            childList: true,
+                            subtree: true,
+                        };
+        
+                        // Lancement de l'observation
+                        observer.observe(tabContent, config);
+                    }
                 }
-            }
-        }, 1000)
-    } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
-        checkTableRequests()
-    } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
-        // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
-        // Réaliser check if in storage
-        // Else faire sans
+            }, 1000)
+        } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+            checkTableRequests()
+        } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
+            // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
+            // Réaliser check if in storage
+            // Else faire sans
+        }
+        setTimeout(() => {
+            runWinOnLoad = false
+        }, 10000)
     }
 };
 
