@@ -577,6 +577,10 @@ function checkTableRequests() {
 function getQueryContainerTableRequests() {
     const containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
     if (containerTableRqts && containerTableRqts !== null && containerTableRqts !== undefined) {
+        containerTableRqts.addEventListener('click', () => {
+            let menu = document.querySelector("div#context-menu");
+            menu.classList.toggle("active");
+        })
         return containerTableRqts
     } else {
         setTimeout(() => {
@@ -650,6 +654,7 @@ function addListenerDisplayContextMenu(event) {
     if(posY > maxY){
         posY = maxY;
     }
+    posY += window.scrollY
 
     // On positionne le menu
     menu.style.top = posY + "px";
@@ -659,11 +664,7 @@ function addListenerDisplayContextMenu(event) {
 function copyFolderInformations(event) {
     event.preventDefault()
     
-    // On récupère le menu
     let menu = document.querySelector("div#context-menu");
-    console.log(menu)
-    
-    // On met ou retire la classe active
     menu.classList.toggle("active");
 
     let today = new Date()
