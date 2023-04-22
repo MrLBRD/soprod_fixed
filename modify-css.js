@@ -181,6 +181,85 @@ window.onload = function () {
     }
 };
 
+window.addEventListener('message', function (event) {
+    console.log('New Message !!!')
+    console.log(event)
+    // Vérifier l'origine du message pour des raisons de sécurité
+    if (event.origin !== 'https://soprod.solocalms.fr') return;
+    
+    // Vérifier que le message est de type 'textFromFirstPage'
+    if (event.data.type === 'copyDataForExcel') {
+        // const textOfElementTargetFirstPage = event.data.text;
+        console.log('LE BON MESSAGE EST ARRIVE')
+        openCustomerRelationTab()
+    }
+});
+
+function getRequestComment() {
+    const customerRelationTab = document.querySelectorAll('div.portlet[id^="requestArea_"]>div.portlet-body>div.row>div>div[id^="getRequest_"] table.table>tbody>tr')[0]
+    if (customerRelationTab) {
+        let originRequest = (customerRelationTab.dataset.origin).includes('bilan') ? "BILAN" : (customerRelationTab.querySelectorAll('td')[4].innerText).includes('COMMERCIAL') ? "COMMERCIAL" : "CLIENT"
+        let commentRequest = (customerRelationTab.dataset.comment).replace(/"/g, '\'\'')
+        console.log(commentRequest)
+
+        const pathUrl = window.location.pathname.split('/');
+
+        let today = new Date()
+        let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+        
+        let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+
+        let contentForClypboard = `${itemStored.epj}\t${itemStored.name}\t${dateOfToday}\t${itemStored.gamme}\t\t${originRequest}\t"${commentRequest}"`
+        navigator.clipboard.writeText(contentForClypboard)
+        setTimeout(() => {
+            window.close()
+        }, 300)
+    } else {
+        setTimeout(() => {
+            getRequestComment()
+        }, 300)
+    }
+}
+
+function openCustomerRelationTab() {
+    const tabs = document.querySelectorAll('div#masterWebGroupPortlet>div.portlet-body>div.tabbable.tabbable-custom>ul.nav.nav-tabs>li>a')
+    const pageContainer = document.querySelector('div#masterWebGroupPortlet>div.portlet-body>div.tabbable.tabbable-custom>div.tab-content')
+    tabs.forEach((el) => {
+        if (el.innerText == 'RELATION CLIENT') {
+            el.click()
+
+            let finishLoadTimeout;
+            
+            const containerPageContentFinishLoad = () => {
+                if (finishLoadTimeout) {
+                    clearTimeout(finishLoadTimeout);
+                }
+                finishLoadTimeout = setTimeout(() => {
+                    getRequestComment()
+                }, 500);
+            };
+
+            var observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        containerPageContentFinishLoad()
+                    }
+                });
+            });
+
+            // Configuration de l'observation
+            var config = {
+                attributes: true,
+                childList: true,
+                subtree: true,
+            };
+
+            // Lancement de l'observation
+            observer.observe(pageContainer, config);
+        }
+    })
+}
+
 const btnsList = {
     'sendToControl': {
         'text': 'Clôture schema',
@@ -666,11 +745,13 @@ function copyFolderInformations(event) {
     
     let menu = document.querySelector("div#context-menu");
     menu.classList.toggle("active");
-
-    let today = new Date()
-    let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+        
+    // Ouvrir la nouvelle fenêtre et stocker la référence
+    const newWindow = window.open('https://soprod.solocalms.fr/Operator/Record/'+activRequestTrForContextMenu);
     
-    let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+activRequestTrForContextMenu))
-    let contentForClypboard = `${itemStored.epj}\t${itemStored.name}\t${dateOfToday}\t${itemStored.gamme}`
-    navigator.clipboard.writeText(contentForClypboard)
+    // Attendre que la seconde page soit prête à recevoir des messages
+    newWindow.addEventListener('load', function () {
+        // Envoyer le texte récupéré à la seconde page
+        newWindow.postMessage({ type: 'copyDataForExcel', text: 'copyRuntime' }, 'https://soprod.solocalms.fr/Operator/Dashboard');
+    });
 }
