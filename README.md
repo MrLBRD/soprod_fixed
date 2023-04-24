@@ -8,4 +8,6 @@ ajouter right click menu custom sur les tr de la table requests
  dans le menu :
     - modifier manuellement les infos du local storage ?
 
+Auto complete schema injoignable if is first or second select day
+
 -->
