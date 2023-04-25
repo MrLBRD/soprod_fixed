@@ -63,7 +63,7 @@ function changeKeysContainerCss() {
     }
 }
 
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }';
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; } #beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #beeMenuContainer:hover .btn-badge { width: 64px; height: 64px; } #beeMenuContainer:hover #autoNextRelaunch { left: 34px; bottom: 80px; } #beeMenuContainer:hover #copyForExcel { left: 85px; bottom: 16px; }';
 
 function addStyle(styles) {
 
@@ -148,6 +148,7 @@ window.onload = function () {
                     }
                 } else {
                     changeKeysContainerCss()
+                    addBeeBadge()
         
                     var tabContent = document.querySelector('.tab-content');
                     if (tabContent) {
@@ -239,15 +240,12 @@ window.onload = function () {
 };
 
 window.addEventListener('message', function (event) {
-    console.log('New Message !!!')
-    console.log(event)
     // Vérifier l'origine du message pour des raisons de sécurité
     if (event.origin !== 'https://soprod.solocalms.fr') return;
     
     // Vérifier que le message est de type 'textFromFirstPage'
     if (event.data.type === 'copyDataForExcel') {
         // const textOfElementTargetFirstPage = event.data.text;
-        console.log('LE BON MESSAGE EST ARRIVE')
         openCustomerRelationTab()
     }
 });
@@ -927,4 +925,44 @@ function openRequestInNewTab(event) {
     menu.classList.toggle("active");
     
     window.open("https://soprod.solocalms.fr/Operator/Record/"+activRequestTrForContextMenu, '_blank')
+}
+
+function addBeeBadge() {
+    const svgUrl = chrome.runtime.getURL("icons/SoBee-512.svg");
+    const svgUrlCopyExcel = chrome.runtime.getURL("icons/CopyForExcel-64.svg");
+    const svgUrlAutoRelaunch = chrome.runtime.getURL("icons/AutoRelaunch-64.svg");
+
+    let beeMenuContainer = document.createElement('div')
+    beeMenuContainer.id = 'beeMenuContainer'
+
+    let containerBee = document.createElement('div')
+    containerBee.id = 'beeBadge'
+    let imageBee = document.createElement('img')
+    imageBee.src = svgUrl
+    containerBee.appendChild(imageBee)
+    console.log(containerBee)
+
+    beeMenuContainer.appendChild(containerBee)
+
+    let containerAutoRelaunch = document.createElement('div')
+    containerAutoRelaunch.id = 'autoNextRelaunch'
+    containerAutoRelaunch.className = "btn-badge"
+    imageBtn = document.createElement('img')
+    imageBtn.src = svgUrlAutoRelaunch
+    containerAutoRelaunch.appendChild(imageBtn)
+    console.log(containerAutoRelaunch)
+    
+    beeMenuContainer.appendChild(containerAutoRelaunch)
+    
+    let containerCopyExcel = document.createElement('div')
+    containerCopyExcel.id = 'copyForExcel'
+    containerCopyExcel.className = "btn-badge"
+    imageBtn = document.createElement('img')
+    imageBtn.src = svgUrlCopyExcel
+    containerCopyExcel.appendChild(imageBtn)
+    console.log(containerCopyExcel)
+    
+    beeMenuContainer.appendChild(containerCopyExcel)
+
+    document.body.appendChild(beeMenuContainer)
 }
