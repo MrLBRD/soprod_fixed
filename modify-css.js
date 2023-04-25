@@ -80,12 +80,23 @@ function addStyle(styles) {
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
+function getConfirmModal() {
+    const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content')
+    if (confirmModal) {
+        return confirmModal
+    } else {
+        setTimeout(() => {
+            getConfirmModal()
+        }, 300)
+    }
+}
+
 function displayConfirmOkModal(lastComment) {
     let newDiv = document.createElement('div')
     newDiv.className = "modifOk-comment"
     newDiv.appendChild(lastComment.cloneNode(true))
     setTimeout(() => {
-        const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content')
+        const confirmModal = getConfirmModal()
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
@@ -102,6 +113,7 @@ function displayConfirmOkModal(lastComment) {
 function getModalConfirmInfo() {
     let lastComment = (document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]).querySelector('div')
     if (lastComment) {
+        console.log(lastComment)
         displayConfirmOkModal(lastComment)
     } else {
         setTimeout(() => {
@@ -152,15 +164,26 @@ window.onload = function () {
                 }
             }, 1000)
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+            const elementsContextMenu = [
+                {
+                    id: 'copyInformationsForExcel',
+                    text: 'Copier pour excel'
+                }, {
+                    id: 'openInNewTab',
+                    text: 'Ouvrir nouvel onglet'
+                }
+            ]
             let contextMenuContainer = document.createElement('div')
             contextMenuContainer.id = "context-menu"
             let listActionsContextMenu = document.createElement('ul')
             listActionsContextMenu.className = "menu"
-            let elementListContextMenu = document.createElement('li')
-            elementListContextMenu.className = "menu-item"
-            elementListContextMenu.innerText = "Copier pour excel"
-            elementListContextMenu.id = "copyInformationsForExcel"
-            listActionsContextMenu.appendChild(elementListContextMenu)
+            elementsContextMenu.forEach((el) => {
+                let elementListContextMenu = document.createElement('li')
+                elementListContextMenu.className = "menu-item"
+                elementListContextMenu.innerText = el.text
+                elementListContextMenu.id = el.id
+                listActionsContextMenu.appendChild(elementListContextMenu)
+            })
             contextMenuContainer.appendChild(listActionsContextMenu)
             document.body.appendChild(contextMenuContainer)
             
@@ -168,9 +191,35 @@ window.onload = function () {
             copyLi.addEventListener('click', function(event) {
                 copyFolderInformations(event)
             })
+            const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
+            openNewTab.addEventListener('click', function(event) {
+                openRequestInNewTab(event)
+            })
 
             listenContainerRequestsTable()
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
+            setTimeout(() => {
+                var tabContent = document.querySelector('.tab-content');
+                if (tabContent) {
+                    var observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                changeKeysContainerCss()
+                            }
+                        });
+                    });
+    
+                    // Configuration de l'observation
+                    var config = {
+                        attributes: true,
+                        childList: true,
+                        subtree: true,
+                    };
+    
+                    // Lancement de l'observation
+                    observer.observe(tabContent, config);
+                }
+            }, 500)
             // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
             // Réaliser check if in storage
             // Else faire sans
@@ -565,12 +614,6 @@ function changeEventTagDashboard() {
             }
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
 
-            tr.addEventListener('click', function(e) {
-                if (e.which == 2) {
-                    e.preventDefault();
-                    window.open("https://soprod.solocalms.fr/Operator/Record/"+tdInTrTableRqts[0].innerText, '_blank')
-                }
-            })
             tr.addEventListener("contextmenu", function(event) {
                 addListenerDisplayContextMenu(event)
             })
@@ -754,4 +797,13 @@ function copyFolderInformations(event) {
         // Envoyer le texte récupéré à la seconde page
         newWindow.postMessage({ type: 'copyDataForExcel', text: 'copyRuntime' }, 'https://soprod.solocalms.fr/Operator/Dashboard');
     });
+}
+
+function openRequestInNewTab(event) {
+    event.preventDefault()
+    
+    let menu = document.querySelector("div#context-menu");
+    menu.classList.toggle("active");
+    
+    window.open("https://soprod.solocalms.fr/Operator/Record/"+activRequestTrForContextMenu, '_blank')
 }
