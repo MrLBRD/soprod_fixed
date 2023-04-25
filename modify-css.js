@@ -131,6 +131,10 @@ window.onload = function () {
         if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
             setTimeout(() => {
                 let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+                if (itemStored.qualif === 'notStarted') {
+                    itemStored.qualif = 'encours'
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                }
                 if(itemStored.qualif === 'doneModif') {
                     const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
                     console.log("check modif btn : ", checkModifBtn)
@@ -652,44 +656,51 @@ function addClock() {
 
 let lastDetection = true
 
-function qualifInfo(qualCell, trTarget) {
-    switch (qualCell.innerText) {
-        case 'RDV POUR MODIF':
-            labelEvent = trTarget.querySelector('td span.eventType')
-            if (labelEvent) {
-                // labelEvent.style.backgroundColor = "#824ac9"
-                return 'rdvModif'
-            } else {
-                return 'afterRdvModif'
-            }
-        case 'RELANCE POUR MODIFICATION':
-            labelEvent = trTarget.querySelector('td span.eventType')
-            if (labelEvent) {
-                labelEvent.style.backgroundColor = "#824ac9"
-                return 'relaunchModif'
-            } else {
+function qualifInfo(qualCell, trTarget, qualInfo) {
+    if (qualInfo === "notStarted") {
+        trTarget.style.border = "solid #EC2B3B"
+        return 'notStarted'
+    } else {
+        switch (qualCell.innerText) {
+            case 'RDV POUR MODIF':
+                labelEvent = trTarget.querySelector('td span.eventType')
+                if (labelEvent) {
+                    // labelEvent.style.backgroundColor = "#824ac9"
+                    return 'rdvModif'
+                } else {
+                    return 'afterRdvModif'
+                }
+            case 'RELANCE POUR MODIFICATION':
+                labelEvent = trTarget.querySelector('td span.eventType')
+                if (labelEvent) {
+                    labelEvent.style.backgroundColor = "#824ac9"
+                    return 'relaunchModif'
+                } else {
+                    return 'encours'
+                }
+            case 'RELANCE INJOIGNABLE MODIF':
+                labelEvent = trTarget.querySelector('td span.eventType')
+                labelEvent.style.backgroundColor = "#a49cc7"
+                return 'lastRelaunchModif'
+            case 'MODIFICATION TRAITEE':
+                let allTdChildren = trTarget.querySelectorAll('td')
+                console.log(allTdChildren)
+                let lastChild = allTdChildren[allTdChildren.length - 1]
+                lastChild.style.backgroundColor = "#e96c1b"
+                lastChild.style.color = "#ffffff"
+                lastChild.style.textAlign = "center"
+                lastChild.style.fontSize = "16px"
+                lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
+                lastChild.style.fontWeight = "700"
+                lastChild.innerText = "A CLOTURER"
+                return 'doneModif'
+            case 'MODIF FAITE ENVOI EN CONTRÔLE FINAL':
+                trTarget.style.opacity = 0.2
+                return 'controlInProgress'
+            default:
                 return 'encours'
-            }
-        case 'RELANCE INJOIGNABLE MODIF':
-            labelEvent = trTarget.querySelector('td span.eventType')
-            labelEvent.style.backgroundColor = "#a49cc7"
-            return 'lastRelaunchModif'
-        case 'MODIFICATION TRAITEE':
-            let allTdChildren = trTarget.querySelectorAll('td')
-            console.log(allTdChildren)
-            let lastChild = allTdChildren[allTdChildren.length - 1]
-            lastChild.style.backgroundColor = "#e96c1b"
-            lastChild.style.color = "#ffffff"
-            lastChild.style.textAlign = "center"
-            lastChild.style.fontSize = "16px"
-            lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
-            lastChild.style.fontWeight = "700"
-            lastChild.innerText = "A CLOTURER"
-            return 'doneModif'
-        default:
-            return 'encours'
+        }
     }
-    // MODIF FAITE ENVOI EN CONTRÔLE FINAL
     // RETOUR EN MODIFICATION
 }
 
@@ -716,7 +727,7 @@ function changeEventTagDashboard() {
                     'statu': itemStored ? itemStored.jetlag.statu : null,
                     'diff': itemStored ? itemStored.jetlag.diff : undefined
                 },
-                'qualif': qualifInfo(tdInTrTableRqts[7], tr)
+                'qualif': qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted')
             }
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
 
