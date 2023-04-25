@@ -82,7 +82,10 @@ function addStyle(styles) {
 
 function getConfirmModal() {
     const confirmModal = document.querySelector('div.bootbox.modal.bootbox-preview[role="dialog"] div.modal-dialog>div.modal-content')
-    if (confirmModal) {
+    console.log('confirmModal')
+    console.log(confirmModal)
+    if (confirmModal && confirmModal !== null && confirmModal !== undefined) {
+        console.log(confirmModal)
         return confirmModal
     } else {
         setTimeout(() => {
@@ -97,6 +100,7 @@ function displayConfirmOkModal(lastComment) {
     newDiv.appendChild(lastComment.cloneNode(true))
     setTimeout(() => {
         const confirmModal = getConfirmModal()
+        console.log(confirmModal)
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
@@ -694,7 +698,7 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
                 lastChild.style.fontWeight = "700"
                 lastChild.innerText = "A CLOTURER"
                 return 'doneModif'
-            case 'MODIF FAITE ENVOI EN CONTRÔLE FINAL':
+            case 'MODIF FAITE ENVOI EN CONTROLE FINAL':
                 trTarget.style.opacity = 0.2
                 return 'controlInProgress'
             default:
