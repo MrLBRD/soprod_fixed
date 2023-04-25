@@ -63,7 +63,7 @@ function changeKeysContainerCss() {
     }
 }
 
-var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 10px 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 0 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }';
+var styles = '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }';
 
 function addStyle(styles) {
 
@@ -166,11 +166,11 @@ window.onload = function () {
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
             const elementsContextMenu = [
                 {
-                    id: 'copyInformationsForExcel',
-                    text: 'Copier pour excel'
-                }, {
                     id: 'openInNewTab',
                     text: 'Ouvrir nouvel onglet'
+                }, {
+                    id: 'copyInformationsForExcel',
+                    text: 'Copier pour excel'
                 }
             ]
             let contextMenuContainer = document.createElement('div')
@@ -309,6 +309,88 @@ function openCustomerRelationTab() {
     })
 }
 
+var AddDaTor = {
+    calcul: function (choosenDate, jours) {
+        var date = choosenDate.getTime(),
+            now = new Date(),
+            feries = AddDaTor.joursFeries(choosenDate.getFullYear()),
+            i = 1,
+            cpt = 0,
+            tmp;
+        while (cpt < jours) {
+            tmp = new Date(date + i * 24 * 60 * 60 * 1000);
+            var day = tmp.getDay();
+            if (day != 0) { // dimanche
+                // jours ferié
+                var found = false;
+                for (var f = feries.length - 1; f >= 0; f--) {
+                    if (
+                        parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
+                        && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
+                        && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
+                    ) {
+                        found = true;
+                    }
+                };
+                if (!found) {
+                    cpt++;
+                }
+            }
+            i++;
+        };
+        // S'assurer que la date retournée est un jour ouvrable (hors samedi)
+        var isWorkingDay;
+        do {
+            isWorkingDay = true;
+            if (tmp.getDay() === 6 || tmp.getDay() === 0) { // Si c'est un samedi
+                tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le samedi
+                isWorkingDay = false;
+            } else {
+                for (var f = feries.length - 1; f >= 0; f--) {
+                    if (
+                        parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
+                        && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
+                        && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
+                    ) {
+                        tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le jour férié
+                        isWorkingDay = false;
+                        break;
+                    }
+                }
+            }
+        } while (!isWorkingDay);
+
+        return tmp;
+    },
+
+    joursFeries: function (an) {
+        var JourAn = new Date(an, "00", "01"),
+            FeteTravail = new Date(an, "04", "01"),
+            Victoire1945 = new Date(an, "04", "08"),
+            FeteNationale = new Date(an, "06", "14"),
+            Assomption = new Date(an, "07", "15"),
+            Toussaint = new Date(an, "10", "01"),
+            Armistice = new Date(an, "10", "11"),
+            Noel = new Date(an, "11", "25"),
+            SaintEtienne = new Date(an, "11", "26"),
+            G = an % 19,
+            C = Math.floor(an / 100),
+            H = (C - Math.floor(C / 4) - Math.floor((8 * C + 13) / 25) + 19 * G + 15) % 30,
+            I = H - Math.floor(H / 28) * (1 - Math.floor(H / 28) * Math.floor(29 / (H + 1)) * Math.floor((21 - G) / 11)),
+            J = (an * 1 + Math.floor(an / 4) + I + 2 - C + Math.floor(C / 4)) % 7,
+            L = I - J,
+            MoisPaques = 3 + Math.floor((L + 40) / 44),
+            JourPaques = L + 28 - 31 * Math.floor(MoisPaques / 4),
+            Paques = new Date(an, MoisPaques - 1, JourPaques),
+            VendrediSaint = new Date(an, MoisPaques - 1, JourPaques - 2),
+            LundiPaques = new Date(an, MoisPaques - 1, JourPaques + 1),
+            Ascension = new Date(an, MoisPaques - 1, JourPaques + 39),
+            Pentecote = new Date(an, MoisPaques - 1, JourPaques + 49),
+            LundiPentecote = new Date(an, MoisPaques - 1, JourPaques + 50);
+        return [JourAn, VendrediSaint, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel, SaintEtienne];
+    }
+}
+
 const btnsList = {
     'sendToControl': {
         'text': 'Clôture schema',
@@ -338,6 +420,27 @@ const btnsList = {
         'message': 'Envoi lien de prévisualisation',
         'height': '36px'
     }
+}
+
+function howNextDayToCall() {
+    var pathArray = window.location.pathname.split('/');
+    let idInfos = JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+    console.log(idInfos)
+    let choosenDate = new Date()
+    let dayDelay
+    switch (idInfos.qualif) {
+        case 'relaunchModif':
+        case 'afterRdvModif':
+        case 'encours':
+            dayDelay = 1
+            break;
+        case 'lastRelaunchModif':
+        case 'rdvModif':
+            dayDelay = 2
+            break;
+    }
+    let newDate = AddDaTor.calcul(choosenDate, dayDelay);
+    return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
 }
 
 function addBtnSchema() {
@@ -392,7 +495,11 @@ function addBtnSchema() {
                         if (btnElement) {
                             btnElement.addEventListener('click', () => {
                                 if (addCommentMessage.value == '') {
-                                    addCommentMessage.value = value.message
+                                    if (value.id === 'addUnreachableSchemaBtn') {
+                                        addCommentMessage.value = value.message + howNextDayToCall()
+                                    } else {
+                                        addCommentMessage.value = value.message
+                                    }
                                     addCommentMessage.style.height = value.height
                                 }
                             });
@@ -485,7 +592,6 @@ function displayCurrentTime(horlogeContainer, offset) {
     horlogeContainer.innerText = (targetDate.toLocaleTimeString().substr(0, 5))
 }
 
-
 function updateClock(horlogeContainer, offset) {
     displayCurrentTime(horlogeContainer, offset);
     setTimeout(() => {
@@ -564,7 +670,7 @@ function qualifInfo(qualCell, trTarget) {
             } else {
                 return 'encours'
             }
-        case 'RELANCE MODIFICATION':
+        case 'RELANCE INJOIGNABLE MODIF':
             labelEvent = trTarget.querySelector('td span.eventType')
             labelEvent.style.backgroundColor = "#a49cc7"
             return 'lastRelaunchModif'
