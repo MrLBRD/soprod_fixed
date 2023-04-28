@@ -1,5 +1,19 @@
 console.log('HELLO WOLRD !')
 
+const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
+let userSettings
+
+function loadSettings(callback) {
+    storage.sync.get("userSettings", (data) => {
+        callback(data.userSettings);
+    });
+}
+
+loadSettings((data) => {
+    console.log(data)
+    userSettings = data
+})
+
 let runChangeCss = false
 
 function getLocalStorage() {
@@ -11,6 +25,8 @@ function keywordsBetterView() {
     runChangeCss = true
     var keywordsGroupContainers = document.querySelectorAll('.KeywordsFormGroup');
     if (keywordsGroupContainers) {
+        const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
+        if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
         for (const keywordsGroupContainer of keywordsGroupContainers) {
             keywordsGroupContainer.style.display = 'flex'
             keywordsGroupContainer.style.flexDirection = 'column'
@@ -48,22 +64,6 @@ function addExternalLink() {
             portailRoiLink.innerHTML = '<div class="WebLinks badge" id="linkref-36671" style="background-color:#f00ece"><i class="fa fa-play"></i>PORTAIL ROI</div>'
             externalLinks.appendChild(portailRoiLink)
         }
-    }
-}
-
-function changeKeysContainerCss() {
-    if (!runChangeCss) {
-        runChangeCss = true
-        keywordsBetterView()
-        addExternalLink()
-        setTimeout(() => {
-            runChangeCss = false
-            addBtnSchema()
-            const testClock = document.querySelector('div#horloge')
-            if (!testClock) {
-                addClock()
-            }
-        }, 1000)
     }
 }
 
@@ -114,13 +114,13 @@ function displayConfirmOkModal(lastComment) {
     newDiv.className = "modifOk-comment"
     newDiv.appendChild(lastComment.cloneNode(true))
     setTimeout(() => {
+        const pathUrl = window.location.pathname.split('/');
         const confirmModal = getConfirmModal()
         console.log(confirmModal)
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
         okBtnConfirmModal.addEventListener('click', () => {
-            const pathUrl = window.location.pathname.split('/');
             window.localStorage.removeItem('soprod-' + pathUrl[3])
             window.location.replace(
                 "https://soprod.solocalms.fr/Operator/Dashboard"
@@ -141,6 +141,17 @@ function getModalConfirmInfo() {
     }
 }
 
+function getTabContent() {
+    const tabContent = document.querySelector('div.tab-content');
+    if (tabContent) {
+        return tabContent
+    } else {
+        setTimeout(() => {
+            getTabContent()
+        }, 300)
+    }
+}
+
 let runWinOnLoad = false
 window.onload = function () {
     if (!runWinOnLoad) {
@@ -155,36 +166,66 @@ window.onload = function () {
                     localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
                 }
                 if(itemStored.qualif === 'doneModif') {
-                    const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                    console.log("check modif btn : ", checkModifBtn)
-                    if (checkModifBtn) {
-                        checkModifBtn.click()
-                        getModalConfirmInfo()
+                    if (userSettings.autoCheckModif) {
+                        const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                        console.log("check modif btn : ", checkModifBtn)
+                        if (checkModifBtn) {
+                            checkModifBtn.click()
+                            getModalConfirmInfo()
+                        }
+                    } else {
+                        window.localStorage.removeItem('soprod-' + pathUrl[3])
                     }
                 } else {
-                    changeKeysContainerCss()
+                    // keywordsBetterView()
                     addBeeBadge()
-        
-                    var tabContent = document.querySelector('.tab-content');
-                    if (tabContent) {
-                        var observer = new MutationObserver((mutations) => {
-                            mutations.forEach((mutation) => {
-                                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                    changeKeysContainerCss()
-                                }
-                            });
-                        });
-        
-                        // Configuration de l'observation
-                        var config = {
-                            attributes: true,
-                            childList: true,
-                            subtree: true,
-                        };
-        
-                        // Lancement de l'observation
-                        observer.observe(tabContent, config);
+                    keywordsBetterView()
+                    addExternalLink()
+                    addBtnSchema()
+                    const testClock = document.querySelector('div#horloge')
+                    if (!testClock) {
+                        addClock()
                     }
+        
+                    // var tabContent = getTabContent()
+                    // if (tabContent) {
+                    //     console.log('tabcontent => ', tabContent)
+                        
+                    //     let finishLoadTimeout;
+                        
+                    //     const containerPageContentFinishLoad = () => {
+                    //         if (finishLoadTimeout) {
+                    //             clearTimeout(finishLoadTimeout);
+                    //         }
+                    //         finishLoadTimeout = setTimeout(() => {
+                    //             keywordsBetterView()
+                    //             addExternalLink()
+                    //             addBtnSchema()
+                    //             const testClock = document.querySelector('div#horloge')
+                    //             if (!testClock) {
+                    //                 addClock()
+                    //             }
+                    //         }, 500);
+                    //     };
+
+                    //     var observer = new MutationObserver((mutations) => {
+                    //         mutations.forEach((mutation) => {
+                    //             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    //                 containerPageContentFinishLoad()
+                    //             }
+                    //         });
+                    //     });
+        
+                    //     // Configuration de l'observation
+                    //     var config = {
+                    //         attributes: true,
+                    //         childList: true,
+                    //         subtree: true,
+                    //     };
+        
+                    //     // Lancement de l'observation
+                    //     observer.observe(tabContent, config);
+                    // }
                 }
             }, 1000)
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
@@ -228,7 +269,10 @@ window.onload = function () {
                     var observer = new MutationObserver((mutations) => {
                         mutations.forEach((mutation) => {
                             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                changeKeysContainerCss()
+                                keywordsBetterView()
+                                setTimeout(() => {
+                                    runChangeCss = false
+                                }, 1000)
                             }
                         });
                     });
@@ -680,8 +724,8 @@ function addClock() {
 let lastDetection = true
 
 function qualifInfo(qualCell, trTarget, qualInfo) {
-    if (qualInfo === "notStarted") {
-        trTarget.style.border = "solid #EC2B3B"
+    if (qualInfo === "notStarted" && qualCell.innerText !== "MODIFICATION TRAITEE") {
+        if (userSettings.customDashboard) trTarget.style.border = "solid #EC2B3B"
         return 'notStarted'
     } else {
         switch (qualCell.innerText) {
@@ -696,36 +740,40 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
             case 'RELANCE POUR MODIFICATION':
                 labelEvent = trTarget.querySelector('td span.eventType')
                 if (labelEvent) {
-                    labelEvent.style.backgroundColor = "#824ac9"
+                    if (userSettings.customDashboard) labelEvent.style.backgroundColor = "#824ac9"
                     return 'relaunchModif'
                 } else {
                     return 'encours'
                 }
             case 'RELANCE INJOIGNABLE MODIF':
                 labelEvent = trTarget.querySelector('td span.eventType')
-                labelEvent.style.backgroundColor = "#a49cc7"
+                if (userSettings.customDashboard) labelEvent.style.backgroundColor = "#a49cc7"
                 return 'lastRelaunchModif'
             case 'MODIFICATION TRAITEE':
-                let allTdChildren = trTarget.querySelectorAll('td')
-                console.log(allTdChildren)
-                let lastChild = allTdChildren[allTdChildren.length - 1]
-                lastChild.style.backgroundColor = "#e96c1b"
-                lastChild.style.color = "#ffffff"
-                lastChild.style.textAlign = "center"
-                lastChild.style.fontSize = "16px"
-                lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
-                lastChild.style.fontWeight = "700"
-                lastChild.innerText = "A CLOTURER"
+                if (userSettings.customDashboard) {
+                    let allTdChildren = trTarget.querySelectorAll('td')
+                    console.log(allTdChildren)
+                    let lastChild = allTdChildren[allTdChildren.length - 1]
+                    lastChild.style.backgroundColor = "#e96c1b"
+                    lastChild.style.color = "#ffffff"
+                    lastChild.style.textAlign = "center"
+                    lastChild.style.fontSize = "16px"
+                    lastChild.style.lineHeight = (lastChild.clientHeight - 16) + "px"
+                    lastChild.style.fontWeight = "700"
+                    lastChild.innerText = "A CLOTURER"
+                }
                 return 'doneModif'
             case 'MODIF FAITE ENVOI EN CONTROLE FINAL':
-                trTarget.style.opacity = 0.2
+                if (userSettings.customDashboard) trTarget.style.opacity = 0.2
                 return 'controlInProgress'
             case 'INJOIGNABLE AVEC MODIF':
-                trTarget.style.opacity = 0.2
-                trTarget.classList.add('unreachable')
+                if (userSettings.customDashboard) {
+                    trTarget.style.opacity = 0.2
+                    trTarget.classList.add('unreachable')
+                }
                 return 'controlInProgress'
             case 'RETOUR EN MODIFICATION':
-                trTarget.style.borde = 'solid #9f65eb'
+                if (userSettings.customDashboard) trTarget.style.borde = 'solid #9f65eb'
                 return 'modifReturn'
             default:
                 return 'encours'
@@ -815,7 +863,9 @@ function getQueryTableRequests() {
 }
 
 function checkTableRequests() {
-    addRefreshCustomTableRequests()
+    if (userSettings.customDashboard) {
+        addRefreshCustomTableRequests()
+    }
     const tableRqtContainer = getQueryTableRequests()
     let finishLoadTimeout;
 

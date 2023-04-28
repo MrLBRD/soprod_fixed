@@ -66,6 +66,22 @@ ul li h2 {
     gap: 12px;
 }
 
+#headinfo-container>div#options-btn {
+    position: absolute;
+    right: 16px;
+    top: 8px;
+    width: 21px;
+    height: 21px;
+    padding: 4px 4px;
+    cursor: pointer;
+}
+#headinfo-container>div#options-btn svg {
+    fill: #1E1E1E;
+}
+#headinfo-container>div#options-btn:hover svg {
+    fill: #45b8cc;
+}
+
 /* ? **************** ? */
 /* ? **** SLIDER **** ? */
 /* ? **************** ? */

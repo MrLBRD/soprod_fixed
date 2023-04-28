@@ -6,6 +6,10 @@ function getManifest() {
     nameContainer.innerText = manifest.name
     versionContainer.innerText = 'v'+manifest.version
     descriptionContainer.innerText = manifest.description
+    const optionsBtn = document.getElementById('options-btn')
+    optionsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage()
+    })
 }
 
 function changeSlide(index) {
