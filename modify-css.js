@@ -2,6 +2,11 @@ console.log('HELLO WOLRD !')
 
 let runChangeCss = false
 
+function getLocalStorage() {
+    var pathArray = window.location.pathname.split('/');
+    return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+}
+
 function keywordsBetterView() {
     runChangeCss = true
     var keywordsGroupContainers = document.querySelectorAll('.KeywordsFormGroup');
@@ -35,8 +40,7 @@ function addExternalLink() {
         if ((externalLinks.querySelector('a[href^="https://www.portailroi.solocalgroup.com/stats/"]'))) {
             console.log("Link Portail ROI exist")
         } else {
-            const pathUrl = window.location.pathname.split('/');
-            let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+            let itemStored = getLocalStorage()
             console.log(externalLinks)
             let portailRoiLink = document.createElement('a')
             portailRoiLink.href = `https://www.portailroi.solocalgroup.com/stats/par-produit/${itemStored.epj}`
@@ -65,7 +69,8 @@ function changeKeysContainerCss() {
 
 var styles = [
     '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }',
-    ' #beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #beeMenuContainer:hover .btn-badge { width: 64px; height: 64px; } #beeMenuContainer:hover #autoNextRelaunch { left: 34px; bottom: 80px; } #beeMenuContainer:hover #copyForExcel { left: 85px; bottom: 16px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; }'
+    '#tableRecordsList table tr.unreachable>td { background-color: rgba(219, 178, 130, .65); }',
+    '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); }'
 ];
 
 function addStyle(styles) {
@@ -144,7 +149,7 @@ window.onload = function () {
         addStyle(styles)
         if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
             setTimeout(() => {
-                let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+                let itemStored = getLocalStorage()
                 if (itemStored.qualif === 'notStarted') {
                     itemStored.qualif = 'encours'
                     localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
@@ -272,10 +277,16 @@ function getRequestComment() {
         let today = new Date()
         let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
         
-        let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+        let itemStored = getLocalStorage()
 
         let contentForClypboard = `${itemStored.epj}\t${itemStored.name}\t${dateOfToday}\t${itemStored.gamme}\t\t${originRequest}\t"${commentRequest}"`
         navigator.clipboard.writeText(contentForClypboard)
+
+        itemStored.request.origin = originRequest
+        itemStored.request.comment = commentRequest
+        itemStored.contact = originRequest === 'COMMERCIAL' ? 'ccial' : 'client'
+        localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
+        
         setTimeout(() => {
             window.close()
         }, 300)
@@ -412,21 +423,21 @@ const btnsList = {
         'text': 'Clôture schema',
         'class': 'btn green',
         'id': 'addCloseSchemaBtn',
-        'message': 'Appel client : oui non\r\n\r\nVerbatim client :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
+        'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
         'height': '324px'
     },
     'unreachable': {
         'text': 'Injoignable schema',
         'class': 'btn yellow',
         'id': 'addUnreachableSchemaBtn',
-        'message': 'Appel client : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+        'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
         'height': '76px'
     },
     'basic': {
         'text': 'Appel Basique schema',
         'class': 'btn blue',
         'id': 'addBasicSchemaBtn',
-        'message': 'Appel client : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+        'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
         'height': '114px'
     },
     'sendViewLink': {
@@ -439,8 +450,7 @@ const btnsList = {
 }
 
 function howNextDayToCall() {
-    var pathArray = window.location.pathname.split('/');
-    let idInfos = JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+    let idInfos = getLocalStorage()
     console.log(idInfos)
     let choosenDate = new Date()
     let dayDelay
@@ -467,7 +477,7 @@ function addBtnSchema() {
     let idPath = pathArray.reverse()[0]
     let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
 
-    let idInfos = JSON.parse(window.localStorage.getItem('soprod-' + idPath))
+    let idInfos = getLocalStorage()
 
     if (commentsAreaDivs) {
         commentsAreaDivs.forEach((commentsAreaDiv) => {
@@ -511,10 +521,11 @@ function addBtnSchema() {
                         if (btnElement) {
                             btnElement.addEventListener('click', () => {
                                 if (addCommentMessage.value == '') {
+                                    let rqtInfos = getLocalStorage()
                                     if (value.id === 'addUnreachableSchemaBtn') {
-                                        addCommentMessage.value = value.message + howNextDayToCall()
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
                                     } else {
-                                        addCommentMessage.value = value.message
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
                                     }
                                     addCommentMessage.style.height = value.height
                                 }
@@ -617,7 +628,7 @@ function updateClock(horlogeContainer, offset) {
 
 function addClock() {
     const pathUrl = window.location.pathname.split('/');
-    let itemStored = JSON.parse(window.localStorage.getItem('soprod-'+pathUrl[3]))
+    let itemStored = getLocalStorage()
 
     if (itemStored.jetlag.statu) {
         let horlogeDiv = document.createElement('div');
@@ -709,11 +720,17 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
             case 'MODIF FAITE ENVOI EN CONTROLE FINAL':
                 trTarget.style.opacity = 0.2
                 return 'controlInProgress'
+            case 'INJOIGNABLE AVEC MODIF':
+                trTarget.style.opacity = 0.2
+                trTarget.classList.add('unreachable')
+                return 'controlInProgress'
+            case 'RETOUR EN MODIFICATION':
+                trTarget.style.borde = 'solid #9f65eb'
+                return 'modifReturn'
             default:
                 return 'encours'
         }
     }
-    // RETOUR EN MODIFICATION
 }
 
 function changeEventTagDashboard() {
@@ -739,7 +756,12 @@ function changeEventTagDashboard() {
                     'statu': itemStored ? itemStored.jetlag.statu : null,
                     'diff': itemStored ? itemStored.jetlag.diff : undefined
                 },
-                'qualif': qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted')
+                'qualif': qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
+                'request': {
+                    'origin': itemStored ? itemStored.request.origin ? itemStored.request.origin : null : null,
+                    'comment': itemStored ? itemStored.request.comment ? itemStored.request.comment : null : null
+                },
+                'contact': itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client'
             }
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
 
@@ -938,8 +960,11 @@ function openRequestInNewTab(event) {
 }
 
 function addBeeBadge() {
+    let itemStored = getLocalStorage()
+
     const svgUrl = chrome.runtime.getURL("icons/SoBee-512.svg");
     const svgUrlCopyExcel = chrome.runtime.getURL("icons/CopyForExcel-64.svg");
+    const svgUrlSwitchContact = chrome.runtime.getURL("icons/SwitchContact-64.svg");
     const svgUrlAutoRelaunch = chrome.runtime.getURL("icons/AutoRelaunch-64.svg");
 
     let beeMenuContainer = document.createElement('div')
@@ -950,7 +975,6 @@ function addBeeBadge() {
     let imageBee = document.createElement('img')
     imageBee.src = svgUrl
     containerBee.appendChild(imageBee)
-    console.log(containerBee)
 
     beeMenuContainer.appendChild(containerBee)
 
@@ -960,9 +984,18 @@ function addBeeBadge() {
     imageBtn = document.createElement('img')
     imageBtn.src = svgUrlAutoRelaunch
     containerAutoRelaunch.appendChild(imageBtn)
-    console.log(containerAutoRelaunch)
     
     beeMenuContainer.appendChild(containerAutoRelaunch)
+    
+    let containerSwitchContact = document.createElement('div')
+    containerSwitchContact.id = 'switchContact'
+    containerSwitchContact.className = "btn-badge"
+    containerSwitchContact.title = itemStored.contact
+    imageBtn = document.createElement('img')
+    imageBtn.src = svgUrlSwitchContact
+    containerSwitchContact.appendChild(imageBtn)
+    
+    beeMenuContainer.appendChild(containerSwitchContact)
     
     let containerCopyExcel = document.createElement('div')
     containerCopyExcel.id = 'copyForExcel'
@@ -971,12 +1004,16 @@ function addBeeBadge() {
     imageBtn = document.createElement('img')
     imageBtn.src = svgUrlCopyExcel
     containerCopyExcel.appendChild(imageBtn)
-    console.log(containerCopyExcel)
     
     beeMenuContainer.appendChild(containerCopyExcel)
 
     document.body.appendChild(beeMenuContainer)
 
+    const switchContact = document.querySelector('body div#beeMenuContainer div#switchContact')
+    switchContact.addEventListener('click', () => {
+        switchContact.classList.add("clicked")
+        switchContactForRequest(switchContact)
+    })
     const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
     copyForExcel.addEventListener('click', () => {
         copyForExcelInRequest()
@@ -1110,4 +1147,15 @@ function addAutoCompleteUnreachable() {
             }
         }
     })
+}
+
+function switchContactForRequest(domElement) {
+    const pathUrl = window.location.pathname.split('/');
+    let itemStored = getLocalStorage()
+    itemStored.contact === 'client' ? itemStored.contact = 'ccial' : itemStored.contact = 'client'
+    domElement.title = itemStored.contact
+    localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
+    setTimeout(() => {
+        domElement.classList.remove("clicked")
+    }, 400)
 }
