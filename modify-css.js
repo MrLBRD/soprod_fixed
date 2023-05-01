@@ -68,24 +68,48 @@ function addExternalLink() {
 }
 
 var styles = [
-    '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; } div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; } #context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }',
-    '#tableRecordsList table tr.unreachable>td { background-color: rgba(219, 178, 130, .65); }',
-    '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); }'
+    {
+        modif: 'schemaBtn',
+        configurable: true,
+        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; }',
+    }, {
+        modif: 'horloge',
+        configurable: false,
+        css: 'div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; }'
+    }, {
+        modif: 'autoCheckModif',
+        configurable: true,
+        css: 'div.modifOk-comment { margin-top: 16px;} div.modifOk-comment div.message { background: #eee; text-align: left; border-left: 4px solid #f9b03f; padding: 5px 8px;} div.modifOk-comment div.message .name { color: #f9b03f; font-weight: 600; font-size: 14px; } div.modifOk-comment div.message .body { white-space: pre-line; word-break: break-word; display: block; }'
+    }, {
+        modif: 'contextMenu',
+        configurable: false,
+        css: '#context-menu { position: absolute !important; border: 1px solid #d3d3d3; background-color: #e3e3e3; padding: 0; z-index: 100000 !important; display: none; } #context-menu.active { display: initial; } .menu { list-style: none !important; padding: 0; margin: 0; } .menu-item { padding: 8px 10px; cursor: pointer; } .menu-item:hover { background-color: #d3d3d3; } .menu-separator{ height: 1px; background-color: grey; margin: 5px 0; }'
+    }, {
+        modif: 'customDashboard',
+        configurable: true,
+        css: '#tableRecordsList table tr.unreachable>td { background-color: rgba(219, 178, 130, .65); }'
+    }, {
+        modif: 'beeFloatMenu',
+        configurable: false,
+        css: '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); }'
+    }
 ];
 
 function addStyle(styles) {
     styles.forEach((el) => {
-        /* Create style document */
-        var css = document.createElement('style');
-        css.type = 'text/css';
-    
-        if (css.styleSheet)
-            css.styleSheet.cssText = el;
-        else
-            css.appendChild(document.createTextNode(el));
-    
-        /* Append style to the tag name */
-        document.getElementsByTagName("head")[0].appendChild(css);
+        if (!el.configurable || userSettings[el.modif]) {
+            /* Create style document */
+            var css = document.createElement('style');
+            css.type = 'text/css';
+        
+            if (css.styleSheet)
+                css.styleSheet.cssText = el.css;
+            else
+                css.appendChild(document.createTextNode(el.css));
+        
+            /* Append style to the tag name */
+            document.getElementsByTagName("head")[0].appendChild(css);
+        }
     })
 }
 
@@ -177,11 +201,10 @@ window.onload = function () {
                         window.localStorage.removeItem('soprod-' + pathUrl[3])
                     }
                 } else {
-                    // keywordsBetterView()
                     addBeeBadge()
-                    keywordsBetterView()
+                    if (userSettings.fixViewKeywords) keywordsBetterView()
                     addExternalLink()
-                    addBtnSchema()
+                    if (userSettings.schemaBtn) addBtnSchema()
                     const testClock = document.querySelector('div#horloge')
                     if (!testClock) {
                         addClock()
