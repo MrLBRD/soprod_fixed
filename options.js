@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         displaySettings(settings);
     });
 
+
     // const form = document.getElementById("settingsForm");
 
     // form.addEventListener("submit", (event) => {

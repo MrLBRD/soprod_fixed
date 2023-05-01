@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+div#container {
+    display: flex;
+    flex-direction: column;
+    width: 725px;
+}
+
+div#head-title {
+    text-align: center;
+    font-family: 'Space Grotesk';
+    gap: 0;
+}
+
+p#title {
+    font-weight: 500;
+    font-size: 32px;
+}
+
+h1 {
+    font-weight: 400;
+    font-size: 24px;
+}
+
+input[type="checkbox"] {
+    accent-color: #87E86B;
+}
