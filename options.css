@@ -42,11 +42,16 @@ div#debugOptions {
 
 div.input-container {
     display: flex;
-    gap: 8px;
+    gap: 16px;
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
 }
 
 input[type="checkbox"] {
     accent-color: #87E86B;
+    -webkit-transform: scale(1.6);
 }
 
 div#saveSettingsChange {
@@ -56,4 +61,113 @@ div#saveSettingsChange {
     width: fit-content;
     cursor: pointer;
     align-self: flex-end;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+}
+
+div.otherinput-container {
+    display: flex;
+    flex-direction: column;
+}
+
+div.custom-input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 8px 12px 12px;
+    gap: 18px;
+    border: 1px solid #1E1E1E;
+    border-radius: 8px;
+    width: calc(100% - 26px);
+}
+
+div.element-custominput {
+    height: calc(35px - 4px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 6px;
+    gap: 10px;
+    background: #FFF790;
+    border-radius: 4px;
+}
+
+div.id-elementcustom {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+div.content-elementcustom {
+    font-weight: 400;
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+div[id^='deleteElement'] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+div[id^='deleteElement'] svg {
+    height: 16px;
+}
+
+div#addElementBtn {
+    height: 35px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background: #6AC6FF;
+    border-radius: 4px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+div#addElementBtn svg {
+    width: 16px;
+    height: 16px;
+    margin: 0 8px;
+}
+
+div#addElementBtn select {
+    display: none;
+    min-width: 96px;
+    border: none;
+    outline: none;
+    height: 35px;
+    background: #6AC6FF;
+    border-radius: 4px;
+    font-weight: 400;
+    font-size: 18px;
+    padding: 2px 8px;
+}
+div#addElementBtn.active select {
+    display: block;
+}
+
+div#addElementBtn svg#plusElementSelect {
+    display: flex;
+}
+div#addElementBtn.active svg#plusElementSelect {
+    display: none;
+}
+
+div#addElementBtn svg#validElementSelect {
+    display: none;
+}
+div#addElementBtn.active svg#validElementSelect {
+    display: flex;
+}
+
+div#returnDefaultSettings {
+    margin-top: 32px;
+    text-align: center;
+    cursor: pointer;
 }
