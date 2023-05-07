@@ -3,6 +3,8 @@ console.log('HELLO WOLRD !')
 const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
 let userSettings
 
+let runChangeCss = false
+
 function loadSettings(callback) {
     storage.sync.get("userSettings", (data) => {
         callback(data.userSettings);
@@ -14,11 +16,221 @@ loadSettings((data) => {
     userSettings = data
 })
 
-let runChangeCss = false
+function windowOnload() {
+    if (userSettings) {
+        console.log(userSettings)
+        const pathUrl = window.location.pathname.split('/');
+        addStyle(styles)
+        if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
+            setTimeout(() => {
+                let itemStored = getLocalStorage()
+                console.log(itemStored)
+                if (itemStored.qualif === 'notStarted') {
+                    itemStored.qualif = 'encours'
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                }
+                if(itemStored.qualif === 'doneModif') {
+                    if (userSettings.autoCheckModif) {
+                        const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                        console.log("check modif btn : ", checkModifBtn)
+                        if (checkModifBtn) {
+                            checkModifBtn.click()
+                            getModalConfirmInfo()
+                        }
+                    } else {
+                        window.localStorage.removeItem('soprod-' + pathUrl[3])
+                    }
+                } else {
+                    addBeeBadge()
+                    changeElementsInProgressModified(itemStored)
+                    const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
+                    
+                    let finishLoadTimeout;
+                    
+                    const navFinishChange = () => {
+                        if (finishLoadTimeout) {
+                            clearTimeout(finishLoadTimeout);
+                        }
+                        finishLoadTimeout = setTimeout(() => {
+                            const activeTab = navPageContent.querySelector('li.active')
+                            console.log(activeTab.innerText)
+                            if (activeTab.innerText === "PRODUCTION ") {
+                                changePageContentInProgressModified(itemStored)
+                            }
+                        }, 500);
+                    };
+
+                    const callback = (mutationsList) => {
+                        for (const mutation of mutationsList) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                navFinishChange()
+                            }
+                        }
+                    };
+
+                    const observer = new MutationObserver(callback);
+                    const config = { attributes: true, attributeFilter: ['class'], childList: false, subtree: true };
+                      
+                    observer.observe(navPageContent, config);
+
+                    const testClock = document.querySelector('div#horloge')
+                    if (!testClock) {
+                        addClock()
+                    }
+                }
+            }, 1000)
+        } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+            const elementsContextMenu = [
+                {
+                    id: 'openInNewTab',
+                    text: 'Ouvrir nouvel onglet'
+                }, {
+                    id: 'copyInformationsForExcel',
+                    text: 'Copier pour excel'
+                }
+            ]
+            let contextMenuContainer = document.createElement('div')
+            contextMenuContainer.id = "context-menu"
+            let listActionsContextMenu = document.createElement('ul')
+            listActionsContextMenu.className = "menu"
+            elementsContextMenu.forEach((el) => {
+                let elementListContextMenu = document.createElement('li')
+                elementListContextMenu.className = "menu-item"
+                elementListContextMenu.innerText = el.text
+                elementListContextMenu.id = el.id
+                listActionsContextMenu.appendChild(elementListContextMenu)
+            })
+            contextMenuContainer.appendChild(listActionsContextMenu)
+            document.body.appendChild(contextMenuContainer)
+            
+            const copyLi = document.querySelector('div#context-menu ul.menu li#copyInformationsForExcel')
+            copyLi.addEventListener('click', function(event) {
+                copyFolderInformations(event)
+            })
+            const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
+            openNewTab.addEventListener('click', function(event) {
+                openRequestInNewTab(event)
+            })
+
+            listenContainerRequestsTable()
+
+            clearLocalStorage()
+
+        } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
+            // setTimeout(() => {
+            //     var tabContent = document.querySelector('.tab-content');
+            //     if (tabContent) {
+            //         var observer = new MutationObserver((mutations) => {
+            //             mutations.forEach((mutation) => {
+            //                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            //                     keywordsBetterView()
+            //                     setTimeout(() => {
+            //                         runChangeCss = false
+            //                     }, 1000)
+            //                 }
+            //             });
+            //         });
+    
+            //         // Configuration de l'observation
+            //         var config = {
+            //             attributes: true,
+            //             childList: true,
+            //             subtree: true,
+            //         };
+    
+            //         // Lancement de l'observation
+            //         observer.observe(tabContent, config);
+            //     }
+            // }, 500)
+            // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
+            // Réaliser check if in storage
+            // Else faire sans
+        }
+    } else {
+        setTimeout(() => {
+            windowOnload()
+        }, 400)
+    }
+}
+
+window.onload = function () {
+    if (!runWinOnLoad) {
+        runWinOnLoad = true
+        windowOnload()
+        setTimeout(() => {
+            runWinOnLoad = false
+        }, 10000)
+    }
+};
+
+function changeElementsInProgressModified(itemStored) {
+    if (itemStored.gamme === 'PREMIUM') {
+        if (userSettings.fixViewKeywords) keywordsBetterView()
+    }
+    if (userSettings.schemaBtn) addBtnSchema()
+}
+
+function changePageContentInProgressModified(itemStored) {
+    const pageContent = document.querySelector('div#masterWebGroupPortlet > div.portlet-body div.tab-content')
+    
+    pageContent.addEventListener('DOMContentLoaded', () => {
+        console.log('Tous les éléments HTML et CSS sont chargés.');
+    });
+
+    let finishLoadTimeout;
+                    
+    const pageContentFinishLoad = () => {
+        if (finishLoadTimeout) {
+            clearTimeout(finishLoadTimeout);
+        }
+        finishLoadTimeout = setTimeout(() => {
+            if (!changeContentInProcess) {
+                changeContentInProcess = true
+                changeElementsInProgressModified(itemStored)
+                setTimeout(() => {
+                    changeContentInProcess = false
+                }, 4000)
+            }
+        }, 400);
+    };
+
+    const callback = (mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                pageContentFinishLoad()
+            }
+        }
+    };
+
+    const observer = new MutationObserver(callback);
+    const config = { attributes: false, childList: true, subtree: true };
+
+    observer.observe(pageContent, config);
+}
 
 function getLocalStorage() {
     var pathArray = window.location.pathname.split('/');
     return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+}
+
+function clearLocalStorage() {
+    console.log(localStorage)
+    const today = new Date()
+    for (const [key, value] of Object.entries(localStorage)) {
+        if (key.startsWith('soprod-')) {
+            let valueParse = JSON.parse(value)
+            if (valueParse.lastDate) {
+                let lastDateCheck = new Date(valueParse.lastDate)
+                if (today.getTime() - lastDateCheck.getTime() > (5 * 24 * 60 * 60 * 1000)) {
+                    localStorage.removeItem(key)
+                }
+            } else {
+                console.log([key, valueParse])
+            }
+        } else if (key.startsWith('comment-')) {
+            localStorage.removeItem(key)
+        }
+    }
 }
 
 function keywordsBetterView() {
@@ -47,23 +259,6 @@ function keywordsBetterView() {
         setTimeout(() => {
             keywordsBetterView()
         }, 200)
-    }
-}
-
-function addExternalLink() {
-    const externalLinks = document.querySelector('div.webPage div.externalPortlet[id^="external_"]>div.portlet-body>div.row>div')
-    if (externalLinks) {
-        if ((externalLinks.querySelector('a[href^="https://www.portailroi.solocalgroup.com/stats/"]'))) {
-            console.log("Link Portail ROI exist")
-        } else {
-            let itemStored = getLocalStorage()
-            console.log(externalLinks)
-            let portailRoiLink = document.createElement('a')
-            portailRoiLink.href = `https://www.portailroi.solocalgroup.com/stats/par-produit/${itemStored.epj}`
-            portailRoiLink.setAttribute('target', '_blank')
-            portailRoiLink.innerHTML = '<div class="WebLinks badge" id="linkref-36671" style="background-color:#f00ece"><i class="fa fa-play"></i>PORTAIL ROI</div>'
-            externalLinks.appendChild(portailRoiLink)
-        }
     }
 }
 
@@ -140,7 +335,9 @@ function displayConfirmOkModal(lastComment) {
     setTimeout(() => {
         const pathUrl = window.location.pathname.split('/');
         const confirmModal = getConfirmModal()
+        console.log('=> CONFIRM MODAL && LAST COMMENT <=')
         console.log(confirmModal)
+        console.log(newDiv)
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
@@ -177,149 +374,7 @@ function getTabContent() {
 }
 
 let runWinOnLoad = false
-window.onload = function () {
-    if (!runWinOnLoad) {
-        runWinOnLoad = true
-        const pathUrl = window.location.pathname.split('/');
-        addStyle(styles)
-        if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
-            setTimeout(() => {
-                let itemStored = getLocalStorage()
-                if (itemStored.qualif === 'notStarted') {
-                    itemStored.qualif = 'encours'
-                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
-                }
-                if(itemStored.qualif === 'doneModif') {
-                    if (userSettings.autoCheckModif) {
-                        const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                        console.log("check modif btn : ", checkModifBtn)
-                        if (checkModifBtn) {
-                            checkModifBtn.click()
-                            getModalConfirmInfo()
-                        }
-                    } else {
-                        window.localStorage.removeItem('soprod-' + pathUrl[3])
-                    }
-                } else {
-                    addBeeBadge()
-                    if (userSettings.fixViewKeywords) keywordsBetterView()
-                    addExternalLink()
-                    if (userSettings.schemaBtn) addBtnSchema()
-                    const testClock = document.querySelector('div#horloge')
-                    if (!testClock) {
-                        addClock()
-                    }
-        
-                    // var tabContent = getTabContent()
-                    // if (tabContent) {
-                    //     console.log('tabcontent => ', tabContent)
-                        
-                    //     let finishLoadTimeout;
-                        
-                    //     const containerPageContentFinishLoad = () => {
-                    //         if (finishLoadTimeout) {
-                    //             clearTimeout(finishLoadTimeout);
-                    //         }
-                    //         finishLoadTimeout = setTimeout(() => {
-                    //             keywordsBetterView()
-                    //             addExternalLink()
-                    //             addBtnSchema()
-                    //             const testClock = document.querySelector('div#horloge')
-                    //             if (!testClock) {
-                    //                 addClock()
-                    //             }
-                    //         }, 500);
-                    //     };
 
-                    //     var observer = new MutationObserver((mutations) => {
-                    //         mutations.forEach((mutation) => {
-                    //             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    //                 containerPageContentFinishLoad()
-                    //             }
-                    //         });
-                    //     });
-        
-                    //     // Configuration de l'observation
-                    //     var config = {
-                    //         attributes: true,
-                    //         childList: true,
-                    //         subtree: true,
-                    //     };
-        
-                    //     // Lancement de l'observation
-                    //     observer.observe(tabContent, config);
-                    // }
-                }
-            }, 1000)
-        } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
-            const elementsContextMenu = [
-                {
-                    id: 'openInNewTab',
-                    text: 'Ouvrir nouvel onglet'
-                }, {
-                    id: 'copyInformationsForExcel',
-                    text: 'Copier pour excel'
-                }
-            ]
-            let contextMenuContainer = document.createElement('div')
-            contextMenuContainer.id = "context-menu"
-            let listActionsContextMenu = document.createElement('ul')
-            listActionsContextMenu.className = "menu"
-            elementsContextMenu.forEach((el) => {
-                let elementListContextMenu = document.createElement('li')
-                elementListContextMenu.className = "menu-item"
-                elementListContextMenu.innerText = el.text
-                elementListContextMenu.id = el.id
-                listActionsContextMenu.appendChild(elementListContextMenu)
-            })
-            contextMenuContainer.appendChild(listActionsContextMenu)
-            document.body.appendChild(contextMenuContainer)
-            
-            const copyLi = document.querySelector('div#context-menu ul.menu li#copyInformationsForExcel')
-            copyLi.addEventListener('click', function(event) {
-                copyFolderInformations(event)
-            })
-            const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
-            openNewTab.addEventListener('click', function(event) {
-                openRequestInNewTab(event)
-            })
-
-            listenContainerRequestsTable()
-        } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
-            setTimeout(() => {
-                var tabContent = document.querySelector('.tab-content');
-                if (tabContent) {
-                    var observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                keywordsBetterView()
-                                setTimeout(() => {
-                                    runChangeCss = false
-                                }, 1000)
-                            }
-                        });
-                    });
-    
-                    // Configuration de l'observation
-                    var config = {
-                        attributes: true,
-                        childList: true,
-                        subtree: true,
-                    };
-    
-                    // Lancement de l'observation
-                    observer.observe(tabContent, config);
-                }
-            }, 500)
-            // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
-            // Réaliser check if in storage
-            // Else faire sans
-        }
-        setTimeout(() => {
-            runWinOnLoad = false
-        }, 10000)
-    }
-};
 
 window.addEventListener('message', function (event) {
     // Vérifier l'origine du message pour des raisons de sécurité
@@ -693,6 +748,14 @@ function updateClock(horlogeContainer, offset) {
     }, 30000); // Met à jour l'horloge toutes les 30 secondes
 }
 
+function getValueInputPostalCode(parentElement) {
+    if (parentElement) { 
+        return parentElement.querySelector('input').value
+    } else {
+        return null
+    }
+}
+
 function addClock() {
     const pathUrl = window.location.pathname.split('/');
     let itemStored = getLocalStorage()
@@ -714,29 +777,31 @@ function addClock() {
         const labels = document.querySelectorAll('label.control-label');
         const label = Array.from(labels).find(l => l.textContent.trim() === 'CodePostal');
         const parentElement = label && label.parentNode;
-        const inputValue = parentElement.querySelector('input').value
-    
-        const x = inputValue.substr(0, 3);
+        const inputValue = getValueInputPostalCode(parentElement)
+        
+        if (inputValue) {
+            const x = inputValue.substr(0, 3);
 
-        if (x) {
-            if (timeZoneOffsets.hasOwnProperty(x)) {
-                let horlogeDiv = document.createElement('div');
-                horlogeDiv.id = "horloge";
+            if (x) {
+                if (timeZoneOffsets.hasOwnProperty(x)) {
+                    let horlogeDiv = document.createElement('div');
+                    horlogeDiv.id = "horloge";
+            
+                    const parentOfPage = document.querySelector("div.operator-content.masterPage");
+            
+                    parentOfPage.appendChild(horlogeDiv)
+            
+                    const horlogeContainer = document.querySelector('div#horloge')
         
-                const parentOfPage = document.querySelector("div.operator-content.masterPage");
-        
-                parentOfPage.appendChild(horlogeDiv)
-        
-                const horlogeContainer = document.querySelector('div#horloge')
-    
-                itemStored.jetlag.statu = true
-                itemStored.jetlag.diff = timeZoneOffsets[x]
-                localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
-        
-                updateClock(horlogeContainer, timeZoneOffsets[x]);
-            } else {
-                itemStored.jetlag.statu = false
-                localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                    itemStored.jetlag.statu = true
+                    itemStored.jetlag.diff = timeZoneOffsets[x]
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+            
+                    updateClock(horlogeContainer, timeZoneOffsets[x]);
+                } else {
+                    itemStored.jetlag.statu = false
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                }
             }
         }
     }
@@ -816,23 +881,24 @@ function changeEventTagDashboard() {
             let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
 
             const rqtInformations = {
-                'epj': tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
-                'gamme': tdInTrTableRqts[5].innerText.substr(6),
-                'name': tdInTrTableRqts[2].innerText,
-                'lastComment': {
-                    'text': !itemStored ? null : itemStored.lastComment.text,
-                    'height': !itemStored ? undefined : itemStored.lastComment.height
+                epj: tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
+                gamme: tdInTrTableRqts[5].innerText.substr(6),
+                name: tdInTrTableRqts[2].innerText,
+                lastComment: {
+                    text: !itemStored ? null : itemStored.lastComment.text,
+                    height: !itemStored ? undefined : itemStored.lastComment.height
                 },
-                'jetlag': {
-                    'statu': itemStored ? itemStored.jetlag.statu : null,
-                    'diff': itemStored ? itemStored.jetlag.diff : undefined
+                jetlag: {
+                    statu: itemStored ? itemStored.jetlag.statu : null,
+                    diff: itemStored ? itemStored.jetlag.diff : undefined
                 },
-                'qualif': qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
-                'request': {
-                    'origin': itemStored ? itemStored.request.origin ? itemStored.request.origin : null : null,
-                    'comment': itemStored ? itemStored.request.comment ? itemStored.request.comment : null : null
+                qualif: qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
+                request: {
+                    origin: itemStored ? itemStored.request ? itemStored.request.origin ? itemStored.request.origin : null : null : null,
+                    comment: itemStored ? itemStored.request ? itemStored.request.comment ? itemStored.request.comment : null : null : null
                 },
-                'contact': itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client'
+                contact: itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client',
+                lastDate: new Date()
             }
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
 

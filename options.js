@@ -3,6 +3,8 @@ const storage = chrome.storage;
 const defaultSettings = {
     'fixViewKeywords': true,
     'schemaBtn': true,
+    'autoCheckModif': true,
+    'customDashboard': true,
     'copyForExcel': [
         'epj',
         'name',
@@ -11,9 +13,7 @@ const defaultSettings = {
         'statu',
         'origin',
         'request'
-    ],
-    'autoCheckModif': true,
-    'customDashboard': true
+    ]
 }
 
 function saveSettings(settings, callback) {
@@ -39,10 +39,11 @@ function displaySettings(settings) {
     for (const key in settings) {
         const setting = settings[key]
         const item = document.createElement("div")
+        item.className = 'input-container'
         item.id = `item-${key}` // Ajout d'un identifiant unique
         if (typeof setting == "boolean") {
-            item.innerHTML = `<h3>${key}</h3>
-                            <input type="checkbox" ${setting ? 'checked' : ''}>`
+            item.innerHTML = `<input type="checkbox" ${setting ? 'checked' : ''} id="${key}">
+                            <h3>${key}</h3>`
         } else {
             item.innerHTML = `<h3>${key}</h3>
                             <div>${setting}</div>`
@@ -58,7 +59,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // const form = document.getElementById("settingsForm");
+    const saveSettings = document.getElementById("saveSettingsChange");
+
+    saveSettings.addEventListener('click', (event) => {
+        event.preventDefault()
+
+        const inputsCheckbox = document.querySelectorAll('div.input-container > input[type="checkbox"]')
+    })
 
     // form.addEventListener("submit", (event) => {
     //     event.preventDefault();
@@ -72,12 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
     //     loadSettings((settings) => {
     //         if (!settings) {
     //             settings = {};
-    //         }
-
-    //         // Si nous sommes en train de modifier un élément existant, supprimer l'ancienne clé
-    //         if (editingKey && editingKey !== key) {
-    //             delete settings[editingKey];
-    //             editingKey = null;
     //         }
 
     //         settings[key] = {

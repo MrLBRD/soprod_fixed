@@ -34,6 +34,26 @@ h1 {
     font-size: 24px;
 }
 
+div#debugOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+div.input-container {
+    display: flex;
+    gap: 8px;
+}
+
 input[type="checkbox"] {
     accent-color: #87E86B;
+}
+
+div#saveSettingsChange {
+    padding: 6px 12px;
+    background-color: #87E86B;
+    border-radius: 4px;
+    width: fit-content;
+    cursor: pointer;
+    align-self: flex-end;
 }

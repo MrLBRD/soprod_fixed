@@ -7,6 +7,14 @@ qualif: `info qualif` =>
 dans le context menu :
     - modifier manuellement les infos du local storage ?
 
-ajouter le commentaire de la rqt et la source dans les données de la fiche
+get user setting est async comme on en a besoin pour poursuivre alors modifier code pour l'inclure dans le callback ou boucler tant que l'on n'a rien.
+
+
+Portail ROI : #f00ece
+SLM : #00a1e1
+Acces Duda : #87a9e5
+Acces Duda (producer) :
+SOCOM : #edac06
+
 
 -->
