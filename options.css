@@ -36,24 +36,31 @@ div#svg-container svg #bee {
 @keyframes flightBee {
     0% {
         transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
     }
     20% {
         transform: translateY(0px);
+        -webkit-transform: translateY(0px);
     }
     38% {
         transform: translateY(-33px);
+        -webkit-transform: translateY(-33px);
     }
     50% {
         transform: translateY(-6px);
+        -webkit-transform: translateY(-6px);
     }
     63% {
         transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
     }
     82% {
         transform: translateY(2px);
+        -webkit-transform: translateY(2px);
     }
     100% {
         transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
     }
 }
 
@@ -64,24 +71,31 @@ div#svg-container svg #shadow {
 @keyframes shadowBee {
     0% {
         transform: scale(.92);
+        -webkit-transform: scale(.92);
     }
     20% {
         transform: scale(1);
+        -webkit-transform: scale(1);
     }
     38% {
         transform: scale(.96);
+        -webkit-transform: scale(.96);
     }
     50% {
         transform: scale(.99);
+        -webkit-transform: scale(.99);
     }
     63% {
         transform: scale(.92);
+        -webkit-transform: scale(.92);
     }
     82% {
         transform: scale(1.05);
+        -webkit-transform: scale(1.05);
     }
     100% {
         transform: scale(.92);
+        -webkit-transform: scale(.92);
     }
 }
 
@@ -124,6 +138,7 @@ div.input-container {
 
 input[type="checkbox"] {
     accent-color: #87E86B;
+    transform: scale(1.6);
     -webkit-transform: scale(1.6);
 }
 
