@@ -104,7 +104,7 @@ function customInputFill(elements, key) {
 
 function displaySettings(settings) {
     const debugDisplay = document.getElementById("debugOptions");
-    debugOptions.innerHTML = JSON.stringify(settings, null, "\t")
+    // debugOptions.innerHTML = JSON.stringify(settings, null, "\t")
     
     for (const key in settings) {
         const setting = settings[key]
