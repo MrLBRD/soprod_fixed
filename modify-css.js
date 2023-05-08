@@ -387,28 +387,67 @@ window.addEventListener('message', function (event) {
     }
 });
 
+function generateCopyClipboard() {
+    let contentForClipboard = 'test=>'
+    let itemStored = getLocalStorage()
+    for (const [id, element] of (userSettings.copyForExcel).entries()) {
+        switch (element) {
+            case 'epj':
+                contentForClipboard += `${ itemStored.epj }\t`
+                break
+            case 'companyName':
+                contentForClipboard += `${ itemStored.name }\t`
+                break
+            case 'receptionDate':
+                let today = new Date()
+                let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+                contentForClipboard += `${ dateOfToday }\t`
+                break
+            case 'productRange':
+                contentForClipboard += `${ itemStored.gamme }\t`
+                break
+            case 'requestId':
+                const pathUrl = window.location.pathname.split('/');
+                contentForClipboard += `${ pathUrl[3] }\t`
+                break
+            case 'requestDate':
+                contentForClipboard += `${ itemStored.request.date }\t`
+                break
+            case 'requestOrigin':
+                contentForClipboard += `${ itemStored.request.origin }\t`
+                break
+            case 'requestComment':
+                contentForClipboard += `"${ itemStored.request.comment }"\t`
+                break
+            default:
+                contentForClipboard += `\t`
+                break;
+        }
+        console.log(contentForClipboard)
+    }
+    navigator.clipboard.writeText(contentForClipboard)
+}
+
 function getRequestComment() {
     const customerRelationTab = document.querySelectorAll('div.portlet[id^="requestArea_"]>div.portlet-body>div.row>div>div[id^="getRequest_"] table.table>tbody>tr')[0]
     if (customerRelationTab) {
         let originRequest = (customerRelationTab.dataset.origin).includes('bilan') ? "BILAN" : (customerRelationTab.querySelectorAll('td')[4].innerText).includes('COMMERCIAL') ? "COMMERCIAL" : "CLIENT"
+        let dateRequest = customerRelationTab.querySelectorAll('td')[0].innerText
         let commentRequest = (customerRelationTab.dataset.comment).replace(/"/g, '\'\'')
         console.log(commentRequest)
 
         const pathUrl = window.location.pathname.split('/');
-
-        let today = new Date()
-        let dateOfToday = today.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
         
         let itemStored = getLocalStorage()
 
-        let contentForClypboard = `${itemStored.epj}\t${itemStored.name}\t${dateOfToday}\t${itemStored.gamme}\t\t${originRequest}\t"${commentRequest}"`
-        navigator.clipboard.writeText(contentForClypboard)
-
+        itemStored.request.date = dateRequest
         itemStored.request.origin = originRequest
         itemStored.request.comment = commentRequest
         itemStored.contact = originRequest === 'COMMERCIAL' ? 'ccial' : 'client'
         localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
         
+        generateCopyClipboard()
+
         setTimeout(() => {
             window.close()
         }, 300)
@@ -894,6 +933,7 @@ function changeEventTagDashboard() {
                 },
                 qualif: qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
                 request: {
+                    date: itemStored ? itemStored.request ? itemStored.request.date ? itemStored.request.date : null : null : null,
                     origin: itemStored ? itemStored.request ? itemStored.request.origin ? itemStored.request.origin : null : null : null,
                     comment: itemStored ? itemStored.request ? itemStored.request.comment ? itemStored.request.comment : null : null : null
                 },
@@ -1155,7 +1195,17 @@ function addBeeBadge() {
     })
     const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
     copyForExcel.addEventListener('click', () => {
-        copyForExcelInRequest()
+        let itemStored = getLocalStorage()
+        console.log(itemStored)
+        if (itemStored.request) {
+            if (itemStored.request.origin && itemStored.request.comment && itemStored.request.date) {
+                generateCopyClipboard()
+            } else {
+                copyForExcelInRequest()
+            }
+        } else {
+            copyForExcelInRequest()
+        }
     })
     const autoNextRelaunch = document.querySelector('body div#beeMenuContainer div#autoNextRelaunch')
     autoNextRelaunch.addEventListener('click', () => {
