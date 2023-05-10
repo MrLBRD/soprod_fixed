@@ -42,43 +42,46 @@ function windowOnload() {
                     }
                 } else {
                     addBeeBadge()
-                    changeElementsInProgressModified(itemStored)
+
                     const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
-                    
-                    let finishLoadTimeout;
-                    
-                    const navFinishChange = () => {
-                        if (finishLoadTimeout) {
-                            clearTimeout(finishLoadTimeout);
-                        }
-                        finishLoadTimeout = setTimeout(() => {
-                            const activeTab = navPageContent.querySelector('li.active')
-                            console.log(activeTab.innerText)
-                            if (activeTab.innerText === "PRODUCTION ") {
-                                changePageContentInProgressModified(itemStored)
-                            }
-                        }, 500);
-                    };
+                    let liActive
+                    let lastActivated = null
 
-                    const callback = (mutationsList) => {
-                        for (const mutation of mutationsList) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                navFinishChange()
-                            }
-                        }
-                    };
+                    if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
+                        liActive = navPageContent.querySelector('li.active ul > li.active')
+                    } else {
+                        liActive = navPageContent.querySelector('li.active')
+                    }
 
-                    const observer = new MutationObserver(callback);
-                    const config = { attributes: true, attributeFilter: ['class'], childList: false, subtree: true };
-                      
-                    observer.observe(navPageContent, config);
+                    if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS')) {
+                        changeElementsInProgressModified(itemStored)
+                    }
+                    lastActivated = liActive.innerText
+                    
+                    navPageContent.addEventListener('click', () => {
+                        setTimeout(() => {
+                            if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
+                                liActive = navPageContent.querySelector('li.active ul > li.active')
+                            } else {
+                                liActive = navPageContent.querySelector('li.active')
+                            }
+                            console.log(liActive.innerText)
+                            if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS')) {
+                                console.log('RUN CHANGE PAGE')
+                                setTimeout(() => {
+                                    changeElementsInProgressModified(itemStored)
+                                }, 500)
+                            }
+                            lastActivated = liActive.innerText
+                        }, 500)
+                    })
 
                     const testClock = document.querySelector('div#horloge')
                     if (!testClock) {
                         addClock()
                     }
                 }
-            }, 1000)
+            }, 800)
         } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
             const elementsContextMenu = [
                 {
@@ -170,44 +173,6 @@ function changeElementsInProgressModified(itemStored) {
     if (userSettings.schemaBtn) addBtnSchema()
 }
 
-function changePageContentInProgressModified(itemStored) {
-    const pageContent = document.querySelector('div#masterWebGroupPortlet > div.portlet-body div.tab-content')
-    
-    pageContent.addEventListener('DOMContentLoaded', () => {
-        console.log('Tous les éléments HTML et CSS sont chargés.');
-    });
-
-    let finishLoadTimeout;
-                    
-    const pageContentFinishLoad = () => {
-        if (finishLoadTimeout) {
-            clearTimeout(finishLoadTimeout);
-        }
-        finishLoadTimeout = setTimeout(() => {
-            if (!changeContentInProcess) {
-                changeContentInProcess = true
-                changeElementsInProgressModified(itemStored)
-                setTimeout(() => {
-                    changeContentInProcess = false
-                }, 4000)
-            }
-        }, 400);
-    };
-
-    const callback = (mutationsList) => {
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                pageContentFinishLoad()
-            }
-        }
-    };
-
-    const observer = new MutationObserver(callback);
-    const config = { attributes: false, childList: true, subtree: true };
-
-    observer.observe(pageContent, config);
-}
-
 function getLocalStorage() {
     var pathArray = window.location.pathname.split('/');
     return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
@@ -235,7 +200,7 @@ function clearLocalStorage() {
 
 function keywordsBetterView() {
     runChangeCss = true
-    var keywordsGroupContainers = document.querySelectorAll('.KeywordsFormGroup');
+    var keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup');
     if (keywordsGroupContainers) {
         const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
         if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
@@ -286,7 +251,7 @@ var styles = [
     }, {
         modif: 'beeFloatMenu',
         configurable: false,
-        css: '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); }'
+        css: '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
     }
 ];
 
@@ -350,8 +315,20 @@ function displayConfirmOkModal(lastComment) {
     }, 500)
 }
 
+function getAllComments() {
+    let allComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")
+    if (allComments) {
+        return allComments
+    } else {
+        setTimeout(() => {
+            getAllComments()
+        }, 300)
+    }
+}
+
 function getModalConfirmInfo() {
-    let lastComment = (document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]).querySelector('div')
+    let allComments = getAllComments()
+    let lastComment = (allComments[0]).querySelector('div')
     if (lastComment) {
         console.log(lastComment)
         displayConfirmOkModal(lastComment)
@@ -388,7 +365,7 @@ window.addEventListener('message', function (event) {
 });
 
 function generateCopyClipboard() {
-    let contentForClipboard = 'test=>'
+    let contentForClipboard = ''
     let itemStored = getLocalStorage()
     for (const [id, element] of (userSettings.copyForExcel).entries()) {
         switch (element) {
@@ -1173,6 +1150,10 @@ function addBeeBadge() {
     imageBtn = document.createElement('img')
     imageBtn.src = svgUrlSwitchContact
     containerSwitchContact.appendChild(imageBtn)
+    const textSwitchContact = document.createElement("div")
+    textSwitchContact.id = "textSwitchContact"
+    textSwitchContact.innerText = itemStored.contact
+    containerSwitchContact.appendChild(textSwitchContact)
     
     beeMenuContainer.appendChild(containerSwitchContact)
     
@@ -1287,8 +1268,9 @@ function getProductionTab() {
 }
 
 function addCommentAuto() {
+    let rqtInfos = getLocalStorage()
     const textArea = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.input-cont > textarea.addCommentMessage")
-    textArea.value = btnsList.unreachable.message + howNextDayToCall()
+    textArea.value = (btnsList.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
     let sendMessage = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.btn-cont a.btn.addComment")
     sendMessage.click()
 }
@@ -1342,6 +1324,8 @@ function switchContactForRequest(domElement) {
     const pathUrl = window.location.pathname.split('/');
     let itemStored = getLocalStorage()
     itemStored.contact === 'client' ? itemStored.contact = 'ccial' : itemStored.contact = 'client'
+    const textSwitchContact = domElement.querySelector('div#textSwitchContact')
+    textSwitchContact.innerText = itemStored.contact
     domElement.title = itemStored.contact
     localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
     setTimeout(() => {
