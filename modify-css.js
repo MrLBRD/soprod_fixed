@@ -316,9 +316,9 @@ function displayConfirmOkModal(lastComment) {
 }
 
 function getAllComments() {
-    let allComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")
-    if (allComments) {
-        return allComments
+    let lastAllComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]
+    if (lastAllComments) {
+        return lastAllComments
     } else {
         setTimeout(() => {
             getAllComments()
@@ -327,11 +327,17 @@ function getAllComments() {
 }
 
 function getModalConfirmInfo() {
-    let allComments = getAllComments()
-    let lastComment = (allComments[0]).querySelector('div')
-    if (lastComment) {
-        console.log(lastComment)
-        displayConfirmOkModal(lastComment)
+    let lastAllComments = getAllComments()
+    if (lastAllComments) {
+        let lastComment = lastAllComments.querySelector('div')
+        if (lastComment) {
+            console.log(lastComment)
+            displayConfirmOkModal(lastComment)
+        } else {
+            setTimeout(() => {
+                getModalConfirmInfo()
+            }, 300)
+        }
     } else {
         setTimeout(() => {
             getModalConfirmInfo()
@@ -877,7 +883,7 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
                 }
                 return 'controlInProgress'
             case 'RETOUR EN MODIFICATION':
-                if (userSettings.customDashboard) trTarget.style.borde = 'solid #9f65eb'
+                if (userSettings.customDashboard) trTarget.style.border = 'solid #9f65eb'
                 return 'modifReturn'
             default:
                 return 'encours'
