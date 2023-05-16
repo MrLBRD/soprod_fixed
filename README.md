@@ -13,8 +13,6 @@ Acces Duda : #87a9e5
 Acces Duda (producer) :
 SOCOM : #edac06
 
-action à ajouté sur le btn auto add relance :
-après ajout du commentaire, cliquer automatiquement sur le btn correspondant pour la prochaine relance
-idéalement, ensuite mettre en surbrillance le jour de la relance et si nécessaire changer de page auto
+ajouter possibilité de faire un export des data stocké et la possibilité d'import des datas
 
 -->

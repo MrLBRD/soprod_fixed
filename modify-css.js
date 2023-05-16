@@ -1288,19 +1288,78 @@ function getProductionTab() {
     }
 }
 
-function getTheadDayTarget(newDate) {
-    console.log(newDate)
+async function getTheadDayTarget(newDate) {
     let dataDay = newDate.toISOString().slice(0, 10)
     let theadDayTarget = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div[data-day="' + dataDay + '"]')
-    if (theadDayTarget) {
-        console.log(theadDayTarget)
-        return theadDayTarget
-    } else {
-        setTimeout(() => {
-            console.log('re run get thead day target')
-            getTheadDayTarget(newDate)
-        }, 300);
+    while (!theadDayTarget) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        theadDayTarget = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div[data-day="' + dataDay + '"]')
     }
+    console.log(theadDayTarget)
+    return theadDayTarget
+}
+
+function changeTargetDateOfCalendar(element) {
+    element.style.backgroundColor = '#5cfb94'
+    element.style.display = 'flex'
+    element.style.justifyContent = 'center'
+    element.style.gap = '32px'
+    
+    let newDiv = document.createElement('div')
+    for (let child of element.childNodes) {
+        newDiv.appendChild(child.cloneNode(true))
+    }
+
+    let arrowDiv = document.createElement('div')
+    arrowDiv.innerHTML = "↓"
+    arrowDiv.style.fontSize = "32px"
+    
+    element.innerHTML = ''
+    element.appendChild(arrowDiv)
+    element.appendChild(newDiv)
+    element.appendChild(arrowDiv)
+}
+
+async function getWeekSelect(selectCalendarWeek) {
+    let weekSelected = selectCalendarWeek.querySelector('div[id="s2id_selectCalendarWeek"] > a > span[id^="select2-chosen"]')
+    while (!weekSelected) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        weekSelected = selectCalendarWeek.querySelector('div[id="s2id_selectCalendarWeek"] > a > span[id^="select2-chosen"]')
+    }
+    return weekSelected
+}
+
+async function getSelectCalendarWeek() {
+    let selectCalendarWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-header h4.modal-title div[name="selectCalendarWeek"]')
+    while (!selectCalendarWeek) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        selectCalendarWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-header h4.modal-title div[name="selectCalendarWeek"]')
+    }
+    return selectCalendarWeek
+}
+
+async function getBtnNextWeek() {
+    let btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
+    console.log(btnNextWeek)
+    while (!btnNextWeek) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
+        console.log(btnNextWeek)
+    }
+    btnNextWeek.click()
+    return true
+}
+
+async function getBtnPreviousWeek() {
+    let btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
+    console.log(btnPreviousWeek)
+    while (!btnPreviousWeek) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
+        console.log(btnPreviousWeek)
+    }
+    btnPreviousWeek.click()
+    return true
 }
 
 function openCalendarAddRelaunch() {
@@ -1325,16 +1384,109 @@ function openCalendarAddRelaunch() {
                 btnForLastRelaunch.click()
                 break;
         }
+
         let newDate = AddDaTor.calcul(choosenDate, dayDelay);
-        console.log(newDate)
-        let theadDayTarget = getTheadDayTarget(newDate)
-        console.log('theadDayTarget') //La fonction n'attend pas le retour de getTheadDayTarget pour poursuivre l'action
-        console.log(theadDayTarget)
-        theadDayTarget.style.backgroundColor = '#5cfb94'
+
+        getSelectCalendarWeek().then(selectCalendarWeek => {
+
+            // On vérifie si la semaine active du calendar correspond
+            getWeekSelect(selectCalendarWeek).then(weekSelected => {
+                console.log('weekSelected', weekSelected)
+                if (weekSelected) {
+                    // On récupére le numéro de la semaine de newDate
+                    let weekNumber = newDate.getWeek()
+                    let textSearch = 'Semaine ' + weekNumber.toString()
+                    console.log(textSearch)
+                    if ((weekSelected.innerText).includes(textSearch)) {
+                        console.log('Nous avons la bonne semaine de sélectionné')
+                        getTheadDayTarget(newDate).then(element => {
+                            changeTargetDateOfCalendar(element)
+                        })
+                    } else {
+                        console.log('Pas la bonne semaine')
+                        // Si non on fait un next, on check la semaine, si c'est bon on affiche le jour, sinon on reviens en arrière et on affiche une erreur
+                        setTimeout(() => {
+                            getBtnNextWeek().then(() => {
+                                console.log(weekSelected)
+                                console.log(weekSelected.innerText)
+                                if ((weekSelected.innerText).includes(textSearch)) {
+                                    console.log('Maintenant, nous avons la bonne semaine')
+                                    getTheadDayTarget(newDate).then(element => {
+                                        // changeTargetDateOfCalendar(element)
+                                        calendarObserver.runObservation(element)
+                                    })
+                                } else {
+                                    console.log('Pas la bonne semaine, possible erreur')
+                                    getBtnPreviousWeek()
+                                }
+                            })
+                        }, 400)
+                    }
+                }
+            })
+        })
     } else {
         setTimeout(() => {
             openCalendarAddRelaunch()
         }, 300)
+    }
+}
+
+
+
+// let changeThead = false
+
+// let runIfNoChangeAfterDelay = setTimeout(() => {
+//     if (!changeThead) {
+//         changeTargetDateOfCalendar(theadDayTarget)
+//         setTimeout(() => {
+//             changeThead = false
+//         }, 4000)
+//     }
+// }, 1000)
+
+// TEST DE MUTATION
+// if (runIfNoChangeAfterDelay) {
+//     clearTimeout(runIfNoChangeAfterDelay);
+// }
+const calendarObserver = {
+    finishLoadTimeout: undefined,
+    changeThead: false,
+    elementTarget: undefined,
+    calendarFinishLoad() {
+        let self = this
+        if (self.finishLoadTimeout) {
+            clearTimeout(self.finishLoadTimeout);
+        }
+        self.finishLoadTimeout = setTimeout(() => {
+            if (!self.changeThead) {
+                self.changeThead = true
+                changeTargetDateOfCalendar(self.elementTarget)
+                setTimeout(() => {
+                    self.changeThead = false
+                }, 4000)
+            }
+        }, 500)
+    },
+    observerFunction() {
+        let self = this
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.removedNodes.length || mutation.addedNodes.length) {
+                    self.calendarFinishLoad()
+                }
+            })
+        })
+        observer.observe(self.elementTarget, self.config)
+    },
+    config: {
+        childList: true,
+        subtree: true,
+        characterData: true
+    },
+    runObservation(element) {
+        this.elementTarget = element
+        this.observerFunction()
     }
 }
 
@@ -1401,4 +1553,12 @@ function switchContactForRequest(domElement) {
     setTimeout(() => {
         domElement.classList.remove("clicked")
     }, 400)
+}
+
+Date.prototype.getWeek = function() {
+    var date = new Date(this.getTime());
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 }
