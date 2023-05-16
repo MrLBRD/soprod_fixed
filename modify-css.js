@@ -1194,7 +1194,6 @@ function addBeeBadge() {
 
     const switchContact = document.querySelector('body div#beeMenuContainer div#switchContact')
     switchContact.addEventListener('click', () => {
-        switchContact.classList.add("clicked")
         switchContactForRequest(switchContact)
     })
     const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
@@ -1213,7 +1212,6 @@ function addBeeBadge() {
     })
     const autoNextRelaunch = document.querySelector('body div#beeMenuContainer div#autoNextRelaunch')
     autoNextRelaunch.addEventListener('click', () => {
-        console.log('clicked')
         addAutoCompleteUnreachable()
     })
 }
@@ -1290,19 +1288,68 @@ function getProductionTab() {
     }
 }
 
+function getTheadDayTarget(newDate) {
+    console.log(newDate)
+    let dataDay = newDate.toISOString().slice(0, 10)
+    let theadDayTarget = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div[data-day="' + dataDay + '"]')
+    if (theadDayTarget) {
+        console.log(theadDayTarget)
+        return theadDayTarget
+    } else {
+        setTimeout(() => {
+            console.log('re run get thead day target')
+            getTheadDayTarget(newDate)
+        }, 300);
+    }
+}
+
+function openCalendarAddRelaunch() {
+    const btnsQualificationsContainer = document.querySelector('div.tab-content div[id^="qualifications_"] div.portlet-body > div > div')
+    if (btnsQualificationsContainer) {
+        let idInfos = getLocalStorage()
+        console.log(idInfos)
+        let choosenDate = new Date()
+        let dayDelay
+        switch (idInfos.qualif) {
+            case 'afterRdvModif':
+            case 'encours':
+                dayDelay = 1
+                let btnForRelaunch = btnsQualificationsContainer.querySelector('a[id^="qualificationElement_"][data-name="RELANCE POUR MODIFICATION"]')
+                btnForRelaunch.click()
+                break;
+            case 'relaunchModif':
+            case 'lastRelaunchModif':
+            case 'rdvModif':
+                dayDelay = 2
+                let btnForLastRelaunch = btnsQualificationsContainer.querySelector('a[id^="qualificationElement_"][data-name="RELANCE INJOIGNABLE MODIF"]')
+                btnForLastRelaunch.click()
+                break;
+        }
+        let newDate = AddDaTor.calcul(choosenDate, dayDelay);
+        console.log(newDate)
+        let theadDayTarget = getTheadDayTarget(newDate)
+        console.log('theadDayTarget') //La fonction n'attend pas le retour de getTheadDayTarget pour poursuivre l'action
+        console.log(theadDayTarget)
+        theadDayTarget.style.backgroundColor = '#5cfb94'
+    } else {
+        setTimeout(() => {
+            openCalendarAddRelaunch()
+        }, 300)
+    }
+}
+
 function addCommentAuto() {
     let rqtInfos = getLocalStorage()
     const textArea = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.input-cont > textarea.addCommentMessage")
     textArea.value = (btnsList.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
     let sendMessage = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.btn-cont a.btn.addComment")
     sendMessage.click()
+    openCalendarAddRelaunch()
 }
 
 function addAutoCompleteUnreachable() {
     const tabs = getProductionTab()
-    console.log(tabs)
     const pageContainer = getPageContainer()
-    console.log(pageContainer)
     tabs.forEach((el) => {
         if (el.innerText.includes('PRODUCTION MODIFS EN COURS')) {
             if ((el.parentNode.classList).value.includes('active')) {
