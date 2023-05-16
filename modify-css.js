@@ -115,9 +115,13 @@ function windowOnload() {
                 openRequestInNewTab(event)
             })
 
-            listenContainerRequestsTable()
+            let filterDashboard = getFilterOfDashboard()
 
-            clearLocalStorage()
+            if (filterDashboard === "À moi") {
+                listenContainerRequestsTable()
+
+                clearLocalStorage()
+            }
 
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
             // setTimeout(() => {
@@ -599,11 +603,11 @@ function howNextDayToCall() {
     let choosenDate = new Date()
     let dayDelay
     switch (idInfos.qualif) {
-        case 'relaunchModif':
         case 'afterRdvModif':
         case 'encours':
             dayDelay = 1
             break;
+        case 'relaunchModif':
         case 'lastRelaunchModif':
         case 'rdvModif':
             dayDelay = 2
@@ -1055,6 +1059,19 @@ function listenContainerRequestsTable() {
 
     // Lancement de l'observation
     observer.observe(containerTableRqts, config);
+}
+
+function getFilterOfDashboard() {
+    elementOfList = document.querySelectorAll("div.recordsPortlet div.portlet div.portlet-body div.divFilterOthers > div > ul > li")
+    if (elementOfList) {
+        let textOfFilter = elementOfList[0].innerText
+        console.log(textOfFilter)
+        return textOfFilter
+    } else {
+        setTimeout(() => {
+            getFilterOfDashboard()
+        }, 400)
+    }
 }
 
 let activRequestTrForContextMenu = null
