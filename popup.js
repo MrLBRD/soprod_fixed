@@ -40,3 +40,30 @@ slidePoints.forEach((el, id) => {
 })
 
 getManifest();
+
+function exportDataSaved() {
+    const showDebug = document.querySelector('div#showDebug')
+    showDebug.innerText = JSON.stringify(localStorage, null, 2)
+
+    // let informationsStored = {
+    //     nom: "Dupont",
+    //     prenom: "Jean",
+    //     age: 30
+    // };  // Remplacez ceci par vos propres données
+    
+    // // Convertir les données en JSON
+    // let dataStr = JSON.stringify(informationsStored);
+    
+    // // Encodage des données pour le téléchargement
+    // let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    // // Création d'un lien qui sera cliqué pour déclencher le téléchargement
+    // let exportFileDefaultName = 'data.json';
+    
+    // let linkElement = document.createElement('a');
+    // linkElement.setAttribute('href', dataUri);
+    // linkElement.setAttribute('download', exportFileDefaultName);
+    // linkElement.click();
+}
+
+exportDataSaved()

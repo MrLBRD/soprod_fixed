@@ -72,6 +72,14 @@ function windowOnload() {
                                     changeElementsInProgressModified(itemStored)
                                 }, 500)
                             }
+                            if (itemStored.gamme === 'ESSENTIEL') {
+                                if ((liActive.innerText).includes('CLIENT_CONTACT_COMMERCIAL')) {
+                                    const clockElement = document.querySelector('div#horloge')
+                                    if (!clockElement) {
+                                        addClock()
+                                    }
+                                }
+                            }
                             lastActivated = liActive.innerText
                         }, 500)
                     })
