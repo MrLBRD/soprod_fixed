@@ -210,6 +210,7 @@ function clearLocalStorage() {
             localStorage.removeItem(key)
         }
     }
+    Alerts.displayAlert('success', 'Localstorage analysé avec succés. Les données sont à jour.')
 }
 
 function keywordsBetterView() {
@@ -265,7 +266,11 @@ var styles = [
     }, {
         modif: 'beeFloatMenu',
         configurable: false,
-        css: '#beeMenuContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; min-height: 64px; min-width: 64px; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #beeMenuContainer:hover #exportLocalStorage { left: 10px; bottom: 85px; } #beeMenuContainer:hover #importLocalStorage { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #exportLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
+        css: '#beeElementsContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; display: flex; flex-direction: column-reverse; gap: 1rem; transition: all 0.3s ease-out; } #beeMenuContainer { min-height: 64px; min-width: 64px; width: fit-content; transition: all 0.3s ease-out; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #beeMenuContainer:hover #exportLocalStorage { left: 10px; bottom: 85px; } #beeMenuContainer:hover #importLocalStorage { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #importLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
+    }, {
+        modif: 'alerts',
+        configurable: false,
+        css: '@property --border-angle { syntax: "<angle>"; inherits: true; initial-value: 1turn; } div#alertBoxContainer { position: relative; min-width: 180px; max-width: 240px; width: fit-content; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 16px; background: rgba(180, 254, 192, 0.4); border: 2px solid #B4FEC0; border-radius: 8px !important; --border-angle: 1turn; } div#alertBoxContainer::after { content: ""; position: absolute; inset: -2.5px; border-radius: 8px; padding: 3px; background: conic-gradient(from 0.19turn, transparent var(--border-angle), #223A12 var(--border-angle), #223A12); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: bg-spin 5s linear forwards; } @keyframes bg-spin { to { --border-angle: 0turn; } } div#alertBoxContainer:hover::after { animation-play-state: paused; } #alertBoxContainer #closeAlertBox { width: 1.1rem; align-self: flex-end; cursor: pointer; } #alertBoxContainer #alertTitle { font-weight: 700; font-size: 1.3rem; margin: -0.75rem 0 1rem; } #alertBoxContainer #alertMessage { font-weight: 400; font-size: 1.1rem; margin: 0; } ',
     }
 ];
 
@@ -1151,7 +1156,11 @@ function addBeeBadge(type) {
     const svgUrlCopyExcel = chrome.runtime.getURL("icons/CopyForExcel-64.svg");
     const svgUrlSwitchContact = chrome.runtime.getURL("icons/SwitchContact-64.svg");
     const svgUrlAutoRelaunch = chrome.runtime.getURL("icons/AutoRelaunch-64.svg");
+    const svgUrlExportData = chrome.runtime.getURL("icons/ExportData-64.svg");
+    const svgUrlImportData = chrome.runtime.getURL("icons/ImportData-64.svg");
 
+    let beeElementsContainer = document.createElement('div')
+    beeElementsContainer.id = 'beeElementsContainer'
     let beeMenuContainer = document.createElement('div')
     beeMenuContainer.id = 'beeMenuContainer'
 
@@ -1199,8 +1208,9 @@ function addBeeBadge(type) {
             containerCopyExcel.appendChild(imageBtn)
             
             beeMenuContainer.appendChild(containerCopyExcel)
-            
-            document.body.appendChild(beeMenuContainer)
+
+            beeElementsContainer.appendChild(beeMenuContainer)
+            document.body.appendChild(beeElementsContainer)
 
             const switchContact = document.querySelector('body div#beeMenuContainer div#switchContact')
             switchContact.addEventListener('click', () => {
@@ -1232,7 +1242,7 @@ function addBeeBadge(type) {
             containerExportSaveStorage.className = "btn-badge"
             containerExportSaveStorage.title = 'Exporter une sauvegarde'
             imageBtn = document.createElement('img')
-            imageBtn.src = svgUrlCopyExcel
+            imageBtn.src = svgUrlExportData
             containerExportSaveStorage.appendChild(imageBtn)
             
             beeMenuContainer.appendChild(containerExportSaveStorage)
@@ -1242,17 +1252,19 @@ function addBeeBadge(type) {
             containerImportSaveStorage.className = "btn-badge"
             containerImportSaveStorage.title = 'Importer une sauvegarde'
             imageBtn = document.createElement('img')
-            imageBtn.src = svgUrlCopyExcel
+            imageBtn.src = svgUrlImportData
             containerImportSaveStorage.appendChild(imageBtn)
             
             beeMenuContainer.appendChild(containerImportSaveStorage)
-            
-            document.body.appendChild(beeMenuContainer)
+
+            beeElementsContainer.appendChild(beeMenuContainer)
+            document.body.appendChild(beeElementsContainer)
             
             const exportSaveLocalStorage = document.querySelector('body div#beeMenuContainer div#exportLocalStorage')
             exportSaveLocalStorage.addEventListener('click', () => {
                 console.log('export data from local storage')
                 exportLocalstorage()
+                Alerts.displayAlert('success', 'Les données de localstorage ont été exporter et enregistré sur votre ordinateur.')
             })
             const importSaveLocalStorage = document.querySelector('body div#beeMenuContainer div#importLocalStorage')
             importSaveLocalStorage.addEventListener('click', () => {
@@ -1652,6 +1664,92 @@ function switchContactForRequest(domElement) {
     setTimeout(() => {
         domElement.classList.remove("clicked")
     }, 400)
+}
+
+const Alerts = {
+    displayAlert(type, message) {
+        let self = this
+        const beeFloatContainer = document.querySelector('body div#beeElementsContainer')
+
+        const alertBox = self.createAlert(type, message)
+
+        beeFloatContainer.appendChild(alertBox);
+        
+        var Timer = function(callback, delay) {
+            var timerId, start, remaining = delay;
+        
+            this.pause = function() {
+                window.clearTimeout(timerId);
+                timerId = null;
+                remaining -= Date.now() - start;
+            };
+        
+            this.resume = function() {
+                if (timerId) {
+                    return;
+                }
+        
+                start = Date.now();
+                timerId = window.setTimeout(callback, remaining);
+            };
+
+            this.stop = function() {
+                window.clearTimeout(timerId);
+                timerId = null;
+                remaining = delay;
+            };
+        
+            this.resume();
+        };
+        
+        var timer = new Timer(() => {
+            let alertBox = beeFloatContainer.querySelector('div#alertBoxContainer')
+            if (alertBox) {
+                alertBox.remove()
+            } else {
+                console.log(beeFloatContainer)
+            }
+        }, 5400);
+
+        beeFloatContainer.addEventListener('mouseover', () => {
+            timer.pause();
+        })
+        beeFloatContainer.addEventListener('mouseout', () => {
+            timer.resume();
+        })
+        document.getElementById("closeAlertBox").addEventListener("click", function() {
+            timer.stop();
+        });
+    },
+    createAlert(type, message) {
+        let alertContainer = document.createElement('div')
+        alertContainer.id = "alertBoxContainer"
+        alertContainer.className = type
+        alertContainer.innerHTML = '<svg id="closeAlertBox" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><path d="M0.6 6L0 5.4L2.4 3L0 0.6L0.6 0L3 2.4L5.4 0L6 0.6L3.6 3L6 5.4L5.4 6L3 3.6L0.6 6Z" fill="black"/></svg>'
+        let titleAlert = document.createElement('p')
+        titleAlert.id = "alertTitle"
+        switch (type) {
+            case 'success':
+                titleAlert.innerText = 'Action validé !'
+                break;
+            case 'error':
+                titleAlert.innerText = 'Oups ! Erreur.'
+                break;
+            case 'warning':
+                titleAlert.innerText = 'Attention !'
+                break;
+            case 'info':
+                titleAlert.innerText = 'Pour information.'
+                break;
+        }
+        alertContainer.appendChild(titleAlert)
+        let messageAlert = document.createElement('p')
+        messageAlert.id = "alertMessage"
+        messageAlert.innerText = message
+        alertContainer.appendChild(messageAlert)
+
+        return alertContainer
+    },
 }
 
 Date.prototype.getWeek = function() {
