@@ -13,6 +13,7 @@ Acces Duda : #87a9e5
 Acces Duda (producer) :
 SOCOM : #edac06
 
-ajouter possibilité de faire un export des data stocké et la possibilité d'import des datas
+Ajouter une gestion d'alerte
+→ ajouter des alertes lors de succès ou d'échec
 
 -->
