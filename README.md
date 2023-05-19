@@ -13,7 +13,4 @@ Acces Duda : #87a9e5
 Acces Duda (producer) :
 SOCOM : #edac06
 
-Ajouter une gestion d'alerte
-→ ajouter des alertes lors de succès ou d'échec
-
 -->

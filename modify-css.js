@@ -1294,6 +1294,7 @@ function importDataToLocalstorage(datas) {
             localStorage.setItem(key, JSON.stringify(valueParse));
         }
     }
+    Alerts.displayAlert('success', 'Les informations ont été ajoutés sur votre navigateur.')
 }
 
 function exportLocalstorage() {

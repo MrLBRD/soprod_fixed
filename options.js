@@ -38,6 +38,7 @@ const allInfosAvailable = [
 ]
 
 let activeSettings
+let timeAtLastAction
 
 function saveSettings(settings, callback) {
     storage.sync.set({ userSettings: settings }, callback);
@@ -150,19 +151,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    const saveSettings = document.getElementById("saveSettingsChange");
+    const saveSettings = document.getElementById("saveSettingsChange")
+    const imgageBeeContainer = saveSettings.querySelector('#imageBee > img')
+    const debugDisplay = document.getElementById("debugOptions")
 
     saveSettings.addEventListener('click', (event) => {
         event.preventDefault()
-
-        const inputsCheckbox = document.querySelectorAll('div.input-container > input[type="checkbox"]')
+        timeAtLastAction = (new Date()).getTime()
+        saveSettings.classList.add('clicked')
+        debugDisplay.classList.add('onSaved')
 
         storage.sync.set({ userSettings: activeSettings }, () => {
-            loadSettings((settings) => {
-                activeSettings = settings
-                displaySettings(settings)
-            });
+            setTimeout(() => {
+                imgageBeeContainer.src = "icons/SoBee_static.svg"
+                debugDisplay.classList.remove('onSaved')
+                setTimeout(() => {
+                    saveSettings.classList.remove('clicked')
+                }, 500)
+                loadSettings((settings) => {
+                    activeSettings = settings
+                    displaySettings(settings)
+                });
+            }, 1200 + ((new Date()).getTime() - timeAtLastAction))
         })
+    })
+    saveSettings.addEventListener('mouseenter', () => {
+        imgageBeeContainer.src = "icons/SoBee_flight.svg"
+    })
+    saveSettings.addEventListener('mouseleave', () => {
+        if (!saveSettings.classList.contains('clicked')) {
+            imgageBeeContainer.src = "icons/SoBee_static.svg"
+        }
     })
 
     const returnDefaultSettings = document.getElementById("returnDefaultSettings");
