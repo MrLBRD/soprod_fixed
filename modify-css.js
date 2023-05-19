@@ -1,5 +1,3 @@
-console.log('HELLO WOLRD !')
-
 const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
 let userSettings
 
@@ -12,19 +10,16 @@ function loadSettings(callback) {
 }
 
 loadSettings((data) => {
-    console.log(data)
     userSettings = data
 })
 
 function windowOnload() {
     if (userSettings) {
-        console.log(userSettings)
         const pathUrl = window.location.pathname.split('/');
         addStyle(styles)
         if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
             setTimeout(() => {
                 let itemStored = getLocalStorage()
-                console.log(itemStored)
                 if (itemStored.qualif === 'notStarted') {
                     itemStored.qualif = 'encours'
                     localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
@@ -32,7 +27,6 @@ function windowOnload() {
                 if(itemStored.qualif === 'doneModif') {
                     if (userSettings.autoCheckModif) {
                         const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                        console.log("check modif btn : ", checkModifBtn)
                         if (checkModifBtn) {
                             checkModifBtn.click()
                             getModalConfirmInfo()
@@ -65,9 +59,7 @@ function windowOnload() {
                             } else {
                                 liActive = navPageContent.querySelector('li.active')
                             }
-                            console.log(liActive.innerText)
                             if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS')) {
-                                console.log('RUN CHANGE PAGE')
                                 setTimeout(() => {
                                     changeElementsInProgressModified(itemStored)
                                 }, 500)
@@ -270,7 +262,7 @@ var styles = [
     }, {
         modif: 'alerts',
         configurable: false,
-        css: '@property --border-angle { syntax: "<angle>"; inherits: true; initial-value: 1turn; } div#alertBoxContainer { position: relative; min-width: 180px; max-width: 240px; width: fit-content; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 16px; background: rgba(180, 254, 192, 0.4); border: 2px solid #B4FEC0; border-radius: 8px !important; --border-angle: 1turn; } div#alertBoxContainer::after { content: ""; position: absolute; inset: -2.5px; border-radius: 8px; padding: 3px; background: conic-gradient(from 0.19turn, transparent var(--border-angle), #223A12 var(--border-angle), #223A12); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: bg-spin 5s linear forwards; } @keyframes bg-spin { to { --border-angle: 0turn; } } div#alertBoxContainer:hover::after { animation-play-state: paused; } #alertBoxContainer #closeAlertBox { width: 1.1rem; align-self: flex-end; cursor: pointer; } #alertBoxContainer #alertTitle { font-weight: 700; font-size: 1.3rem; margin: -0.75rem 0 1rem; } #alertBoxContainer #alertMessage { font-weight: 400; font-size: 1.1rem; margin: 0; } ',
+        css: '@property --border-angle { syntax: "<angle>"; inherits: true; initial-value: 1turn; } div#alertBoxContainer { position: relative; min-width: 180px; max-width: 240px; width: fit-content; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 16px; background: rgba(180, 254, 192, 0.4); border: 2px solid #B4FEC0; border-radius: 8px !important; --border-angle: 1turn; } div#alertBoxContainer::after { content: ""; position: absolute; inset: -2.5px; border-radius: 8px; padding: 3px; background: conic-gradient(from 0.19turn, transparent var(--border-angle), #223A12 var(--border-angle), #223A12); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: bg-spin 5s linear forwards; } @keyframes bg-spin { to { --border-angle: 0turn; } } div#alertBoxContainer:hover::after { animation-play-state: paused; } #alertBoxContainer #closeAlertBox { position: absolute; z-index: 1; width: 1.1rem; align-self: flex-end; cursor: pointer; } #alertBoxContainer #alertTitle { font-weight: 700; font-size: 1.3rem; margin: 0.25rem 0 1rem; } #alertBoxContainer #alertMessage { font-weight: 400; font-size: 1.1rem; margin: 0; } ',
     }
 ];
 
@@ -294,10 +286,7 @@ function addStyle(styles) {
 
 function getConfirmModal() {
     const confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
-    console.log('confirmModal')
-    console.log(confirmModal)
     if (confirmModal && confirmModal !== null && confirmModal !== undefined) {
-        console.log(confirmModal)
         if (confirmModal.querySelector('div.modal-body > div.bootbox-body').innerText === 'La fiche sera qualifié en « CHECK MODIF TRAITEE OK »') {
             return confirmModal
         } else {
@@ -319,9 +308,6 @@ function displayConfirmOkModal(lastComment) {
     setTimeout(() => {
         const pathUrl = window.location.pathname.split('/');
         const confirmModal = getConfirmModal()
-        console.log('=> CONFIRM MODAL && LAST COMMENT <=')
-        console.log(confirmModal)
-        console.log(newDiv)
         const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
         bodyConfirmModal.appendChild(newDiv)
         const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
@@ -350,7 +336,6 @@ function getModalConfirmInfo() {
     if (lastAllComments) {
         let lastComment = lastAllComments.querySelector('div')
         if (lastComment) {
-            console.log(lastComment)
             displayConfirmOkModal(lastComment)
         } else {
             setTimeout(() => {
@@ -421,13 +406,16 @@ function generateCopyClipboard() {
             case 'requestComment':
                 contentForClipboard += `"${ itemStored.request.comment }"\t`
                 break
+            case 'jetlag':
+                contentForClipboard += `"${ itemStored.jetlag.statu ? itemStored.jetlag.diff : itemStored.jetlag.statu }"\t`
+                break
             default:
                 contentForClipboard += `\t`
                 break;
         }
-        console.log(contentForClipboard)
     }
     navigator.clipboard.writeText(contentForClipboard)
+    Alerts.displayAlert('success', 'Les informations ont été formaté et copié. Vous pouvez les coller sur votre tableur.')
 }
 
 function getRequestComment() {
@@ -436,7 +424,6 @@ function getRequestComment() {
         let originRequest = (customerRelationTab.dataset.origin).includes('bilan') ? "BILAN" : (customerRelationTab.querySelectorAll('td')[4].innerText).includes('COMMERCIAL') ? "COMMERCIAL" : "CLIENT"
         let dateRequest = customerRelationTab.querySelectorAll('td')[0].innerText
         let commentRequest = (customerRelationTab.dataset.comment).replace(/"/g, '\'\'')
-        console.log(commentRequest)
 
         const pathUrl = window.location.pathname.split('/');
         
@@ -614,7 +601,6 @@ const btnsList = {
 
 function howNextDayToCall() {
     let idInfos = getLocalStorage()
-    console.log(idInfos)
     let choosenDate = new Date()
     let dayDelay
     switch (idInfos.qualif) {
@@ -881,7 +867,6 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
             case 'MODIFICATION TRAITEE':
                 if (userSettings.customDashboard) {
                     let allTdChildren = trTarget.querySelectorAll('td')
-                    console.log(allTdChildren)
                     let lastChild = allTdChildren[allTdChildren.length - 1]
                     lastChild.style.backgroundColor = "#e96c1b"
                     lastChild.style.color = "#ffffff"
@@ -1077,7 +1062,6 @@ function getFilterOfDashboard() {
     elementOfList = document.querySelectorAll("div.recordsPortlet div.portlet div.portlet-body div.divFilterOthers > div > ul > li")
     if (elementOfList) {
         let textOfFilter = elementOfList[0].innerText
-        console.log(textOfFilter)
         return textOfFilter
     } else {
         setTimeout(() => {
@@ -1219,7 +1203,6 @@ function addBeeBadge(type) {
             const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
             copyForExcel.addEventListener('click', () => {
                 let itemStored = getLocalStorage()
-                console.log(itemStored)
                 if (itemStored.request) {
                     if (itemStored.request.origin && itemStored.request.comment && itemStored.request.date) {
                         generateCopyClipboard()
@@ -1262,7 +1245,6 @@ function addBeeBadge(type) {
             
             const exportSaveLocalStorage = document.querySelector('body div#beeMenuContainer div#exportLocalStorage')
             exportSaveLocalStorage.addEventListener('click', () => {
-                console.log('export data from local storage')
                 exportLocalstorage()
                 Alerts.displayAlert('success', 'Les données de localstorage ont été exporter et enregistré sur votre ordinateur.')
             })
@@ -1303,8 +1285,6 @@ function addBeeBadge(type) {
 }
 
 function importDataToLocalstorage(datas) {
-    console.log(datas)
-    
     const today = new Date()
     for (const [key, value] of Object.entries(datas)) {
         if (key.startsWith('soprod-')) {
@@ -1451,7 +1431,7 @@ async function getSelectCalendarWeek() {
 
 async function getBtnNextWeek() {
     let btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
-    console.log(btnNextWeek)
+    console.log('Go next btn', btnNextWeek)
     while (!btnNextWeek) {
         await new Promise(resolve => setTimeout(resolve, 400))
         btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
@@ -1463,7 +1443,7 @@ async function getBtnNextWeek() {
 
 async function getBtnPreviousWeek() {
     let btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
-    console.log(btnPreviousWeek)
+    console.log('Back btn', btnPreviousWeek)
     while (!btnPreviousWeek) {
         await new Promise(resolve => setTimeout(resolve, 400))
         btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
@@ -1543,29 +1523,16 @@ function openCalendarAddRelaunch() {
     }
 }
 
-
-
-// let changeThead = false
-
-// let runIfNoChangeAfterDelay = setTimeout(() => {
-//     if (!changeThead) {
-//         changeTargetDateOfCalendar(theadDayTarget)
-//         setTimeout(() => {
-//             changeThead = false
-//         }, 4000)
-//     }
-// }, 1000)
-
-// TEST DE MUTATION
-// if (runIfNoChangeAfterDelay) {
-//     clearTimeout(runIfNoChangeAfterDelay);
-// }
 const calendarObserver = {
     finishLoadTimeout: undefined,
     changeThead: false,
     elementTarget: undefined,
+    runIfNoChangeAfterDelay: undefined,
     calendarFinishLoad() {
         let self = this
+        if (self.runIfNoChangeAfterDelay) {
+            clearTimeout(self.runIfNoChangeAfterDelay);
+        }
         if (self.finishLoadTimeout) {
             clearTimeout(self.finishLoadTimeout);
         }
@@ -1596,8 +1563,17 @@ const calendarObserver = {
         characterData: true
     },
     runObservation(element) {
-        this.elementTarget = element
-        this.observerFunction()
+        let self = this
+        self.runIfNoChangeAfterDelay = setTimeout(() => {
+            if (!changeThead) {
+                changeTargetDateOfCalendar(theadDayTarget)
+                setTimeout(() => {
+                    self.changeThead = false
+                }, 4000)
+            }
+        }, 1000)
+        self.elementTarget = element
+        self.observerFunction()
     }
 }
 
@@ -1607,7 +1583,9 @@ function addCommentAuto() {
     textArea.value = (btnsList.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
     let sendMessage = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.btn-cont a.btn.addComment")
     sendMessage.click()
-    openCalendarAddRelaunch()
+    setTimeout(() => {
+        openCalendarAddRelaunch()
+    }, 300)
 }
 
 function addAutoCompleteUnreachable() {
@@ -1674,52 +1652,65 @@ const Alerts = {
         const alertBox = self.createAlert(type, message)
 
         beeFloatContainer.appendChild(alertBox);
+
+        const alertBoxContainer = beeFloatContainer.querySelector('div#alertBoxContainer')
         
+        let timerCancel = false
         var Timer = function(callback, delay) {
-            var timerId, start, remaining = delay;
+            var timerId, start, remaining = delay
         
             this.pause = function() {
-                window.clearTimeout(timerId);
-                timerId = null;
-                remaining -= Date.now() - start;
-            };
+                window.clearTimeout(timerId)
+                timerId = null
+                remaining -= Date.now() - start
+            }
         
             this.resume = function() {
                 if (timerId) {
-                    return;
+                    return
                 }
         
-                start = Date.now();
-                timerId = window.setTimeout(callback, remaining);
-            };
+                start = Date.now()
+                timerId = window.setTimeout(callback, remaining)
+            }
 
             this.stop = function() {
-                window.clearTimeout(timerId);
-                timerId = null;
-                remaining = delay;
-            };
+                window.clearTimeout(timerId)
+                timerId = null
+                remaining, start = null
+                callback()
+            }
         
-            this.resume();
-        };
+            this.resume()
+        }
         
         var timer = new Timer(() => {
             let alertBox = beeFloatContainer.querySelector('div#alertBoxContainer')
             if (alertBox) {
                 alertBox.remove()
             } else {
-                console.log(beeFloatContainer)
+                timer.stop()
             }
-        }, 5400);
+        }, 5200)
 
-        beeFloatContainer.addEventListener('mouseover', () => {
-            timer.pause();
+        let timerPaused = false
+        alertBoxContainer.addEventListener('mouseover', () => {
+            if (!timerPaused && !timerCancel) {
+                timerPaused = true
+                timer.pause()
+            }
         })
-        beeFloatContainer.addEventListener('mouseout', () => {
-            timer.resume();
+        alertBoxContainer.addEventListener('mouseleave', () => {
+            if (timerPaused && !timerCancel) {
+                timer.resume()
+                timerPaused = false
+            }
         })
         document.getElementById("closeAlertBox").addEventListener("click", function() {
-            timer.stop();
-        });
+            timerPaused = false
+            timerCancel = true
+            timer.stop()
+        })
     },
     createAlert(type, message) {
         let alertContainer = document.createElement('div')

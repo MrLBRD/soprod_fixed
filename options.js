@@ -33,7 +33,8 @@ const allInfosAvailable = [
     'requestId',
     'requestDate',
     'requestOrigin',
-    'requestComment'
+    'requestComment',
+    'jetlag'
 ]
 
 let activeSettings
