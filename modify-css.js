@@ -236,13 +236,17 @@ function keywordsBetterView() {
 
 var styles = [
     {
+        modif: 'importFont',
+        configurable: false,
+        css: "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap')"
+    }, {
         modif: 'schemaBtn',
         configurable: true,
         css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; }',
     }, {
         modif: 'horloge',
         configurable: false,
-        css: 'div#horloge { position: fixed; padding: 8px 16px; background: rgba(230, 30, 30, 0.2); border-radius: 6px !important; top: 104px; right: 6%; backdrop-filter: blur(1.5px); z-index: 999; font-size: 32px; }'
+        css: '.clockActive #beeBadge { padding: 8px 16px 8px 10px; } div#horloge { font-size: 36px; font-family: "Space Grotesk", sans-serif; font-weight: 500; letter-spacing: 0.05em; color: #1E1E1E; line-height: 1em; } #beeMenuContainer.clockActive { min-width: 180px; } #beeMenuContainer.clockActive:hover { min-width: 180px; }'
     }, {
         modif: 'autoCheckModif',
         configurable: true,
@@ -258,7 +262,7 @@ var styles = [
     }, {
         modif: 'beeFloatMenu',
         configurable: false,
-        css: '#beeElementsContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; display: flex; flex-direction: column-reverse; gap: 1rem; transition: all 0.3s ease-out; } #beeMenuContainer { min-height: 64px; min-width: 64px; width: fit-content; transition: all 0.3s ease-out; } #beeMenuContainer:hover { min-height: 145px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 8px; width: fit-content; height: 64px; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover #autoNextRelaunch { left: 10px; bottom: 85px; } #beeMenuContainer:hover #copyForExcel { left: 89px; bottom: 7px; } #beeMenuContainer:hover #switchContact { left: 65px; bottom: 61px; } #beeMenuContainer:hover #exportLocalStorage { left: 10px; bottom: 85px; } #beeMenuContainer:hover #importLocalStorage { left: 65px; bottom: 61px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #importLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
+        css: '#beeElementsContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; display: flex; flex-direction: column-reverse; gap: 1rem; transition: all 0.3s ease-out; } #beeMenuContainer { min-height: 64px; min-width: 64px; width: fit-content; transition: all 0.3s ease-out; } #beeMenuContainer:hover { min-height: 135px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 4px; width: fit-content; height: 64px; gap: 8px; min-width: 64px; justify-content: center; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer:hover div:nth-child(3) { left: 65px; bottom: 61px; } #beeMenuContainer:hover div:nth-child(4) { left: 89px; bottom: 7px; } #beeMenuContainer.clockActive:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(3) { left: 70px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(4) { left: 130px; bottom: 85px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #importLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
     }, {
         modif: 'alerts',
         configurable: false,
@@ -788,14 +792,17 @@ function addClock() {
     let itemStored = getLocalStorage()
 
     if (itemStored.jetlag.statu) {
-        let horlogeDiv = document.createElement('div');
+        let horlogeDiv = document.createElement('div')
         horlogeDiv.id = "horloge";
 
-        const parentOfPage = document.querySelector("div.operator-content.masterPage");
+        const beeContainer = document.querySelector("div#beeBadge")
 
-        parentOfPage.appendChild(horlogeDiv)
+        beeContainer.appendChild(horlogeDiv)
 
-        const horlogeContainer = document.querySelector('div#horloge')
+        const horlogeContainer = document.querySelector('div#beeBadge div#horloge')
+
+        const beeMenuContainer = document.querySelector("div#beeMenuContainer")
+        beeMenuContainer.classList.add('clockActive')
 
         updateClock(horlogeContainer, itemStored.jetlag.diff);
     } else if (itemStored.jetlag.statu === false) {
@@ -814,15 +821,18 @@ function addClock() {
                     let horlogeDiv = document.createElement('div');
                     horlogeDiv.id = "horloge";
             
-                    const parentOfPage = document.querySelector("div.operator-content.masterPage");
+                    const beeContainer = document.querySelector("div#beeBadge");
+
+                    beeContainer.appendChild(horlogeDiv)
             
-                    parentOfPage.appendChild(horlogeDiv)
-            
-                    const horlogeContainer = document.querySelector('div#horloge')
+                    const horlogeContainer = document.querySelector('div#beeBadge div#horloge')
         
                     itemStored.jetlag.statu = true
                     itemStored.jetlag.diff = timeZoneOffsets[x]
                     localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                    
+                    const beeMenuContainer = document.querySelector("div#beeMenuContainer")
+                    beeMenuContainer.classList.add('clockActive')
             
                     updateClock(horlogeContainer, timeZoneOffsets[x]);
                 } else {

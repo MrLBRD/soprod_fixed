@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#beeElementsContainer {
+    position: fixed;
+    z-index: 9999;
+    left: 32px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    transition: all 0.3s ease-out;
+}
+
+#beeMenuContainer {
+    min-height: 64px;
+    min-width: 64px;
+    width: fit-content;
+    transition: all 0.3s ease-out;
+}
+
+#beeMenuContainer:hover {
+    min-height: 135px;
+    min-width: 150px;
+}
+
+#beeMenuContainer.clockActive {
+    min-width: 180px;
+}
+
+#beeMenuContainer.clockActive:hover {
+    min-width: 180px;
+}
+
+#beeBadge {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+    width: fit-content;
+    height: 64px;
+    gap: 8px;
+    background: #F1D4F3;
+    border-radius: 248px !important;
+    cursor: pointer !important;
+    z-index: 3;
+}
+
+.clockActive #beeBadge {
+    padding: 8px 16px 8px 10px;
+}
+
+div#horloge {
+    font-size: 36px;
+    font-family: '';
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: #1E1E1E;
+}
+
+#beeMenuContainer:hover #beeBadge {
+    background: #BDA7BF;
+}
+
+#beeBadge img {
+    height: 48px;
+}
+
+.btn-badge {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    bottom: calc(32px - 8px);
+    left: calc(32px - 8px);
+    cursor: pointer;
+    border-radius: 248px !important;
+    transition: all 0.3s ease-out;
+}
+
+.btn-badge img {
+    height: 100%;
+}
+
+#autoNextRelaunch {
+    background: #87E86B;
+}
+
+#copyForExcel {
+    background: #FFF790;
+}
+
+#switchContact {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    background: #6AC6FF;
+}
+
+#exportLocalStorage {
+    background: #F69421;
+}
+
+#importLocalStorage {
+    background: #6AC6FF;
+}
+
+#beeMenuContainer:hover .btn-badge {
+    width: 48px;
+    height: 48px;
+}
+
+#beeMenuContainer:hover div:nth-child(2) {
+    left: 10px;
+    bottom: 85px;
+}
+
+#beeMenuContainer:hover div:nth-child(3) {
+    left: 65px;
+    bottom: 61px;
+}
+
+#beeMenuContainer:hover div:nth-child(4) {
+    left: 89px;
+    bottom: 7px;
+}
+
+#beeMenuContainer.clockActive:hover div:nth-child(2) {
+    left: 10px;
+    bottom: 85px;
+}
+
+#beeMenuContainer.clockActive:hover div:nth-child(3) {
+    left: 70px;
+    bottom: 85px;
+}
+
+#beeMenuContainer.clockActive:hover div:nth-child(4) {
+    left: 130px;
+    bottom: 85px;
+}
+
+#autoNextRelaunch:hover {
+    background: #6dbf56;
+}
+
+#copyForExcel:hover {
+    background: #ccc672;
+}
+
+#switchContact:hover {
+    background: #5ba9d9;
+}
+
+#exportLocalStorage:hover {
+    background: #CC7B1B;
+}
+
+#importLocalStorage:hover {
+    background: #5ba9d9;
+}
+
+#beeMenuContainer:hover #switchContact.clicked {
+    width: 16px;
+    height: 16px;
+    bottom: calc(32px - 8px);
+    left: calc(32px - 8px);
+}
+
+.btn-badge#switchContact img {
+    margin-top: -6px;
+    height: 90%;
+}
+
+.btn-badge#switchContact #textSwitchContact {
+    margin-top: -9px;
+    text-transform: uppercase;
+    font-size: 9px;
+    font-weight: 800;
+}
