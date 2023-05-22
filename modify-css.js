@@ -47,7 +47,9 @@ function windowOnload() {
                         liActive = navPageContent.querySelector('li.active')
                     }
 
-                    if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS')) {
+                    console.log(liActive.innerText)
+
+                    if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS') || (liActive.innerText).includes('PRODUCTION MODIF GRAPH EN COURS')) {
                         changeElementsInProgressModified(itemStored)
                     }
                     lastActivated = liActive.innerText
@@ -59,7 +61,7 @@ function windowOnload() {
                             } else {
                                 liActive = navPageContent.querySelector('li.active')
                             }
-                            if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS')) {
+                            if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS') || (liActive.innerText).includes('PRODUCTION MODIF GRAPH EN COURS')) {
                                 setTimeout(() => {
                                     changeElementsInProgressModified(itemStored)
                                 }, 500)
@@ -1603,7 +1605,7 @@ function addAutoCompleteUnreachable() {
     const tabs = getProductionTab()
     const pageContainer = getPageContainer()
     tabs.forEach((el) => {
-        if (el.innerText.includes('PRODUCTION MODIFS EN COURS')) {
+        if (el.innerText.includes('PRODUCTION MODIFS EN COURS') || el.innerText.includes('PRODUCTION MODIF GRAPH EN COURS')) {
             if ((el.parentNode.classList).value.includes('active')) {
                 addCommentAuto()
             } else {
