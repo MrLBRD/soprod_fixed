@@ -13,7 +13,9 @@ Acces Duda : #87a9e5
 Acces Duda (producer) :
 SOCOM : #edac06
 
-Ajouter fonctionalité commentaire par poste [CDP Premium / Graph Privi]
+-->
+
+[ ] Ajouter fonctionalité commentaire par poste [CDP Premium / Graph Privi]
 
 Créer Notion site avec les infos sur l'extension, les fonctionnalités.
 - la possibilité de report un problème
@@ -27,5 +29,3 @@ Les fontionnalités :
 - Commentaire injoignable + relance auto, ouverture du calendrier à la bonne date pour positionner un rdv
 - Affichage heure si décalage horaire
 - Export et import de vos datas
-
--->
