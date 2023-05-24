@@ -47,8 +47,6 @@ function windowOnload() {
                         liActive = navPageContent.querySelector('li.active')
                     }
 
-                    console.log(liActive.innerText)
-
                     if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS') || (liActive.innerText).includes('PRODUCTION MODIF GRAPH EN COURS')) {
                         changeElementsInProgressModified(itemStored)
                     }
@@ -440,9 +438,9 @@ function getRequestComment() {
         
         generateCopyClipboard()
 
-        setTimeout(() => {
-            window.close()
-        }, 300)
+        // setTimeout(() => {
+        //     window.close()
+        // }, 300)
     } else {
         setTimeout(() => {
             getRequestComment()
@@ -1354,6 +1352,7 @@ function copyForExcelInRequest() {
                 }
                 finishLoadTimeout = setTimeout(() => {
                     getRequestComment()
+                    observer.disconnect();
                 }, 500);
             };
 
