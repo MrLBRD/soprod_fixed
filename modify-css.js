@@ -290,21 +290,17 @@ function addStyle(styles) {
     })
 }
 
-function getConfirmModal() {
-    const confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
-    if (confirmModal && confirmModal !== null && confirmModal !== undefined) {
-        if (confirmModal.querySelector('div.modal-body > div.bootbox-body').innerText === 'La fiche sera qualifié en « CHECK MODIF TRAITEE OK »') {
-            return confirmModal
-        } else {
-            setTimeout(() => {
-                getConfirmModal()
-            }, 200)
-        }
-    } else {
-        setTimeout(() => {
-            getConfirmModal()
-        }, 300)
+async function getConfirmModal() {
+    let confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
+    while (!confirmModal) {
+        await new Promise(resolve => setTimeout(resolve, 300))
+        confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
     }
+    while (confirmModal.querySelector('div.modal-body > div.bootbox-body').innerText !== 'La fiche sera qualifié en « CHECK MODIF TRAITEE OK »') {
+        await new Promise(resolve => setTimeout(resolve, 200))
+        confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
+    }
+    return confirmModal
 }
 
 function displayConfirmOkModal(lastComment) {
@@ -313,15 +309,16 @@ function displayConfirmOkModal(lastComment) {
     newDiv.appendChild(lastComment.cloneNode(true))
     setTimeout(() => {
         const pathUrl = window.location.pathname.split('/');
-        const confirmModal = getConfirmModal()
-        const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
-        bodyConfirmModal.appendChild(newDiv)
-        const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
-        okBtnConfirmModal.addEventListener('click', () => {
-            window.localStorage.removeItem('soprod-' + pathUrl[3])
-            window.location.replace(
-                "https://soprod.solocalms.fr/Operator/Dashboard"
-            );
+        getConfirmModal().then(confirmModal => {
+            const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
+            bodyConfirmModal.appendChild(newDiv)
+            const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
+            okBtnConfirmModal.addEventListener('click', () => {
+                window.localStorage.removeItem('soprod-' + pathUrl[3])
+                window.location.replace(
+                    "https://soprod.solocalms.fr/Operator/Dashboard"
+                );
+            })
         })
     }, 500)
 }
