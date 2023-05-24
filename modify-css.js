@@ -1,8 +1,6 @@
 const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
 let userSettings
 
-let runChangeCss = false
-
 function loadSettings(callback) {
     storage.sync.get("userSettings", (data) => {
         callback(data.userSettings);
@@ -126,31 +124,6 @@ function windowOnload() {
             }
 
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
-            // setTimeout(() => {
-            //     var tabContent = document.querySelector('.tab-content');
-            //     if (tabContent) {
-            //         var observer = new MutationObserver((mutations) => {
-            //             mutations.forEach((mutation) => {
-            //                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            //                     keywordsBetterView()
-            //                     setTimeout(() => {
-            //                         runChangeCss = false
-            //                     }, 1000)
-            //                 }
-            //             });
-            //         });
-    
-            //         // Configuration de l'observation
-            //         var config = {
-            //             attributes: true,
-            //             childList: true,
-            //             subtree: true,
-            //         };
-    
-            //         // Lancement de l'observation
-            //         observer.observe(tabContent, config);
-            //     }
-            // }, 500)
             // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
             // Réaliser check if in storage
             // Else faire sans
@@ -205,10 +178,17 @@ function clearLocalStorage() {
     Alerts.displayAlert('success', 'Localstorage analysé avec succés. Les données sont à jour.')
 }
 
+async function getAllKeywordsArea() {
+    let keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
+    while (!keywordsGroupContainers || keywordsGroupContainers.length <= 0) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
+    }
+    return keywordsGroupContainers
+}
+
 function keywordsBetterView() {
-    runChangeCss = true
-    var keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup');
-    if (keywordsGroupContainers) {
+    getAllKeywordsArea().then(keywordsGroupContainers => {
         const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
         if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
         for (const keywordsGroupContainer of keywordsGroupContainers) {
@@ -227,11 +207,7 @@ function keywordsBetterView() {
                 addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
             }
         }
-    } else {
-        setTimeout(() => {
-            keywordsBetterView()
-        }, 200)
-    }
+    })
 }
 
 var styles = [
@@ -619,17 +595,21 @@ function howNextDayToCall() {
     return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
 }
 
+async function getAllCommentsArea() {
+    let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
+    while (!commentsAreaDivs || commentsAreaDivs.length <= 0) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
+    }
+    return commentsAreaDivs
+}
+
 function addBtnSchema() {
-    // Modif à apporter =>
-    // - regarder quel onglet est actif -> si "production" alors exécuter la suite
-    // - boucler sur les commentsAreaDivs si aucune de trouver alors relancer après x milliseconde
     var pathArray = window.location.pathname.split('/');
     let idPath = pathArray.reverse()[0]
-    let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
-
     let idInfos = getLocalStorage()
 
-    if (commentsAreaDivs) {
+    getAllCommentsArea().then(commentsAreaDivs => {
         commentsAreaDivs.forEach((commentsAreaDiv) => {
             let portletBody = commentsAreaDiv.querySelector('.portlet-body.chats')
 
@@ -744,7 +724,7 @@ function addBtnSchema() {
                 }
             }
         })
-    }
+    })
 }
 
 const timeZoneOffsets = {
