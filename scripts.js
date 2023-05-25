@@ -545,6 +545,75 @@ var AddDaTor = {
     }
 }
 
+const schemaComments = [
+    {
+        gamme: 'premium',
+        poste: 'cdp',
+        btnsList: {
+            'sendToControl': {
+                'text': 'Clôture schema',
+                'class': 'btn green',
+                'id': 'addCloseSchemaBtn',
+                'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
+                'height': '324px'
+            },
+            'unreachable': {
+                'text': 'Injoignable schema',
+                'class': 'btn yellow',
+                'id': 'addUnreachableSchemaBtn',
+                'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                'height': '76px'
+            },
+            'basic': {
+                'text': 'Appel Basique schema',
+                'class': 'btn blue',
+                'id': 'addBasicSchemaBtn',
+                'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+                'height': '114px'
+            },
+            'sendViewLink': {
+                'text': 'Envoi lien',
+                'class': 'btn purple',
+                'id' : 'addSendViewLinkSchemaBtn',
+                'message': 'Envoi lien de prévisualisation',
+                'height': '36px'
+            }
+        },
+    }, {
+        gamme: 'privilege',
+        poste: 'graph',
+        btnsList: {
+            'sendToControl': {
+                'text': 'Clôture schema',
+                'class': 'btn green',
+                'id': 'addCloseSchemaBtn',
+                'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\nNote SoOptimo : XX > XX\r\n\r\nModif Graph faite - Envoi en contrôle final',
+                'height': '324px'
+            },
+            'unreachable': {
+                'text': 'Injoignable schema',
+                'class': 'btn yellow',
+                'id': 'addUnreachableSchemaBtn',
+                'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                'height': '76px'
+            },
+            'basic': {
+                'text': 'Appel Basique schema',
+                'class': 'btn blue',
+                'id': 'addBasicSchemaBtn',
+                'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+                'height': '114px'
+            },
+            'sendViewLink': {
+                'text': 'Envoi lien',
+                'class': 'btn purple',
+                'id' : 'addSendViewLinkSchemaBtn',
+                'message': 'Envoi lien de prévisualisation',
+                'height': '36px'
+            }
+        },
+    }
+]
 const btnsList = {
     'sendToControl': {
         'text': 'Clôture schema',

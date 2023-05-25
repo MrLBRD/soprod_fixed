@@ -201,6 +201,34 @@ div#saveSettingsChange #textBtn {
 div.otherinput-container {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+}
+
+div.userjobInput-container {
+    display: flex;
+    gap: 8px;
+}
+
+select.selectUserJob {
+    min-width: 160px;
+    height: 35px;
+    padding: 2px 8px;
+    background: #6AC6FF;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    gap: 4px;
+    outline: none;
+    font-weight: 400;
+    font-size: 18px;
+    accent-color: #87E86B;
+    text-transform: uppercase;
+    color: #1E1E1E;
 }
 
 div.custom-input {

@@ -23,7 +23,7 @@
         {
             "matches": ["https://soprod.solocalms.fr/*"],
             "js": [
-                "modify-css.js"
+                "scripts.js"
             ]
         }
     ],

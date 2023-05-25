@@ -1,11 +1,65 @@
 const storage = chrome.storage;
 
+const settingsInformation = {
+    userJob: {
+        typeOfInput: 'userJob',
+        title: 'Poste d\'utilisation de SoProd',
+        value: {
+            gamme: {
+                0: 'premium',
+                1: 'privilege'
+            },
+            poste: {
+                0: 'cdp',
+                1: 'graph'
+            }
+        }
+    },
+    fixViewKeywords: {
+        typeOfInput: 'checkbox',
+        title: 'Correction de l’affichage des mots-clés',
+        value: Boolean
+    },
+    schemaBtn: {
+        typeOfInput: 'checkbox',
+        title: 'Ajout schémas de commentaire',
+        value: Boolean
+    },
+    autoCheckModif: {
+        typeOfInput: 'checkbox',
+        title: 'Semi-auto check modif traitée',
+        value: Boolean
+    },
+    customDashboard: {
+        typeOfInput: 'checkbox',
+        title: 'Dashboard modifié',
+        value: Boolean
+    },
+    copyForExcel: {
+        typeOfInput: 'selectOrdered',
+        title: 'Copie des informations pour Excel',
+        value: [
+            '',
+            'epj',
+            'companyName',
+            'receptionDate',
+            'productRange',
+            'requestId',
+            'requestDate',
+            'requestOrigin',
+            'requestComment',
+            'jetlag'
+        ]
+    }
+}
+
 const defaultSettings = {
-    'fixViewKeywords': true,
-    'schemaBtn': true,
-    'autoCheckModif': true,
-    'customDashboard': true,
-    'copyForExcel': [
+    userJob: [0, 0],
+    fixViewKeywords: true,
+    schemaBtn: true,
+    autoCheckModif: true,
+    customDashboard: true,
+    copyForExcel: [
         'epj',
         'companyName',
         'receptionDate',
@@ -13,29 +67,8 @@ const defaultSettings = {
         '',
         'requestOrigin',
         'requestComment'
-    ]
+    ],
 }
-
-const settingsInfos = {
-    'fixViewKeywords': 'Correction de l’affichage des mots-clés',
-    'schemaBtn': 'Ajout schémas de commentaire',
-    'autoCheckModif': 'Semi-auto check modif traitée',
-    'customDashboard': 'Dashboard modifié',
-    'copyForExcel': 'Copie des informations pour Excel'
-}
-
-const allInfosAvailable = [
-    '',
-    'epj',
-    'companyName',
-    'receptionDate',
-    'productRange',
-    'requestId',
-    'requestDate',
-    'requestOrigin',
-    'requestComment',
-    'jetlag'
-]
 
 let activeSettings
 let timeAtLastAction
@@ -47,6 +80,16 @@ function saveSettings(settings, callback) {
 function loadSettings(callback) {
     storage.sync.get("userSettings", (data) => {
         if (data.userSettings) {
+            for (const value of Object.keys(settingsInformation)) {
+                if (!(value in data.userSettings)) {
+                    data.userSettings[value] = defaultSettings[value]
+                    saveSettings(data.userSettings, () => {
+                        loadSettings((settings) => {
+                            displaySettings(settings)
+                        })
+                    });
+                }
+            }
             callback(data.userSettings);
         } else {
             saveSettings(defaultSettings, () => {
@@ -56,16 +99,17 @@ function loadSettings(callback) {
     });
 }
 
-function customInputFill(elements, key) {
+function customInputFill(elements, key, infosSetting) {
     const customInput = document.querySelector(`div[id^="item"] div[id="customInput-${key}"]`)
-    console.log(customInput)
     customInput.innerHTML = ''
+
     for (const [id, value] of elements.entries()) {
         const element = document.createElement("div")
         element.className = 'element-custominput'
         element.innerHTML = `<div class="id-elementcustom">${ id }</div><div class="content-elementcustom">${ value }</div><div id="deleteElement-${ id }">${ deleteIcon }</div>`
         customInput.appendChild(element)
     }
+
     const addElementBtn = document.createElement("div")
     addElementBtn.id = "addElementBtn"
     addElementBtn.className = ""
@@ -74,7 +118,6 @@ function customInputFill(elements, key) {
 
     
     const deleteElementBtns = document.querySelectorAll('div.custom-input > div.element-custominput > div[id^="deleteElement-"]')
-    console.log(deleteElementBtns)
     deleteElementBtns.forEach((el) => {
         el.addEventListener('click', () => {
             let idForRemove = parseInt((el.id).substring(14))
@@ -89,7 +132,7 @@ function customInputFill(elements, key) {
         btnAddElement.className = "active"
     })
     const selectNewElement = document.querySelector('div#addElementBtn select#toAddElement')
-    for (const [id, infoAvailable] of allInfosAvailable.entries()) {
+    for (const infoAvailable of infosSetting.value) {
         const optionElement = document.createElement('option')
         optionElement.value = infoAvailable
         optionElement.text = infoAvailable
@@ -106,39 +149,79 @@ function customInputFill(elements, key) {
 
 function displaySettings(settings) {
     const debugDisplay = document.getElementById("debugOptions");
-    debugOptions.innerHTML = ''
+    debugOptions.innerHTML = JSON.stringify(settings)
     
-    for (const key in settings) {
+    for (const [key, value] of Object.entries(settingsInformation)) {
         const setting = settings[key]
+
         const item = document.createElement("div")
         item.className = 'input-container'
         item.id = `item-${key}` // Ajout d'un identifiant unique
-        if (typeof setting == "boolean") {
-            item.innerHTML = `<input type="checkbox" ${setting ? 'checked' : ''} id="${key}">
-                            <p>${ settingsInfos[key] }</p>`
 
-            debugDisplay.appendChild(item)
+        switch (value.typeOfInput) {
+            case 'checkbox':
+                item.innerHTML = `<input type="checkbox" ${setting ? 'checked' : ''} id="${key}">
+                                <p>${ value.title }</p>`
 
-            const itemCheckbox = document.querySelector(`div#item-${key} input#${key}`)
-            itemCheckbox.addEventListener('change', () => {
-                activeSettings[key] = itemCheckbox.checked
-                console.log(activeSettings)
-            })
-        } else {
-            item.className = 'otherinput-container'
-            const headline = document.createElement("div")
-            headline.className = 'input-container'
-            headline.innerHTML = `<input type="checkbox" ${setting ? 'checked' : ''} id="${key}">
-                                <p>${ settingsInfos[key] }</p>`
-            item.appendChild(headline)
-            const customInput = document.createElement("div")
-            customInput.className = 'custom-input'
-            customInput.id = `customInput-${ key }`
-            item.appendChild(customInput)
+                debugDisplay.appendChild(item)
 
-            debugDisplay.appendChild(item)
+                const itemCheckbox = document.querySelector(`div#item-${key} input#${key}`)
+                itemCheckbox.addEventListener('change', () => {
+                    activeSettings[key] = itemCheckbox.checked
+                })
+                break;
+            case 'selectOrdered':
+                item.className = 'otherinput-container'
+                const headline = document.createElement("div")
+                headline.className = 'input-container'
+                headline.innerHTML = `<p>${ value.title }</p>`
+                item.appendChild(headline)
+                const customInput = document.createElement("div")
+                customInput.className = 'custom-input'
+                customInput.id = `customInput-${ key }`
+                item.appendChild(customInput)
 
-            customInputFill(setting, key)
+                debugDisplay.appendChild(item)
+
+                customInputFill(setting, key, value)
+                break;
+            case 'userJob':
+                item.className = 'otherinput-container'
+                item.innerHTML = `<p>${ value.title }</p>`
+
+                let containerSelectors = document.createElement('div')
+                containerSelectors.className = 'userjobInput-container'
+
+                let idOfSelecter = 0
+                for (const [id, whichSelect] of Object.entries(value.value)) {
+                    console.log(idOfSelecter)
+                    const selecter = document.createElement("select")
+                    selecter.className = 'selectUserJob'
+
+                    for (const [id, optionInfo] of Object.entries(whichSelect)) {
+                        const optionElement = document.createElement('option')
+                        optionElement.value = id
+                        optionElement.text = optionInfo
+                        selecter.add(optionElement, null)
+                    }
+
+                    selecter.addEventListener('change', () => {
+                        console.log(selecter.value)
+                        console.log(activeSettings)
+                        console.log(idOfSelecter)
+                        activeSettings.userJob[idOfSelecter] = selecter.value
+                    })
+                    
+                    containerSelectors.appendChild(selecter)
+                    idOfSelecter++
+                }
+                
+                item.appendChild(containerSelectors)
+                debugDisplay.appendChild(item)
+
+                break;
+            default:
+                break;
         }
     }
 }
