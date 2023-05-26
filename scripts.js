@@ -45,7 +45,13 @@ function windowOnload() {
                         liActive = navPageContent.querySelector('li.active')
                     }
 
-                    if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS') || (liActive.innerText).includes('PRODUCTION MODIF GRAPH EN COURS')) {
+                    const statuses = [
+                        'PRODUCTION MODIFS EN COURS',
+                        'PRODUCTION MODIF GRAPH EN COURS',
+                        'PRODUCTION MODIF CONTENU EN COURS'
+                    ]
+
+                    if (statuses.some(status => liActive.innerText.includes(status))) {
                         changeElementsInProgressModified(itemStored)
                     }
                     lastActivated = liActive.innerText
@@ -57,7 +63,7 @@ function windowOnload() {
                             } else {
                                 liActive = navPageContent.querySelector('li.active')
                             }
-                            if ((liActive.innerText).includes('PRODUCTION MODIFS EN COURS') || (liActive.innerText).includes('PRODUCTION MODIF GRAPH EN COURS')) {
+                            if (statuses.some(status => liActive.innerText.includes(status))) {
                                 setTimeout(() => {
                                     changeElementsInProgressModified(itemStored)
                                 }, 500)
@@ -588,7 +594,7 @@ const schemaComments = [
                 'class': 'btn green',
                 'id': 'addCloseSchemaBtn',
                 'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\nNote SoOptimo : XX > XX\r\n\r\nModif Graph faite - Envoi en contrôle final',
-                'height': '324px'
+                'height': '292px'
             },
             'unreachable': {
                 'text': 'Injoignable schema',
@@ -614,36 +620,6 @@ const schemaComments = [
         },
     }
 ]
-const btnsList = {
-    'sendToControl': {
-        'text': 'Clôture schema',
-        'class': 'btn green',
-        'id': 'addCloseSchemaBtn',
-        'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
-        'height': '324px'
-    },
-    'unreachable': {
-        'text': 'Injoignable schema',
-        'class': 'btn yellow',
-        'id': 'addUnreachableSchemaBtn',
-        'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
-        'height': '76px'
-    },
-    'basic': {
-        'text': 'Appel Basique schema',
-        'class': 'btn blue',
-        'id': 'addBasicSchemaBtn',
-        'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
-        'height': '114px'
-    },
-    'sendViewLink': {
-        'text': 'Envoi lien',
-        'class': 'btn purple',
-        'id' : 'addSendViewLinkSchemaBtn',
-        'message': 'Envoi lien de prévisualisation',
-        'height': '36px'
-    }
-}
 
 function howNextDayToCall() {
     let idInfos = getLocalStorage()
@@ -690,18 +666,35 @@ function addBtnSchema() {
                     let newBtnsContainer = document.createElement('div')
                     newBtnsContainer.className = 'ext--btns-container'
 
-                    for (const [key, value] of Object.entries(btnsList)) {
+                    console.log(userSettings.userJob)
+
+                    let btnsListToUse = schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
+                    console.log(btnsListToUse)
+
+                    for (const [key, value] of Object.entries(btnsListToUse)) {
                         // Création d'une nouvelle div avec la classe 'btn'
-                        var newBtnDiv = document.createElement('div');
-                        newBtnDiv.className = value.class;
-                        newBtnDiv.id = value.id;
+                        var newBtnDiv = document.createElement('div')
+                        newBtnDiv.className = value.class
+                        newBtnDiv.id = value.id
 
                         // Ajout du texte 'Add text' à la nouvelle div
-                        var textNode = document.createTextNode(value.text);
-                        newBtnDiv.appendChild(textNode);
+                        var textNode = document.createTextNode(value.text)
+                        newBtnDiv.appendChild(textNode)
+
+                        newBtnDiv.addEventListener('click', () => {
+                            if (addCommentMessage.value == '') {
+                                let rqtInfos = getLocalStorage()
+                                if (value.id === 'addUnreachableSchemaBtn') {
+                                    addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
+                                } else {
+                                    addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
+                                }
+                                addCommentMessage.style.height = value.height
+                            }
+                        })
 
                         // Ajout de la nouvelle div à l'intérieur de la div 'portletBody'
-                        newBtnsContainer.appendChild(newBtnDiv);
+                        newBtnsContainer.appendChild(newBtnDiv)
                     }
 
                     if (idInfos.lastComment.text) {
@@ -710,39 +703,18 @@ function addBtnSchema() {
                         newBtnDiv.id = 'getAddStoredMessage';
                         newBtnDiv.title = "Récupérer le mesage que vous étiez en train d'écrire."
                         newBtnDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M280 64h40c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128C0 92.7 28.7 64 64 64h40 9.6C121 27.5 153.3 0 192 0s71 27.5 78.4 64H280zM64 112c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320c8.8 0 16-7.2 16-16V128c0-8.8-7.2-16-16-16H304v24c0 13.3-10.7 24-24 24H192 104c-13.3 0-24-10.7-24-24V112H64zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>'
+
+                        newBtnDiv.addEventListener('click', () => {
+                            if (addCommentMessage.value == '') {
+                                addCommentMessage.value = idInfos.lastComment.text
+                                addCommentMessage.style.height = idInfos.lastComment.height
+                            }
+                        })
+
                         newBtnsContainer.appendChild(newBtnDiv);
                     }
 
                     portletBody.appendChild(newBtnsContainer)
-
-                    for (const [key, value] of Object.entries(btnsList)) {
-                        let btnElement = document.getElementById(value.id)
-                        if (btnElement) {
-                            btnElement.addEventListener('click', () => {
-                                if (addCommentMessage.value == '') {
-                                    let rqtInfos = getLocalStorage()
-                                    if (value.id === 'addUnreachableSchemaBtn') {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
-                                    } else {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
-                                    }
-                                    addCommentMessage.style.height = value.height
-                                }
-                            });
-                        }
-                    }
-                    if (idInfos.lastComment.text) {
-                        let btnElement = document.getElementById('getAddStoredMessage')
-                        if (btnElement) {
-                            btnElement.addEventListener('click', () => {
-                                if (addCommentMessage.value == '') {
-                                    addCommentMessage.value = idInfos.lastComment.text
-                                    addCommentMessage.style.height = idInfos.lastComment.height
-                                }
-                            });
-                        }
-                    }
-
 
                     let keysActiv = {
                         'Enter': false,

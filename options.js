@@ -54,7 +54,10 @@ const settingsInformation = {
 }
 
 const defaultSettings = {
-    userJob: [0, 0],
+    userJob: {
+        gamme: 'premium',
+        poste: 'cdp'
+    },
     fixViewKeywords: true,
     schemaBtn: true,
     autoCheckModif: true,
@@ -194,22 +197,20 @@ function displaySettings(settings) {
 
                 let idOfSelecter = 0
                 for (const [id, whichSelect] of Object.entries(value.value)) {
-                    console.log(idOfSelecter)
                     const selecter = document.createElement("select")
                     selecter.className = 'selectUserJob'
 
                     for (const [id, optionInfo] of Object.entries(whichSelect)) {
                         const optionElement = document.createElement('option')
-                        optionElement.value = id
+                        optionElement.value = optionInfo
                         optionElement.text = optionInfo
                         selecter.add(optionElement, null)
                     }
 
+                    selecter.value = (activeSettings.userJob)[id]
+
                     selecter.addEventListener('change', () => {
-                        console.log(selecter.value)
-                        console.log(activeSettings)
-                        console.log(idOfSelecter)
-                        activeSettings.userJob[idOfSelecter] = selecter.value
+                        activeSettings.userJob[id] = selecter.value
                     })
                     
                     containerSelectors.appendChild(selecter)
