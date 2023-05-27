@@ -353,11 +353,11 @@ window.addEventListener('message', function (event) {
     // Vérifier que le message est de type 'textFromFirstPage'
     if (event.data.type === 'copyDataForExcel') {
         // const textOfElementTargetFirstPage = event.data.text;
-        openCustomerRelationTab()
+        openCustomerRelationTab('closeAfterCopy')
     }
 });
 
-function generateCopyClipboard() {
+function generateCopyClipboard(event = null) {
     let contentForClipboard = ''
     let itemStored = getLocalStorage()
     for (const [id, element] of (userSettings.copyForExcel).entries()) {
@@ -399,9 +399,10 @@ function generateCopyClipboard() {
     }
     navigator.clipboard.writeText(contentForClipboard)
     Alerts.displayAlert('success', 'Les informations ont été formaté et copié. Vous pouvez les coller sur votre tableur.')
+    if (event === 'closeAfterCopy') window.close()
 }
 
-function getRequestComment() {
+function getRequestComment(event = null) {
     const customerRelationTab = document.querySelectorAll('div.portlet[id^="requestArea_"]>div.portlet-body>div.row>div>div[id^="getRequest_"] table.table>tbody>tr')[0]
     if (customerRelationTab) {
         let originRequest = (customerRelationTab.dataset.origin).includes('bilan') ? "BILAN" : (customerRelationTab.querySelectorAll('td')[4].innerText).includes('COMMERCIAL') ? "COMMERCIAL" : "CLIENT"
@@ -418,7 +419,7 @@ function getRequestComment() {
         itemStored.contact = originRequest === 'COMMERCIAL' ? 'ccial' : 'client'
         localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
         
-        generateCopyClipboard()
+        generateCopyClipboard(event)
 
         // setTimeout(() => {
         //     window.close()
@@ -430,7 +431,7 @@ function getRequestComment() {
     }
 }
 
-function openCustomerRelationTab() {
+function openCustomerRelationTab(event = null) {
     const tabs = document.querySelectorAll('div#masterWebGroupPortlet>div.portlet-body>div.tabbable.tabbable-custom>ul.nav.nav-tabs>li>a')
     const pageContainer = document.querySelector('div#masterWebGroupPortlet>div.portlet-body>div.tabbable.tabbable-custom>div.tab-content')
     tabs.forEach((el) => {
@@ -444,7 +445,7 @@ function openCustomerRelationTab() {
                     clearTimeout(finishLoadTimeout);
                 }
                 finishLoadTimeout = setTimeout(() => {
-                    getRequestComment()
+                    getRequestComment(event)
                 }, 500);
             };
 
