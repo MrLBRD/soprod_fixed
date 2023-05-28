@@ -53,6 +53,8 @@ const settingsInformation = {
     }
 }
 
+const availableJobs = ["premium cdp", "privilege graph"]
+
 const defaultSettings = {
     userJob: {
         gamme: 'premium',
@@ -152,7 +154,7 @@ function customInputFill(elements, key, infosSetting) {
 
 function displaySettings(settings) {
     const debugDisplay = document.getElementById("debugOptions");
-    debugOptions.innerHTML = JSON.stringify(settings)
+    debugOptions.innerHTML = ""
     
     for (const [key, value] of Object.entries(settingsInformation)) {
         const setting = settings[key]
@@ -211,11 +213,22 @@ function displaySettings(settings) {
 
                     selecter.addEventListener('change', () => {
                         activeSettings.userJob[id] = selecter.value
+                        if (!availableJobs.includes(activeSettings.userJob.gamme + ' ' + activeSettings.userJob.poste)) {
+                            containerSelectors.classList.add('unavailable')
+                        } else {
+                            containerSelectors.classList.remove('unavailable')
+                        }
                     })
                     
                     containerSelectors.appendChild(selecter)
                     idOfSelecter++
                 }
+
+                let divOfErrorMessage = document.createElement('div')
+                divOfErrorMessage.className = "error-message"
+                divOfErrorMessage.innerText = "Oups ! Cette combinaisson n'est pas encore paramétré sur SoBee."
+                
+                containerSelectors.appendChild(divOfErrorMessage)
                 
                 item.appendChild(containerSelectors)
                 debugDisplay.appendChild(item)

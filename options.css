@@ -214,6 +214,16 @@ div.userjobInput-container {
     gap: 8px;
 }
 
+div.userjobInput-container div.error-message {
+    display: none;
+    font-size: 14px;
+    color: #ff1b00;
+    font-weight: 600;
+}
+div.userjobInput-container.unavailable div.error-message {
+    display: block;
+}
+
 select.selectUserJob {
     min-width: 160px;
     height: 35px;
@@ -229,6 +239,9 @@ select.selectUserJob {
     accent-color: #87E86B;
     text-transform: uppercase;
     color: #1E1E1E;
+}
+div.userjobInput-container.unavailable select.selectUserJob {
+    background: #ff1b00;
 }
 
 div.custom-input {
@@ -328,6 +341,7 @@ div#addElementBtn.active svg#validElementSelect {
 
 div#returnDefaultSettings {
     margin-top: 32px;
+    margin-bottom: 24px;
     text-align: center;
     cursor: pointer;
 }
