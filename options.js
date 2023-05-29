@@ -50,6 +50,11 @@ const settingsInformation = {
             'requestComment',
             'jetlag'
         ]
+    },
+    togglePortletBlock: {
+        typeOfInput: 'checkbox',
+        title: 'Masquer les blocs non/peu utilisés et les rendres visibles via un boutton',
+        value: Boolean
     }
 }
 
@@ -73,6 +78,7 @@ const defaultSettings = {
         'requestOrigin',
         'requestComment'
     ],
+    togglePortletBlock: true,
 }
 
 let activeSettings

@@ -52,7 +52,7 @@ function windowOnload() {
                     ]
 
                     if (statuses.some(status => liActive.innerText.includes(status))) {
-                        changeElementsInProgressModified(itemStored)
+                        changeElementsInProgressModified(itemStored, liActive.innerText)
                     }
                     lastActivated = liActive.innerText
                     
@@ -65,7 +65,7 @@ function windowOnload() {
                             }
                             if (statuses.some(status => liActive.innerText.includes(status))) {
                                 setTimeout(() => {
-                                    changeElementsInProgressModified(itemStored)
+                                    changeElementsInProgressModified(itemStored, liActive.innerText)
                                 }, 500)
                             }
                             if (itemStored.gamme === 'ESSENTIEL') {
@@ -151,11 +151,64 @@ window.onload = function () {
     }
 };
 
-function changeElementsInProgressModified(itemStored) {
+function changeElementsInProgressModified(itemStored, activTab) {
     if (itemStored.gamme === 'PREMIUM') {
         if (userSettings.fixViewKeywords) keywordsBetterView()
     }
     if (userSettings.schemaBtn) addBtnSchema()
+
+    if (userSettings.togglePortletBlock) {
+        let portletsToHidden = null
+        switch (true) {
+            case activTab.includes('PRODUCTION MODIFS EN COURS'):
+                portletsToHidden = [
+                    'Client',
+                    'TYPE DE MODIFICATION / PROACTIVITE OU DEMANDE CLIENT'
+                ]
+                createTogglePortlet(portletsToHidden)
+                break;
+            case activTab.includes('PRODUCTION MODIF GRAPH EN COURS'):
+                portletsToHidden = [
+                    'Client',
+                    'MODIFICATION CONTENU SEO',
+                    'TYPE MODIFICATION ET DIFFICULTÉ DE CELLE CI'
+                ]
+                createTogglePortlet(portletsToHidden)
+                break;
+            case activTab.includes('PRODUCTION MODIF CONTENU EN COURS'):
+                portletsToHidden = [
+                    'Client',
+                    'MODIFICATION CONTENU SEO',
+                    'Liste des demandes'
+                ]
+                createTogglePortlet(portletsToHidden)
+                break;
+        }
+    }
+}
+
+function createTogglePortlet(portletsToHidden) {
+    const portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
+
+    for (const portletTitle of portletsTitles) {
+        if (portletsToHidden.some(el => portletTitle.innerText === el)) {
+            let portletBody = (portletTitle.parentNode.parentNode).querySelector('div.portlet-body form')
+            portletBody.classList.add('hiddenPortletBody')
+
+            let containerBtn = document.createElement('div')
+            containerBtn.className = "containerBtnShowMore"
+            let btnShowMore = document.createElement('div')
+            btnShowMore.innerText = "VOIR PLUS"
+            btnShowMore.className = "btnShowMore"
+
+            btnShowMore.addEventListener('click', () => {
+                portletBody.classList.toggle('hiddenPortletBody')
+            })
+
+            containerBtn.appendChild(btnShowMore)
+            portletBody.parentNode.appendChild(containerBtn)
+        }
+    }
 }
 
 function getLocalStorage() {
@@ -249,6 +302,10 @@ var styles = [
         modif: 'alerts',
         configurable: false,
         css: '@property --border-angle { syntax: "<angle>"; inherits: true; initial-value: 1turn; } div#alertBoxContainer { position: relative; min-width: 180px; max-width: 240px; width: fit-content; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 16px; background: rgba(180, 254, 192, 0.4); border: 2px solid #B4FEC0; border-radius: 8px !important; --border-angle: 1turn; } div#alertBoxContainer::after { content: ""; position: absolute; inset: -2.5px; border-radius: 8px; padding: 3px; background: conic-gradient(from 0.19turn, transparent var(--border-angle), #223A12 var(--border-angle), #223A12); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: bg-spin 5s linear forwards; } @keyframes bg-spin { to { --border-angle: 0turn; } } div#alertBoxContainer:hover::after { animation-play-state: paused; } #alertBoxContainer #closeAlertBox { position: absolute; z-index: 1; width: 1.1rem; align-self: flex-end; cursor: pointer; } #alertBoxContainer #alertTitle { font-weight: 700; font-size: 1.3rem; margin: 0.25rem 0 1rem; } #alertBoxContainer #alertMessage { font-weight: 400; font-size: 1.1rem; margin: 0; } ',
+    }, {
+        modif: 'togglePortlet',
+        configurable: false,
+        css: 'form.hiddenPortletBody { display: none; } .containerBtnShowMore { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 50px; } .btnShowMore { width: fit-content; padding: 8px 16px; background-color: rgba(85, 107, 47, .8); display: flex; align-content: center; justify-content: center; color: whitesmoke; font-size: 16px; font-family: "Space Grotesk"; border-radius: 4px !important; cursor: pointer; }'
     }
 ];
 
