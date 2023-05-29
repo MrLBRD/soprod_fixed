@@ -8,3 +8,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true;
     }
 });
+
+chrome.runtime.onInstalled.addListener(function(details) {
+    if (details.previousVersion !== chrome.runtime.getManifest().version || details.reason == 'install') chrome.runtime.openOptionsPage();
+});
