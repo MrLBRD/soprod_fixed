@@ -226,7 +226,7 @@ function displaySettings(settings) {
 
                 let divOfErrorMessage = document.createElement('div')
                 divOfErrorMessage.className = "error-message"
-                divOfErrorMessage.innerText = "Oups ! Cette combinaisson n'est pas encore paramétré sur SoBee."
+                divOfErrorMessage.innerText = "Oups ! Cette combinaisson n'est pas encore disponible sur SoBee."
                 
                 containerSelectors.appendChild(divOfErrorMessage)
                 

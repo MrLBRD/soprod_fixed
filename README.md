@@ -15,5 +15,6 @@ SOCOM : #edac06
 
 -->
 
-[ ] Ajouter fonctionalité commentaire par poste [CDP Premium / Graph Privi]
+- ajouter selecter dans le bouton ajout commentaire de cloture pour injoignable avec et sans modif
+- pour réduire les infos affichés sur la page de la requete mettre dans les blocs avec un dropdown
 
