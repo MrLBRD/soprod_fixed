@@ -973,6 +973,7 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
                 }
                 return 'controlInProgress'
             case 'RETOUR EN MODIFICATION':
+            case 'RETOUR EN MODIF GRAPHIQUE':
                 if (userSettings.customDashboard) trTarget.style.border = 'solid #9f65eb'
                 return 'modifReturn'
             default:
