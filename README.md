@@ -16,5 +16,8 @@ SOCOM : #edac06
 -->
 
 - ajouter selecter dans le bouton ajout commentaire de cloture pour injoignable avec et sans modif
+
 - pour réduire les infos affichés sur la page de la requete mettre dans les blocs avec un dropdown
+  → ne fonctionne pas aprsè un changement de tab
+
 

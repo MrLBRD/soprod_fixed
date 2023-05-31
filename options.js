@@ -134,7 +134,7 @@ function customInputFill(elements, key, infosSetting) {
             let idForRemove = parseInt((el.id).substring(14))
             const elementsUpdate = (elements.slice(0, idForRemove)).concat(elements.slice(idForRemove+1))
             console.log(elementsUpdate, key)
-            customInputFill(elementsUpdate, key)
+            customInputFill(elementsUpdate, key, infosSetting)
             activeSettings.copyForExcel = elementsUpdate
         })
     })
@@ -153,7 +153,7 @@ function customInputFill(elements, key, infosSetting) {
     validElementSelect.addEventListener('click', () => {
         const elementsUpdate = elements
         elementsUpdate.push(selectNewElement.value)
-        customInputFill(elementsUpdate, key)
+        customInputFill(elementsUpdate, key, infosSetting)
         activeSettings.copyForExcel = elementsUpdate
     })
 }

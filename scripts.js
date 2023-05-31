@@ -187,28 +187,37 @@ function changeElementsInProgressModified(itemStored, activTab) {
     }
 }
 
-function createTogglePortlet(portletsToHidden) {
-    const portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
-
-    for (const portletTitle of portletsTitles) {
-        if (portletsToHidden.some(el => portletTitle.innerText === el)) {
-            let portletBody = (portletTitle.parentNode.parentNode).querySelector('div.portlet-body form')
-            portletBody.classList.add('hiddenPortletBody')
-
-            let containerBtn = document.createElement('div')
-            containerBtn.className = "containerBtnShowMore"
-            let btnShowMore = document.createElement('div')
-            btnShowMore.innerText = "VOIR PLUS"
-            btnShowMore.className = "btnShowMore"
-
-            btnShowMore.addEventListener('click', () => {
-                portletBody.classList.toggle('hiddenPortletBody')
-            })
-
-            containerBtn.appendChild(btnShowMore)
-            portletBody.parentNode.appendChild(containerBtn)
-        }
+async function getAllPortletsTitles() {
+    let portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
+    while (!portletsTitles || portletsTitles.length <= 0) {
+        await new Promise(resolve => setTimeout(resolve, 400))
+        portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
     }
+    return portletsTitles
+}
+
+function createTogglePortlet(portletsToHidden) {
+    getAllPortletsTitles().then(portletsTitles => {
+        for (const portletTitle of portletsTitles) {
+            if (portletsToHidden.some(el => portletTitle.innerText === el)) {
+                let portletBody = (portletTitle.parentNode.parentNode).querySelector('div.portlet-body form')
+                portletBody.classList.add('hiddenPortletBody')
+    
+                let containerBtn = document.createElement('div')
+                containerBtn.className = "containerBtnShowMore"
+                let btnShowMore = document.createElement('div')
+                btnShowMore.innerText = "VOIR PLUS"
+                btnShowMore.className = "btnShowMore"
+    
+                btnShowMore.addEventListener('click', () => {
+                    portletBody.classList.toggle('hiddenPortletBody')
+                })
+    
+                containerBtn.appendChild(btnShowMore)
+                portletBody.parentNode.appendChild(containerBtn)
+            }
+        }
+    })
 }
 
 function getLocalStorage() {
@@ -477,10 +486,6 @@ function getRequestComment(event = null) {
         localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
         
         generateCopyClipboard(event)
-
-        // setTimeout(() => {
-        //     window.close()
-        // }, 300)
     } else {
         setTimeout(() => {
             getRequestComment()
