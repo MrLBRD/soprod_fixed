@@ -179,7 +179,8 @@ function changeElementsInProgressModified(itemStored, activTab) {
                 portletsToHidden = [
                     'Client',
                     'MODIFICATION CONTENU SEO',
-                    'Liste des demandes'
+                    'Liste des demandes',
+                    'TYPE MODIFICATION ET DIFFICULTÉ DE CELLE CI'
                 ]
                 createTogglePortlet(portletsToHidden)
                 break;
