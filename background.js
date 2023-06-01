@@ -10,5 +10,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {
-    if (details.previousVersion !== chrome.runtime.getManifest().version || details.reason == 'install') chrome.runtime.openOptionsPage();
+    let optionsUrl = chrome.runtime.getURL('options.html');
+    // if (details.previousVersion !== chrome.runtime.getManifest().version || details.reason == 'install') chrome.runtime.openOptionsPage();
+    if (details.reason == 'install') {
+        // L'extension a été installée
+        chrome.tabs.create({ url: optionsUrl + '?reason=install' })
+    } else if (details.previousVersion !== chrome.runtime.getManifest().version) {
+        // L'extension a été mise à jour
+        chrome.tabs.create({ url: optionsUrl + '?reason=update' })
+    }
 });

@@ -11,6 +11,11 @@ loadSettings((data) => {
     userSettings = data
 })
 
+function getLocalStorage() {
+    var pathArray = window.location.pathname.split('/');
+    return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+}
+
 function windowOnload() {
     if (userSettings) {
         const pathUrl = window.location.pathname.split('/');
@@ -27,7 +32,7 @@ function windowOnload() {
                         const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
                         if (checkModifBtn) {
                             checkModifBtn.click()
-                            getModalConfirmInfo()
+                            ConfirmModif.getModalConfirmInfo()
                         }
                     } else {
                         window.localStorage.removeItem('soprod-' + pathUrl[3])
@@ -152,10 +157,10 @@ window.onload = function () {
 };
 
 function changeElementsInProgressModified(itemStored, activTab) {
-    if (itemStored.gamme === 'PREMIUM') {
-        if (userSettings.fixViewKeywords) keywordsBetterView()
+    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS')) {
+        if (userSettings.fixViewKeywords) Keywords.keywordsBetterView()
     }
-    if (userSettings.schemaBtn) addBtnSchema()
+    if (userSettings.schemaBtn) Commentaries.addBtnSchema()
 
     if (userSettings.togglePortletBlock) {
         let portletsToHidden = null
@@ -165,7 +170,7 @@ function changeElementsInProgressModified(itemStored, activTab) {
                     'Client',
                     'TYPE DE MODIFICATION / PROACTIVITE OU DEMANDE CLIENT'
                 ]
-                createTogglePortlet(portletsToHidden)
+                Portlets.createTogglePortlet(portletsToHidden)
                 break;
             case activTab.includes('PRODUCTION MODIF GRAPH EN COURS'):
                 portletsToHidden = [
@@ -173,7 +178,7 @@ function changeElementsInProgressModified(itemStored, activTab) {
                     'MODIFICATION CONTENU SEO',
                     'TYPE MODIFICATION ET DIFFICULTÉ DE CELLE CI'
                 ]
-                createTogglePortlet(portletsToHidden)
+                Portlets.createTogglePortlet(portletsToHidden)
                 break;
             case activTab.includes('PRODUCTION MODIF CONTENU EN COURS'):
                 portletsToHidden = [
@@ -182,49 +187,372 @@ function changeElementsInProgressModified(itemStored, activTab) {
                     'Liste des demandes',
                     'TYPE MODIFICATION ET DIFFICULTÉ DE CELLE CI'
                 ]
-                createTogglePortlet(portletsToHidden)
+                Portlets.createTogglePortlet(portletsToHidden)
                 break;
         }
     }
 }
 
-async function getAllPortletsTitles() {
-    let portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
-    while (!portletsTitles || portletsTitles.length <= 0) {
-        await new Promise(resolve => setTimeout(resolve, 400))
-        portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
-    }
-    return portletsTitles
-}
-
-function createTogglePortlet(portletsToHidden) {
-    getAllPortletsTitles().then(portletsTitles => {
-        for (const portletTitle of portletsTitles) {
-            if (portletsToHidden.some(el => portletTitle.innerText === el)) {
-                let portletBody = (portletTitle.parentNode.parentNode).querySelector('div.portlet-body form')
-                portletBody.classList.add('hiddenPortletBody')
-    
-                let containerBtn = document.createElement('div')
-                containerBtn.className = "containerBtnShowMore"
-                let btnShowMore = document.createElement('div')
-                btnShowMore.innerText = "VOIR PLUS"
-                btnShowMore.className = "btnShowMore"
-    
-                btnShowMore.addEventListener('click', () => {
-                    portletBody.classList.toggle('hiddenPortletBody')
-                })
-    
-                containerBtn.appendChild(btnShowMore)
-                portletBody.parentNode.appendChild(containerBtn)
-            }
+const Portlets = {
+    async getAllPortletsTitles() {
+        let portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
+        while (!portletsTitles || portletsTitles.length <= 0) {
+            await new Promise(resolve => setTimeout(resolve, 400))
+            portletsTitles = document.querySelectorAll('div div.formGroupPortlet[id^="form_"] div.portlet-title div.caption')
         }
-    })
+        return portletsTitles
+    },
+    createTogglePortlet(portletsToHidden) {
+        this.getAllPortletsTitles().then(portletsTitles => {
+            for (const portletTitle of portletsTitles) {
+                if (portletsToHidden.some(el => portletTitle.innerText === el)) {
+                    let portletBody = (portletTitle.parentNode.parentNode).querySelector('div.portlet-body form')
+                    portletBody.classList.add('hiddenPortletBody')
+        
+                    let containerBtn = document.createElement('div')
+                    containerBtn.className = "containerBtnShowMore"
+                    let btnShowMore = document.createElement('div')
+                    btnShowMore.innerText = "VOIR PLUS"
+                    btnShowMore.className = "btnShowMore"
+        
+                    btnShowMore.addEventListener('click', () => {
+                        portletBody.classList.toggle('hiddenPortletBody')
+                    })
+        
+                    containerBtn.appendChild(btnShowMore)
+                    portletBody.parentNode.appendChild(containerBtn)
+                }
+            }
+        })
+    }
 }
 
-function getLocalStorage() {
-    var pathArray = window.location.pathname.split('/');
-    return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+const Keywords = {
+    async getAllKeywordsArea() {
+        let keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
+        while (!keywordsGroupContainers || keywordsGroupContainers.length <= 0) {
+            await new Promise(resolve => setTimeout(resolve, 400))
+            keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
+        }
+        return keywordsGroupContainers
+    },
+    keywordsBetterView() {
+        this.getAllKeywordsArea().then(keywordsGroupContainers => {
+            const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
+            if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
+            for (const keywordsGroupContainer of keywordsGroupContainers) {
+                keywordsGroupContainer.style.display = 'flex'
+                keywordsGroupContainer.style.flexDirection = 'column'
+    
+                var keywordsContainer = document.querySelector("[id^='keywordsContainer']");
+                if (keywordsContainer) {
+                    keywordsContainer.style.width = '100%'
+                }
+                var addKeywordsElement = document.querySelector("[id^='addKeywords']");
+                if (addKeywordsElement) {
+                    addKeywordsElement.style.width = 'fit-content'
+                    addKeywordsElement.style.marginTop = '16px'
+                    addKeywordsElement.style.alignSelf = 'center'
+                    addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
+                }
+            }
+        })
+    }
 }
+
+const Commentaries = {
+    schemaComments: [
+        {
+            gamme: 'premium',
+            poste: 'cdp',
+            btnsList: {
+                'sendToControl': {
+                    'text': 'Clôture schema',
+                    'class': 'btn green',
+                    'id': 'addCloseSchemaBtn',
+                    'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
+                    'height': '324px'
+                },
+                'unreachable': {
+                    'text': 'Injoignable schema',
+                    'class': 'btn yellow',
+                    'id': 'addUnreachableSchemaBtn',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                    'height': '76px'
+                },
+                'basic': {
+                    'text': 'Appel Basique schema',
+                    'class': 'btn blue',
+                    'id': 'addBasicSchemaBtn',
+                    'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+                    'height': '114px'
+                },
+                'sendViewLink': {
+                    'text': 'Envoi lien',
+                    'class': 'btn purple',
+                    'id' : 'addSendViewLinkSchemaBtn',
+                    'message': 'Envoi lien de prévisualisation',
+                    'height': '36px'
+                }
+            },
+        }, {
+            gamme: 'privilege',
+            poste: 'graph',
+            btnsList: {
+                'sendToControl': {
+                    'text': 'Clôture schema',
+                    'class': 'btn green',
+                    'id': 'addCloseSchemaBtn',
+                    'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\nNote SoOptimo : XX > XX\r\n\r\nModif Graph faite - Envoi en contrôle final',
+                    'height': '292px'
+                },
+                'unreachable': {
+                    'text': 'Injoignable schema',
+                    'class': 'btn yellow',
+                    'id': 'addUnreachableSchemaBtn',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                    'height': '76px'
+                },
+                'basic': {
+                    'text': 'Appel Basique schema',
+                    'class': 'btn blue',
+                    'id': 'addBasicSchemaBtn',
+                    'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+                    'height': '114px'
+                },
+                'sendViewLink': {
+                    'text': 'Envoi lien',
+                    'class': 'btn purple',
+                    'id' : 'addSendViewLinkSchemaBtn',
+                    'message': 'Envoi lien de prévisualisation',
+                    'height': '36px'
+                }
+            },
+        }
+    ],
+    async getAllCommentsArea() {
+        let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
+        while (!commentsAreaDivs || commentsAreaDivs.length <= 0) {
+            await new Promise(resolve => setTimeout(resolve, 400))
+            commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
+        }
+        return commentsAreaDivs
+    },
+    addBtnSchema() {
+        var pathArray = window.location.pathname.split('/');
+        let idPath = pathArray.reverse()[0]
+        let idInfos = getLocalStorage()
+    
+        this.getAllCommentsArea().then(commentsAreaDivs => {
+            commentsAreaDivs.forEach((commentsAreaDiv) => {
+                let portletBody = commentsAreaDiv.querySelector('.portlet-body.chats')
+    
+                let addCommentMessage = document.querySelector('.form-control.addCommentMessage')
+    
+                if (portletBody) {
+                    const containersBtns = portletBody.querySelectorAll('.ext--btns-container')
+                    if (containersBtns.length === 0) {
+                        let newBtnsContainer = document.createElement('div')
+                        newBtnsContainer.className = 'ext--btns-container'
+    
+                        let btnsListToUse = this.schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
+    
+                        for (const [key, value] of Object.entries(btnsListToUse)) {
+                            // Création d'une nouvelle div avec la classe 'btn'
+                            var newBtnDiv = document.createElement('div')
+                            newBtnDiv.className = value.class
+                            newBtnDiv.id = value.id
+    
+                            // Ajout du texte 'Add text' à la nouvelle div
+                            var textNode = document.createTextNode(value.text)
+                            newBtnDiv.appendChild(textNode)
+    
+                            newBtnDiv.addEventListener('click', () => {
+                                if (addCommentMessage.value == '') {
+                                    let rqtInfos = getLocalStorage()
+                                    if (value.id === 'addUnreachableSchemaBtn') {
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + this.howNextDayToCall()
+                                    } else {
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
+                                    }
+                                    addCommentMessage.style.height = value.height
+                                }
+                            })
+    
+                            // Ajout de la nouvelle div à l'intérieur de la div 'portletBody'
+                            newBtnsContainer.appendChild(newBtnDiv)
+                        }
+    
+                        if (idInfos.lastComment.text) {
+                            var newBtnDiv = document.createElement('div');
+                            newBtnDiv.className = 'btn btn-outline icon-custombtn';
+                            newBtnDiv.id = 'getAddStoredMessage';
+                            newBtnDiv.title = "Récupérer le mesage que vous étiez en train d'écrire."
+                            newBtnDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M280 64h40c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128C0 92.7 28.7 64 64 64h40 9.6C121 27.5 153.3 0 192 0s71 27.5 78.4 64H280zM64 112c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320c8.8 0 16-7.2 16-16V128c0-8.8-7.2-16-16-16H304v24c0 13.3-10.7 24-24 24H192 104c-13.3 0-24-10.7-24-24V112H64zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>'
+    
+                            newBtnDiv.addEventListener('click', () => {
+                                if (addCommentMessage.value == '') {
+                                    addCommentMessage.value = idInfos.lastComment.text
+                                    addCommentMessage.style.height = idInfos.lastComment.height
+                                }
+                            })
+    
+                            newBtnsContainer.appendChild(newBtnDiv);
+                        }
+    
+                        portletBody.appendChild(newBtnsContainer)
+    
+                        let keysActiv = {
+                            'Enter': false,
+                            'Control': false
+                        }
+    
+                        addCommentMessage.addEventListener("keydown", (e) => {
+                            if (!e.repeat) {
+                                if (e.key == 'Enter' || e.key == 'Control') {
+                                    keysActiv[e.key] = true
+                                    if (keysActiv.Enter && keysActiv.Control) {
+                                        idInfos.lastComment.text = addCommentMessage.value
+                                        idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                        localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                                        let sendMessage = document.querySelector('.btn.addComment')
+                                        sendMessage.click()
+                                    }
+                                }
+                            }
+                        });
+                        addCommentMessage.addEventListener("keyup", (e) => {
+                            if (e.key == 'Enter' || e.key == 'Control') {
+                                keysActiv[e.key] = false
+                            }
+                        });
+                        let storage = ''
+                        addCommentMessage.addEventListener("input", (e) => {
+                            if ((addCommentMessage.value).length - storage.length > 5 || (addCommentMessage.value).length - storage.length < -5) {
+                                idInfos.lastComment.text = addCommentMessage.value
+                                idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                            }
+                        });
+                        addCommentMessage.addEventListener("focusout", (e) => {
+                            if (addCommentMessage.value !== '') {
+                                idInfos.lastComment.text = addCommentMessage.value
+                                idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                            }
+                        });
+                    } else {
+                        if (containersBtns.length > 1) {
+                            containersBtns.forEach((el, id) => {
+                                console.log(id, el)
+                                // el.parentNode.removeChild(el)
+                            })
+                        }
+                    }
+                }
+            })
+        })
+    },
+    howNextDayToCall() {
+        let idInfos = getLocalStorage()
+        let choosenDate = new Date()
+        let dayDelay
+        switch (idInfos.qualif) {
+            case 'afterRdvModif':
+            case 'encours':
+                dayDelay = 1
+                break;
+            case 'relaunchModif':
+            case 'lastRelaunchModif':
+            case 'rdvModif':
+                dayDelay = 2
+                break;
+        }
+        let newDate = this.AddDaTor.calcul(choosenDate, dayDelay);
+        return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+    },
+    AddDaTor: {
+        calcul(choosenDate, jours) {
+            var date = choosenDate.getTime(),
+                now = new Date(),
+                feries = this.joursFeries(choosenDate.getFullYear()),
+                i = 1,
+                cpt = 0,
+                tmp;
+            while (cpt < jours) {
+                tmp = new Date(date + i * 24 * 60 * 60 * 1000);
+                var day = tmp.getDay();
+                if (day != 0) { // dimanche
+                    // jours ferié
+                    var found = false;
+                    for (var f = feries.length - 1; f >= 0; f--) {
+                        if (
+                            parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
+                            && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
+                            && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
+                        ) {
+                            found = true;
+                        }
+                    };
+                    if (!found) {
+                        cpt++;
+                    }
+                }
+                i++;
+            };
+            // S'assurer que la date retournée est un jour ouvrable (hors samedi)
+            var isWorkingDay;
+            do {
+                isWorkingDay = true;
+                if (tmp.getDay() === 6 || tmp.getDay() === 0) { // Si c'est un samedi
+                    tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le samedi
+                    isWorkingDay = false;
+                } else {
+                    for (var f = feries.length - 1; f >= 0; f--) {
+                        if (
+                            parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
+                            && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
+                            && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
+                        ) {
+                            tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le jour férié
+                            isWorkingDay = false;
+                            break;
+                        }
+                    }
+                }
+            } while (!isWorkingDay);
+    
+            return tmp;
+        },
+        joursFeries(an) {
+            var JourAn = new Date(an, "00", "01"),
+                FeteTravail = new Date(an, "04", "01"),
+                Victoire1945 = new Date(an, "04", "08"),
+                FeteNationale = new Date(an, "06", "14"),
+                Assomption = new Date(an, "07", "15"),
+                Toussaint = new Date(an, "10", "01"),
+                Armistice = new Date(an, "10", "11"),
+                Noel = new Date(an, "11", "25"),
+                SaintEtienne = new Date(an, "11", "26"),
+                G = an % 19,
+                C = Math.floor(an / 100),
+                H = (C - Math.floor(C / 4) - Math.floor((8 * C + 13) / 25) + 19 * G + 15) % 30,
+                I = H - Math.floor(H / 28) * (1 - Math.floor(H / 28) * Math.floor(29 / (H + 1)) * Math.floor((21 - G) / 11)),
+                J = (an * 1 + Math.floor(an / 4) + I + 2 - C + Math.floor(C / 4)) % 7,
+                L = I - J,
+                MoisPaques = 3 + Math.floor((L + 40) / 44),
+                JourPaques = L + 28 - 31 * Math.floor(MoisPaques / 4),
+                Paques = new Date(an, MoisPaques - 1, JourPaques),
+                VendrediSaint = new Date(an, MoisPaques - 1, JourPaques - 2),
+                LundiPaques = new Date(an, MoisPaques - 1, JourPaques + 1),
+                Ascension = new Date(an, MoisPaques - 1, JourPaques + 39),
+                Pentecote = new Date(an, MoisPaques - 1, JourPaques + 49),
+                LundiPentecote = new Date(an, MoisPaques - 1, JourPaques + 50);
+            return [JourAn, VendrediSaint, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel, SaintEtienne];
+        }
+    }
+}
+
 
 function clearLocalStorage() {
     console.log(localStorage)
@@ -245,38 +573,6 @@ function clearLocalStorage() {
         }
     }
     Alerts.displayAlert('success', 'Localstorage analysé avec succés. Les données sont à jour.')
-}
-
-async function getAllKeywordsArea() {
-    let keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
-    while (!keywordsGroupContainers || keywordsGroupContainers.length <= 0) {
-        await new Promise(resolve => setTimeout(resolve, 400))
-        keywordsGroupContainers = document.querySelectorAll('form[id^="formGroupKeywords"] div.KeywordsFormGroup')
-    }
-    return keywordsGroupContainers
-}
-
-function keywordsBetterView() {
-    getAllKeywordsArea().then(keywordsGroupContainers => {
-        const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
-        if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
-        for (const keywordsGroupContainer of keywordsGroupContainers) {
-            keywordsGroupContainer.style.display = 'flex'
-            keywordsGroupContainer.style.flexDirection = 'column'
-
-            var keywordsContainer = document.querySelector("[id^='keywordsContainer']");
-            if (keywordsContainer) {
-                keywordsContainer.style.width = '100%'
-            }
-            var addKeywordsElement = document.querySelector("[id^='addKeywords']");
-            if (addKeywordsElement) {
-                addKeywordsElement.style.width = 'fit-content'
-                addKeywordsElement.style.marginTop = '16px'
-                addKeywordsElement.style.alignSelf = 'center'
-                addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
-            }
-        }
-    })
 }
 
 var styles = [
@@ -337,65 +633,57 @@ function addStyle(styles) {
     })
 }
 
-async function getConfirmModal() {
-    let confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
-    while (!confirmModal) {
-        await new Promise(resolve => setTimeout(resolve, 300))
-        confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
-    }
-    while (confirmModal.querySelector('div.modal-body > div.bootbox-body').innerText !== 'La fiche sera qualifié en « CHECK MODIF TRAITEE OK »') {
-        await new Promise(resolve => setTimeout(resolve, 200))
-        confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
-    }
-    return confirmModal
-}
-
-function displayConfirmOkModal(lastComment) {
-    let newDiv = document.createElement('div')
-    newDiv.className = "modifOk-comment"
-    newDiv.appendChild(lastComment.cloneNode(true))
-    setTimeout(() => {
-        const pathUrl = window.location.pathname.split('/');
-        getConfirmModal().then(confirmModal => {
-            const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
-            bodyConfirmModal.appendChild(newDiv)
-            const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
-            okBtnConfirmModal.addEventListener('click', () => {
-                window.localStorage.removeItem('soprod-' + pathUrl[3])
-                window.location.replace(
-                    "https://soprod.solocalms.fr/Operator/Dashboard"
-                );
-            })
-        })
-    }, 500)
-}
-
-function getAllComments() {
-    let lastAllComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]
-    if (lastAllComments) {
-        return lastAllComments
-    } else {
-        setTimeout(() => {
-            getAllComments()
-        }, 300)
-    }
-}
-
-function getModalConfirmInfo() {
-    let lastAllComments = getAllComments()
-    if (lastAllComments) {
-        let lastComment = lastAllComments.querySelector('div')
-        if (lastComment) {
-            displayConfirmOkModal(lastComment)
-        } else {
-            setTimeout(() => {
-                getModalConfirmInfo()
-            }, 300)
+const ConfirmModif = {
+    async getConfirmModal() {
+        let confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
+        while (!confirmModal) {
+            await new Promise(resolve => setTimeout(resolve, 300))
+            confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
         }
-    } else {
+        while (confirmModal.querySelector('div.modal-body > div.bootbox-body').innerText !== 'La fiche sera qualifié en « CHECK MODIF TRAITEE OK »') {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            confirmModal = document.querySelector('body > div.bootbox.modal.fade.bootbox-preview.in > div.modal-dialog > div.modal-content')
+        }
+        return confirmModal
+    },
+    displayConfirmOkModal(lastComment) {
+        let newDiv = document.createElement('div')
+        newDiv.className = "modifOk-comment"
+        newDiv.appendChild(lastComment.cloneNode(true))
         setTimeout(() => {
-            getModalConfirmInfo()
-        }, 300)
+            const pathUrl = window.location.pathname.split('/');
+            this.getConfirmModal().then(confirmModal => {
+                const bodyConfirmModal = confirmModal.querySelector('div.modal-body')
+                bodyConfirmModal.appendChild(newDiv)
+                const okBtnConfirmModal = confirmModal.querySelector('div.modal-footer button.btn[type="button"][data-bb-handler="Ok"]')
+                okBtnConfirmModal.addEventListener('click', () => {
+                    window.localStorage.removeItem('soprod-' + pathUrl[3])
+                    window.location.replace(
+                        "https://soprod.solocalms.fr/Operator/Dashboard"
+                    );
+                })
+            })
+        }, 500)
+    },
+    async getAllComments() {
+        let lastAllComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]
+        while (!lastAllComments) {
+            await new Promise(resolve => setTimeout(resolve, 300))
+            lastAllComments = document.querySelectorAll("div.commentsAreaDiv[id^='comments'] div.portlet-body>div.getComments>div.row ul.chats>li.in")[0]
+        }
+        return lastAllComments
+    },
+    getModalConfirmInfo() {
+        this.getAllComments().then(lastAllComments => {
+            let lastComment = lastAllComments.querySelector('div')
+            if (lastComment) {
+                this.displayConfirmOkModal(lastComment)
+            } else {
+                setTimeout(() => {
+                    this.getModalConfirmInfo()
+                }, 300)
+            }
+        })
     }
 }
 
@@ -530,305 +818,6 @@ function openCustomerRelationTab(event = null) {
             // Lancement de l'observation
             observer.observe(pageContainer, config);
         }
-    })
-}
-
-var AddDaTor = {
-    calcul: function (choosenDate, jours) {
-        var date = choosenDate.getTime(),
-            now = new Date(),
-            feries = AddDaTor.joursFeries(choosenDate.getFullYear()),
-            i = 1,
-            cpt = 0,
-            tmp;
-        while (cpt < jours) {
-            tmp = new Date(date + i * 24 * 60 * 60 * 1000);
-            var day = tmp.getDay();
-            if (day != 0) { // dimanche
-                // jours ferié
-                var found = false;
-                for (var f = feries.length - 1; f >= 0; f--) {
-                    if (
-                        parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
-                        && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
-                        && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
-                    ) {
-                        found = true;
-                    }
-                };
-                if (!found) {
-                    cpt++;
-                }
-            }
-            i++;
-        };
-        // S'assurer que la date retournée est un jour ouvrable (hors samedi)
-        var isWorkingDay;
-        do {
-            isWorkingDay = true;
-            if (tmp.getDay() === 6 || tmp.getDay() === 0) { // Si c'est un samedi
-                tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le samedi
-                isWorkingDay = false;
-            } else {
-                for (var f = feries.length - 1; f >= 0; f--) {
-                    if (
-                        parseInt(feries[f].getDate()) == parseInt(tmp.getDate())
-                        && parseInt(feries[f].getMonth()) == parseInt(tmp.getMonth())
-                        && parseInt(feries[f].getFullYear()) == parseInt(tmp.getFullYear())
-                    ) {
-                        tmp.setDate(tmp.getDate() + 1); // Ajouter un jour supplémentaire pour éviter le jour férié
-                        isWorkingDay = false;
-                        break;
-                    }
-                }
-            }
-        } while (!isWorkingDay);
-
-        return tmp;
-    },
-
-    joursFeries: function (an) {
-        var JourAn = new Date(an, "00", "01"),
-            FeteTravail = new Date(an, "04", "01"),
-            Victoire1945 = new Date(an, "04", "08"),
-            FeteNationale = new Date(an, "06", "14"),
-            Assomption = new Date(an, "07", "15"),
-            Toussaint = new Date(an, "10", "01"),
-            Armistice = new Date(an, "10", "11"),
-            Noel = new Date(an, "11", "25"),
-            SaintEtienne = new Date(an, "11", "26"),
-            G = an % 19,
-            C = Math.floor(an / 100),
-            H = (C - Math.floor(C / 4) - Math.floor((8 * C + 13) / 25) + 19 * G + 15) % 30,
-            I = H - Math.floor(H / 28) * (1 - Math.floor(H / 28) * Math.floor(29 / (H + 1)) * Math.floor((21 - G) / 11)),
-            J = (an * 1 + Math.floor(an / 4) + I + 2 - C + Math.floor(C / 4)) % 7,
-            L = I - J,
-            MoisPaques = 3 + Math.floor((L + 40) / 44),
-            JourPaques = L + 28 - 31 * Math.floor(MoisPaques / 4),
-            Paques = new Date(an, MoisPaques - 1, JourPaques),
-            VendrediSaint = new Date(an, MoisPaques - 1, JourPaques - 2),
-            LundiPaques = new Date(an, MoisPaques - 1, JourPaques + 1),
-            Ascension = new Date(an, MoisPaques - 1, JourPaques + 39),
-            Pentecote = new Date(an, MoisPaques - 1, JourPaques + 49),
-            LundiPentecote = new Date(an, MoisPaques - 1, JourPaques + 50);
-        return [JourAn, VendrediSaint, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel, SaintEtienne];
-    }
-}
-
-const schemaComments = [
-    {
-        gamme: 'premium',
-        poste: 'cdp',
-        btnsList: {
-            'sendToControl': {
-                'text': 'Clôture schema',
-                'class': 'btn green',
-                'id': 'addCloseSchemaBtn',
-                'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\n- Envoi en contrôle final',
-                'height': '324px'
-            },
-            'unreachable': {
-                'text': 'Injoignable schema',
-                'class': 'btn yellow',
-                'id': 'addUnreachableSchemaBtn',
-                'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
-                'height': '76px'
-            },
-            'basic': {
-                'text': 'Appel Basique schema',
-                'class': 'btn blue',
-                'id': 'addBasicSchemaBtn',
-                'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
-                'height': '114px'
-            },
-            'sendViewLink': {
-                'text': 'Envoi lien',
-                'class': 'btn purple',
-                'id' : 'addSendViewLinkSchemaBtn',
-                'message': 'Envoi lien de prévisualisation',
-                'height': '36px'
-            }
-        },
-    }, {
-        gamme: 'privilege',
-        poste: 'graph',
-        btnsList: {
-            'sendToControl': {
-                'text': 'Clôture schema',
-                'class': 'btn green',
-                'id': 'addCloseSchemaBtn',
-                'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\nNote SoOptimo : XX > XX\r\n\r\nModif Graph faite - Envoi en contrôle final',
-                'height': '292px'
-            },
-            'unreachable': {
-                'text': 'Injoignable schema',
-                'class': 'btn yellow',
-                'id': 'addUnreachableSchemaBtn',
-                'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
-                'height': '76px'
-            },
-            'basic': {
-                'text': 'Appel Basique schema',
-                'class': 'btn blue',
-                'id': 'addBasicSchemaBtn',
-                'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
-                'height': '114px'
-            },
-            'sendViewLink': {
-                'text': 'Envoi lien',
-                'class': 'btn purple',
-                'id' : 'addSendViewLinkSchemaBtn',
-                'message': 'Envoi lien de prévisualisation',
-                'height': '36px'
-            }
-        },
-    }
-]
-
-function howNextDayToCall() {
-    let idInfos = getLocalStorage()
-    let choosenDate = new Date()
-    let dayDelay
-    switch (idInfos.qualif) {
-        case 'afterRdvModif':
-        case 'encours':
-            dayDelay = 1
-            break;
-        case 'relaunchModif':
-        case 'lastRelaunchModif':
-        case 'rdvModif':
-            dayDelay = 2
-            break;
-    }
-    let newDate = AddDaTor.calcul(choosenDate, dayDelay);
-    return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
-}
-
-async function getAllCommentsArea() {
-    let commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
-    while (!commentsAreaDivs || commentsAreaDivs.length <= 0) {
-        await new Promise(resolve => setTimeout(resolve, 400))
-        commentsAreaDivs = document.querySelectorAll('.portlet.box.commentsAreaDiv')
-    }
-    return commentsAreaDivs
-}
-
-function addBtnSchema() {
-    var pathArray = window.location.pathname.split('/');
-    let idPath = pathArray.reverse()[0]
-    let idInfos = getLocalStorage()
-
-    getAllCommentsArea().then(commentsAreaDivs => {
-        commentsAreaDivs.forEach((commentsAreaDiv) => {
-            let portletBody = commentsAreaDiv.querySelector('.portlet-body.chats')
-
-            let addCommentMessage = document.querySelector('.form-control.addCommentMessage')
-
-            if (portletBody) {
-                const containersBtns = portletBody.querySelectorAll('.ext--btns-container')
-                if (containersBtns.length === 0) {
-                    let newBtnsContainer = document.createElement('div')
-                    newBtnsContainer.className = 'ext--btns-container'
-
-                    console.log(userSettings.userJob)
-
-                    let btnsListToUse = schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
-                    console.log(btnsListToUse)
-
-                    for (const [key, value] of Object.entries(btnsListToUse)) {
-                        // Création d'une nouvelle div avec la classe 'btn'
-                        var newBtnDiv = document.createElement('div')
-                        newBtnDiv.className = value.class
-                        newBtnDiv.id = value.id
-
-                        // Ajout du texte 'Add text' à la nouvelle div
-                        var textNode = document.createTextNode(value.text)
-                        newBtnDiv.appendChild(textNode)
-
-                        newBtnDiv.addEventListener('click', () => {
-                            if (addCommentMessage.value == '') {
-                                let rqtInfos = getLocalStorage()
-                                if (value.id === 'addUnreachableSchemaBtn') {
-                                    addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
-                                } else {
-                                    addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
-                                }
-                                addCommentMessage.style.height = value.height
-                            }
-                        })
-
-                        // Ajout de la nouvelle div à l'intérieur de la div 'portletBody'
-                        newBtnsContainer.appendChild(newBtnDiv)
-                    }
-
-                    if (idInfos.lastComment.text) {
-                        var newBtnDiv = document.createElement('div');
-                        newBtnDiv.className = 'btn btn-outline icon-custombtn';
-                        newBtnDiv.id = 'getAddStoredMessage';
-                        newBtnDiv.title = "Récupérer le mesage que vous étiez en train d'écrire."
-                        newBtnDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M280 64h40c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128C0 92.7 28.7 64 64 64h40 9.6C121 27.5 153.3 0 192 0s71 27.5 78.4 64H280zM64 112c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320c8.8 0 16-7.2 16-16V128c0-8.8-7.2-16-16-16H304v24c0 13.3-10.7 24-24 24H192 104c-13.3 0-24-10.7-24-24V112H64zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>'
-
-                        newBtnDiv.addEventListener('click', () => {
-                            if (addCommentMessage.value == '') {
-                                addCommentMessage.value = idInfos.lastComment.text
-                                addCommentMessage.style.height = idInfos.lastComment.height
-                            }
-                        })
-
-                        newBtnsContainer.appendChild(newBtnDiv);
-                    }
-
-                    portletBody.appendChild(newBtnsContainer)
-
-                    let keysActiv = {
-                        'Enter': false,
-                        'Control': false
-                    }
-
-                    addCommentMessage.addEventListener("keydown", (e) => {
-                        if (!e.repeat) {
-                            if (e.key == 'Enter' || e.key == 'Control') {
-                                keysActiv[e.key] = true
-                                if (keysActiv.Enter && keysActiv.Control) {
-                                    idInfos.lastComment.text = addCommentMessage.value
-                                    idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                    localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
-                                    let sendMessage = document.querySelector('.btn.addComment')
-                                    sendMessage.click()
-                                }
-                            }
-                        }
-                    });
-                    addCommentMessage.addEventListener("keyup", (e) => {
-                        if (e.key == 'Enter' || e.key == 'Control') {
-                            keysActiv[e.key] = false
-                        }
-                    });
-                    let storage = ''
-                    addCommentMessage.addEventListener("input", (e) => {
-                        if ((addCommentMessage.value).length - storage.length > 5 || (addCommentMessage.value).length - storage.length < -5) {
-                            idInfos.lastComment.text = addCommentMessage.value
-                            idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                            localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
-                        }
-                    });
-                    addCommentMessage.addEventListener("focusout", (e) => {
-                        if (addCommentMessage.value !== '') {
-                            idInfos.lastComment.text = addCommentMessage.value
-                            idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                            localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
-                        }
-                    });
-                } else {
-                    if (containersBtns.length > 1) {
-                        containersBtns.forEach((el, id) => {
-                            console.log(id, el)
-                            // el.parentNode.removeChild(el)
-                        })
-                    }
-                }
-            }
-        })
     })
 }
 
@@ -1675,7 +1664,10 @@ const calendarObserver = {
 function addCommentAuto() {
     let rqtInfos = getLocalStorage()
     const textArea = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.input-cont > textarea.addCommentMessage")
-    textArea.value = (btnsList.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + howNextDayToCall()
+    
+    let btnsListToUse = Commentaries.schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
+    
+    textArea.value = (btnsListToUse.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + Commentaries.howNextDayToCall()
     let sendMessage = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.btn-cont a.btn.addComment")
     sendMessage.click()
     setTimeout(() => {

@@ -247,16 +247,26 @@ function displaySettings(settings) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log('loaded')
     loadSettings((settings) => {
         activeSettings = settings
         displaySettings(settings);
     });
 
 
+
+    let params = new URLSearchParams(window.location.search);
+    let installReason = params.get('reason');
+    if (installReason === 'install') {
+        // Afficher un message pour une installation
+    } else if (installReason === 'update') {
+        // Afficher un message pour une mise à jour
+    }
+
+    
+    const debugDisplay = document.getElementById("debugOptions")
+    
     const saveSettings = document.getElementById("saveSettingsChange")
     const imgageBeeContainer = saveSettings.querySelector('#imageBee > img')
-    const debugDisplay = document.getElementById("debugOptions")
 
     saveSettings.addEventListener('click', (event) => {
         event.preventDefault()
