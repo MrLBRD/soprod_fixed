@@ -16,6 +16,11 @@ function getLocalStorage() {
     return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
 }
 
+async function setLocalStorage(rqtId, value) {
+    window.localStorage.setItem('soprod-' + rqtId, JSON.stringify(value));
+    return true
+}
+
 function windowOnload() {
     if (userSettings) {
         const pathUrl = window.location.pathname.split('/');
@@ -126,13 +131,13 @@ function windowOnload() {
             
             addBeeBadge('dashboard')
 
-            let filterDashboard = getFilterOfDashboard()
-
-            if (filterDashboard === "À moi") {
-                listenContainerRequestsTable()
-
-                clearLocalStorage()
-            }
+            Dashboard.getFilterOfDashboard().then(filterDashboard => {
+                if (filterDashboard === "À moi") {
+                    Dashboard.listenContainerRequestsTable()
+    
+                    clearLocalStorage()
+                }
+            })
 
         } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
             // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
@@ -236,25 +241,96 @@ const Keywords = {
         }
         return keywordsGroupContainers
     },
+    async getAllKeywordsRows(keywordsGroupContainer) {
+        let keywordsRow = keywordsGroupContainer.querySelectorAll("div.input-group:not(.hidden)")
+        while (!keywordsRow || keywordsRow.length <= 0) {
+            await new Promise(resolve => setTimeout(resolve, 400))
+            keywordsRow = keywordsGroupContainer.querySelectorAll("div.input-group:not(.hidden)")
+        }
+        return keywordsRow
+    },
     keywordsBetterView() {
         this.getAllKeywordsArea().then(keywordsGroupContainers => {
+            let rqtLocalStorage = getLocalStorage()
             const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
             if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
+
             for (const keywordsGroupContainer of keywordsGroupContainers) {
-                keywordsGroupContainer.style.display = 'flex'
-                keywordsGroupContainer.style.flexDirection = 'column'
-    
-                var keywordsContainer = document.querySelector("[id^='keywordsContainer']");
-                if (keywordsContainer) {
-                    keywordsContainer.style.width = '100%'
+                this.getAllKeywordsRows(keywordsGroupContainer).then(keywordsRows => {
+                    for (const keywordRow of keywordsRows) {
+                        let keywordInput = keywordRow.querySelector('input.form-control.keywords')
+
+                        let startX
+                        let isResizing = false
+
+                        keywordInput.addEventListener('mousemove', (event) => {
+                            const rect = keywordInput.getBoundingClientRect()
+                            const isNearEdge = event.clientX > rect.right - 10
+                            keywordInput.style.cursor = isNearEdge ? 'ew-resize' : ''
+                            isNearEdge ? keywordsGroupContainer.classList.add('hover-resize') : keywordsGroupContainer.classList.remove('hover-resize')
+                        })
+                        
+                        keywordInput.addEventListener('mouseleave', () => {
+                            keywordsGroupContainer.classList.remove('hover-resize')
+                        })
+
+                        keywordInput.addEventListener('mousedown', (event) => {
+                            const rect = keywordInput.getBoundingClientRect()
+                            const isNearEdge = event.clientX > rect.right - 10
+
+                            if (isNearEdge) {
+                                isResizing = true
+                                startX = event.clientX
+                            }
+                        })
+
+                        document.addEventListener('mousemove', (event) => {
+                            if (!isResizing) return
+
+                            const dx = event.clientX - startX
+
+                            const newWidth = `${keywordInput.offsetWidth + dx}px`
+
+                            let styleElement = document.getElementById('inputKeywords-style')
+                            if (!styleElement) {
+                                styleElement = document.createElement('style')
+                                styleElement.id = 'inputKeywords-style'
+                                document.head.appendChild(styleElement)
+                            }
+                            styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${newWidth}; }`
+                            
+                            startX = event.clientX
+                        })
+
+                        document.addEventListener('mouseup', () => {
+                            isResizing = false
+                            rqtLocalStorage.modifier.inputKeywordsWidth = keywordInput.offsetWidth / keywordRow.offsetWidth * 100
+                            console.log(rqtLocalStorage.modifier.inputKeywordsWidth)
+
+                            const pathUrl = window.location.pathname.split('/');
+                            setLocalStorage(pathUrl[3], rqtLocalStorage).then(() => {
+                                let styleElement = document.getElementById('inputKeywords-style')
+                                if (!styleElement) {
+                                    styleElement = document.createElement('style')
+                                    styleElement.id = 'inputKeywords-style'
+                                    document.head.appendChild(styleElement)
+                                }
+                                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${rqtLocalStorage.modifier.inputKeywordsWidth}%; }`
+                            })
+                        })
+                    }
+                })
+            }
+
+            // ici si j'ai déjà une valeur enregistré alors on l'appliquera
+            if (rqtLocalStorage.modifier.inputKeywordsWidth) {
+                let styleElement = document.getElementById('inputKeywords-style')
+                if (!styleElement) {
+                    styleElement = document.createElement('style')
+                    styleElement.id = 'inputKeywords-style'
+                    document.head.appendChild(styleElement)
                 }
-                var addKeywordsElement = document.querySelector("[id^='addKeywords']");
-                if (addKeywordsElement) {
-                    addKeywordsElement.style.width = 'fit-content'
-                    addKeywordsElement.style.marginTop = '16px'
-                    addKeywordsElement.style.alignSelf = 'center'
-                    addKeywordsElement.innerHTML = '<span class="fa fa-plus"></span> Ajouter un mot-clé'
-                }
+                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${rqtLocalStorage.modifier.inputKeywordsWidth}%; }`
             }
         })
     }
@@ -612,6 +688,10 @@ var styles = [
         modif: 'togglePortlet',
         configurable: false,
         css: 'form.hiddenPortletBody { display: none; } .containerBtnShowMore { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 50px; } .btnShowMore { width: fit-content; padding: 8px 16px; background-color: rgba(85, 107, 47, .8); display: flex; align-content: center; justify-content: center; color: whitesmoke; font-size: 16px; font-family: "Space Grotesk"; border-radius: 4px !important; cursor: pointer; }'
+    }, {
+        modif: 'keywordsArea',
+        configurable: false,
+        css: '.KeywordsFormGroup.form-group .input-group { display: flex; } .input-group .input-group-btn { width: 36px; } .DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.localities { width: auto; flex-grow: 1; align-items: stretch; } .DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { min-width: 128px; } div.KeywordsFormGroup.hover-resize .input-group input.keywords.form-control { border-right: 4px double #49476b; }',
     }
 ];
 
@@ -915,10 +995,6 @@ function addClock() {
     }
 }
 
-//for test https://soprod.solocalms.fr/Consultation/Record/296804
-
-let lastDetection = true
-
 function qualifInfo(qualCell, trTarget, qualInfo) {
     if (qualInfo === "notStarted" && qualCell.innerText !== "MODIFICATION TRAITEE") {
         if (userSettings.customDashboard) trTarget.style.border = "solid #EC2B3B"
@@ -969,6 +1045,7 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
                 return 'controlInProgress'
             case 'RETOUR EN MODIFICATION':
             case 'RETOUR EN MODIF GRAPHIQUE':
+            case 'RETOUR EN MODIF CONTENU':
                 if (userSettings.customDashboard) trTarget.style.border = 'solid #9f65eb'
                 return 'modifReturn'
             default:
@@ -977,9 +1054,101 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
     }
 }
 
-function changeEventTagDashboard() {
-    if (lastDetection) {
-        lastDetection = false
+const Dashboard = {
+    async getFilterOfDashboard() {
+        let elementOfList = document.querySelectorAll("div.recordsPortlet div.portlet div.portlet-body div.divFilterOthers > div > ul > li")
+        while (!elementOfList || elementOfList.length <= 0) {
+            await new Promise(resolve => setTimeout(resolve, 400))
+            elementOfList = document.querySelectorAll("div.recordsPortlet div.portlet div.portlet-body div.divFilterOthers > div > ul > li")
+        }
+        return elementOfList[0].innerText
+    },
+    async getQueryContainerTableRequests() {
+        let containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
+        while (!containerTableRqts) {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
+        }
+        containerTableRqts.addEventListener('click', () => {
+            let menu = document.querySelector("div#context-menu");
+            menu.classList.toggle("active");
+        })
+        return containerTableRqts
+    },
+    listenContainerRequestsTable() {
+        this.getQueryContainerTableRequests().then(containerTableRqts => {
+            let finishLoadTimeout;
+        
+            const containerTabRqtsFinishLoad = () => {
+                if (finishLoadTimeout) {
+                    clearTimeout(finishLoadTimeout);
+                }
+                finishLoadTimeout = setTimeout(() => {
+                    this.checkTableRequests()
+                }, 500);
+            };
+        
+            var observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        containerTabRqtsFinishLoad()
+                    }
+                });
+            });
+        
+            // Configuration de l'observation
+            var config = {
+                attributes: true,
+                childList: true,
+                subtree: true,
+            };
+        
+            // Lancement de l'observation
+            observer.observe(containerTableRqts, config);
+        })
+    },
+    async getQueryTableRequests() {
+        let tableRqtContainer =  document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+        while (!tableRqtContainer) {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            tableRqtContainer =  document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+        }
+        return tableRqtContainer
+    },
+    checkTableRequests() {
+        if (userSettings.customDashboard) {
+            this.addRefreshCustomTableRequests()
+        }
+
+        this.getQueryTableRequests().then(tableRqtContainer => {
+            let finishLoadTimeout;
+    
+            const tableRqtsFinishLoad = () => {
+                if (finishLoadTimeout) {
+                    clearTimeout(finishLoadTimeout);
+                }
+                finishLoadTimeout = setTimeout(() => {
+                    this.changeEventTagDashboard()
+                }, 500);
+            };
+        
+            var observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        tableRqtsFinishLoad()
+                    }
+                });
+            });
+            var config = {
+                attributes: true,
+                childList: true,
+                subtree: true,
+            };
+
+            observer.observe(tableRqtContainer, config)
+        })
+    },
+    changeEventTagDashboard() {
         const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
 
         const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
@@ -1007,6 +1176,9 @@ function changeEventTagDashboard() {
                     comment: itemStored ? itemStored.request ? itemStored.request.comment ? itemStored.request.comment : null : null : null
                 },
                 contact: itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client',
+                modifier: {
+                    inputKeywordsWidth: itemStored ? itemStored.modifier ? itemStored.modifier.inputKeywordsWidth ? itemStored.modifier.inputKeywordsWidth : null : null : null,
+                },
                 lastDate: new Date()
             }
             localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
@@ -1015,140 +1187,31 @@ function changeEventTagDashboard() {
                 addListenerDisplayContextMenu(event)
             })
         })
-
-        setTimeout(() => {
-            lastDetection = true
-        }, 5000);
-    }
-}
-
-function addRefreshCustomTableRequests() {
-    const topBarTableRqtsContainer = document.querySelector('div.page-content-wrapper>div.page-content div.recordsPortlet div.portlet.box>div.portlet-title')
-    if (topBarTableRqtsContainer) {
-        const btnRefreshExist = topBarTableRqtsContainer.querySelector('div#refreshCustomTable')
-        if (!btnRefreshExist) {
-            let refreshBtn = document.createElement('div')
-            refreshBtn.innerHTML = '<i class="fa fa-repeat"></i>'
-            refreshBtn.id = "refreshCustomTable"
-            // refreshBtn.onclick = checkTableRequests()
-            topBarTableRqtsContainer.appendChild(refreshBtn)
-            const refreshBtnToExecute = document.getElementById('refreshCustomTable')
-            setTimeout(() => {
-                refreshBtnToExecute.addEventListener('click', () => {
-                    changeEventTagDashboard()
-                })
-            }, 2000)
+    },
+    async getTopBarTableRqts() {
+        let topBarTableRqtsContainer = document.querySelector('div.page-content-wrapper>div.page-content div.recordsPortlet div.portlet.box>div.portlet-title')
+        while (!topBarTableRqtsContainer) {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            topBarTableRqtsContainer = document.querySelector('div.page-content-wrapper>div.page-content div.recordsPortlet div.portlet.box>div.portlet-title')
         }
-    } else {
-        setTimeout(() => {
-            addRefreshCustomTableRequests()
-        }, 200)
-    }
-}
-
-function getQueryTableRequests() {
-    const tableRqtContainer =  document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-    if (tableRqtContainer && tableRqtContainer !== null && tableRqtContainer !== undefined) {
-        return tableRqtContainer
-    } else {
-        setTimeout(() => {
-            getQueryTableRequests()
-        }, 200)
-    }
-}
-
-function checkTableRequests() {
-    if (userSettings.customDashboard) {
-        addRefreshCustomTableRequests()
-    }
-    const tableRqtContainer = getQueryTableRequests()
-    let finishLoadTimeout;
-
-    const tableRqtsFinishLoad = () => {
-        if (finishLoadTimeout) {
-            clearTimeout(finishLoadTimeout);
-        }
-        finishLoadTimeout = setTimeout(() => {
-            changeEventTagDashboard()
-        }, 500);
-    };
-
-    var observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                tableRqtsFinishLoad()
+        return topBarTableRqtsContainer
+    },
+    addRefreshCustomTableRequests() {
+        this.getTopBarTableRqts().then(topBarTableRqtsContainer => {
+            const btnRefreshExist = topBarTableRqtsContainer.querySelector('div#refreshCustomTable')
+            if (!btnRefreshExist) {
+                let refreshBtn = document.createElement('div')
+                refreshBtn.innerHTML = '<i class="fa fa-repeat"></i>'
+                refreshBtn.id = "refreshCustomTable"
+                topBarTableRqtsContainer.appendChild(refreshBtn)
+                const refreshBtnToExecute = document.getElementById('refreshCustomTable')
+                setTimeout(() => {
+                    refreshBtnToExecute.addEventListener('click', () => {
+                        this.changeEventTagDashboard()
+                    })
+                }, 2000)
             }
-        });
-    });
-
-    // Configuration de l'observation
-    var config = {
-        attributes: true,
-        childList: true,
-        subtree: true,
-    };
-
-    // Lancement de l'observation
-    observer.observe(tableRqtContainer, config);
-}
-
-function getQueryContainerTableRequests() {
-    const containerTableRqts =  document.querySelector('div.page-content-wrapper>div.page-content>div.recordsPortlet div.portlet.box')
-    if (containerTableRqts && containerTableRqts !== null && containerTableRqts !== undefined) {
-        containerTableRqts.addEventListener('click', () => {
-            let menu = document.querySelector("div#context-menu");
-            menu.classList.toggle("active");
         })
-        return containerTableRqts
-    } else {
-        setTimeout(() => {
-            getQueryContainerTableRequests()
-        }, 200)
-    }
-}
-
-function listenContainerRequestsTable() {
-    const containerTableRqts = getQueryContainerTableRequests()
-    
-    let finishLoadTimeout;
-    
-    const containerTabRqtsFinishLoad = () => {
-        if (finishLoadTimeout) {
-            clearTimeout(finishLoadTimeout);
-        }
-        finishLoadTimeout = setTimeout(() => {
-            checkTableRequests()
-        }, 500);
-    };
-
-    var observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                containerTabRqtsFinishLoad()
-            }
-        });
-    });
-
-    // Configuration de l'observation
-    var config = {
-        attributes: true,
-        childList: true,
-        subtree: true,
-    };
-
-    // Lancement de l'observation
-    observer.observe(containerTableRqts, config);
-}
-
-function getFilterOfDashboard() {
-    elementOfList = document.querySelectorAll("div.recordsPortlet div.portlet div.portlet-body div.divFilterOthers > div > ul > li")
-    if (elementOfList) {
-        let textOfFilter = elementOfList[0].innerText
-        return textOfFilter
-    } else {
-        setTimeout(() => {
-            getFilterOfDashboard()
-        }, 400)
     }
 }
 
@@ -1163,7 +1226,7 @@ function addListenerDisplayContextMenu(event) {
     let menu = document.querySelector("#context-menu");
     
     // On met ou retire la classe active
-    menu.classList.toggle("active");
+    menu.classList.add("active");
 
     // On ouvre le menu là où se trouve la souris
     // On récupère les coordonnées de la souris
