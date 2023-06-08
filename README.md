@@ -17,4 +17,8 @@ SOCOM : #edac06
 
 - ajouter selecter dans le bouton ajout commentaire de cloture pour injoignable avec et sans modif
 
+- mise à jour affichage MC suite MEP
+    -> proposer l'affichage col-12 (default) et col-6
+    -> ajouter un selecteur de taille de colonne comme pour une colonne excel pour pouvoir modifier la taille et l'enregistrer sur le local storage pour la fois suivante
 
+- retirer ctrl+enter pour publier le comm (ajouté de base sur SoProd)
