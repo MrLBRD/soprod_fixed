@@ -36,6 +36,7 @@ div#settingsContainer .header-container {
     display: none;
     width: 100%;
     text-align: center;
+    justify-content: center;
 }
 
 div#principalContainer.update div#settingsContainer .header-container {

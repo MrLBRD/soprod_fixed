@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Space Grotesk';
+}
+
+body {
+    width: 100%;
+    overflow: hidden;
+}
+
+div#globalContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+div#beeChatContainer.horizontal {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+    max-width: 765px;
+    width: 100%;
+}
+
+div#beeChatContainer.horizontal #beeContainer {
+    width: 256px;
+    height: 256px;
+}
+div#beeChatContainer.horizontal #beeContainer svg {
+    width: 256px;
+    height: 256px;
+}
+
+div#beeChatContainer div#chatContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0px;
+    gap: 16px;
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+div#beeChatContainer div#chatContainer .chat {
+    padding: 16px 24px;
+
+    background: #87E86B;
+    border-radius: 32px;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+
+    color: #1E1E1E;
+    display: none;
+}
+
+div.btnsContainer {
+    display: flex;
+    gap: 8px;
+}
+
+select.selectUserJob {
+    width: 180px;
+    padding: 8px 10px;
+    background: #6AC6FF;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-weight: 400;
+    font-size: 21px;
+    text-transform: uppercase;
+    color: #1E1E1E;
+}
+
+
+
+div#demonstrationContainer {
+    display: none;
+}
+
+
+/* BEE ANIMATION */
+
+div#beeContainer svg #bee {
+    animation: flightBee 8s linear 0s infinite normal forwards;
+}
+@keyframes flightBee {
+    0% {
+        transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
+    }
+    20% {
+        transform: translateY(0px);
+        -webkit-transform: translateY(0px);
+    }
+    38% {
+        transform: translateY(-33px);
+        -webkit-transform: translateY(-33px);
+    }
+    50% {
+        transform: translateY(-6px);
+        -webkit-transform: translateY(-6px);
+    }
+    63% {
+        transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
+    }
+    82% {
+        transform: translateY(2px);
+        -webkit-transform: translateY(2px);
+    }
+    100% {
+        transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
+    }
+}
+
+div#beeContainer svg #shadow {
+    transform-origin: center bottom;
+    animation: shadowBee 8s linear 0s infinite normal forwards;
+}
+@keyframes shadowBee {
+    0% {
+        transform: scale(.92);
+        -webkit-transform: scale(.92);
+    }
+    20% {
+        transform: scale(1);
+        -webkit-transform: scale(1);
+    }
+    38% {
+        transform: scale(.96);
+        -webkit-transform: scale(.96);
+    }
+    50% {
+        transform: scale(.99);
+        -webkit-transform: scale(.99);
+    }
+    63% {
+        transform: scale(.92);
+        -webkit-transform: scale(.92);
+    }
+    82% {
+        transform: scale(1.05);
+        -webkit-transform: scale(1.05);
+    }
+    100% {
+        transform: scale(.92);
+        -webkit-transform: scale(.92);
+    }
+}
