@@ -12,17 +12,34 @@ body {
     align-items: center;
 }
 
-div#container {
+div#principalContainer {
     display: flex;
     flex-direction: column;
     width: 725px;
 }
 
-div.header-container {
+div#headContainer {
     display: flex;
     align-items: flex-end;
     padding: 32px 16px;
-    margin-bottom: 64px;
+    margin-bottom: 16px;
+}
+
+div#settingsContainer {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+div#settingsContainer .header-container {
+    margin-bottom: 32px;
+    display: none;
+    width: 100%;
+    text-align: center;
+}
+
+div#principalContainer.update div#settingsContainer .header-container {
+    display: flex;
 }
 
 div#svg-container {
@@ -117,6 +134,8 @@ p#title {
 }
 
 h1 {
+    text-align: center;
+    font-family: 'Space Grotesk';
     font-weight: 400;
     font-size: 24px;
 }
@@ -344,4 +363,65 @@ div#returnDefaultSettings {
     margin-bottom: 24px;
     text-align: center;
     cursor: pointer;
+}
+
+div#updateContainer {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    
+    font-family: 'Space Grotesk';
+    color: #1E1E1E;
+    
+    background: url(icons/FlatBee.svg), #FFCC01;
+    background-position: right -5% bottom -48px;
+    background-repeat: no-repeat;
+    background-size: 30%;
+    box-shadow: 2px 8px 16px rgba(30, 30, 30, 0.25);
+    border-radius: 8px;
+}
+
+div#principalContainer.update div#updateContainer {
+    display: flex;
+}
+
+div#updateContainer h2 {
+    font-weight: 500;
+    font-size: 24px;
+}
+
+div#updateContainer h2 span {
+    font-weight: 300;
+    font-size: 21px;
+}
+
+div#updateContainer .text {
+    padding: 8px 16px 12px;
+    font-size: 16px;
+}
+
+div#updateContainer a {
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 12px;
+    align-self: center;
+
+    background-color: #87E86B;
+    border-radius: 4px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    color: #1E1E1E;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+div#updateContainer a:hover {
+    text-decoration: underline;
 }

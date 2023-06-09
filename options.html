@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="options.css">
 </head>
 <body>
-    <div id="container">
-        <div class="header-container">
+    <div id="principalContainer">
+        <div id="headContainer">
             <div id="svg-container">
                 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                     <g id="bee">
@@ -47,19 +47,33 @@
                 <h1>Réglage de l'extension</h1>
             </div>
         </div>
-        <div id="debugOptions">
+        <div id="updateContainer">
+            <h2>Change log : <span id="js-switchversion">1.8.9 → 1.9.1</span></h2>
+            <div class="text">
+                Des mises à jour sont apporté régulièrement pour corriger de bug, s’adapter au nouvelle fonctionnalité et modification que peut connaitre SoPord et apporter des nouveautés.
+            </div>
+            <a href="https://arnaudl.notion.site/SoBee-53e4e2f8d1fa4645ac14ab1db95ed0ab?pvs=4" target="_blank" rel="external">
+                voir les changements
+            </a>
+        </div>
+        <div id="settingsContainer">
+            <div class="header-container">
+                <h1>Réglage de l'extension</h1>
+            </div>
+            <div id="debugOptions">
 
-        </div>
-        <div id="saveSettingsChange">
-            <div id="imageBee">
-                <img src="icons/SoBee_static.svg">
             </div>
-            <div id="textBtn">
-                Enregistrer
+            <div id="saveSettingsChange">
+                <div id="imageBee">
+                    <img src="icons/SoBee_static.svg">
+                </div>
+                <div id="textBtn">
+                    Enregistrer
+                </div>
             </div>
-        </div>
-        <div id="returnDefaultSettings">
-            Revenir aux paramètres par défaut.
+            <div id="returnDefaultSettings">
+                Revenir aux paramètres par défaut.
+            </div>
         </div>
     </div>
     

@@ -19,3 +19,5 @@ SOCOM : #edac06
 
 - mise à jour affichage MC suite MEP
     -> proposer l'affichage col-12 (default) et col-6
+
+- faire affichage options si update ou install

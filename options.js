@@ -259,7 +259,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (installReason === 'install') {
         // Afficher un message pour une installation
     } else if (installReason === 'update') {
-        // Afficher un message pour une mise à jour
+        const principalContainer = document.getElementById('principalContainer')
+        principalContainer.classList.add('update')
+        const titlePage = principalContainer.querySelector('div#headContainer div#head-title h1')
+        titlePage.innerText = 'Mise à jour effectuée'
+        const versionChangeContainer = principalContainer.querySelector('div#updateContainer h2 span#js-switchversion')
+        versionChangeContainer.innerText = `${params.get('old')} → ${params.get('now')}`
     }
 
     

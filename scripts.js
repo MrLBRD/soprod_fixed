@@ -490,24 +490,22 @@ const Commentaries = {
                                     if (keysActiv.Enter && keysActiv.Control) {
                                         idInfos.lastComment.text = addCommentMessage.value
                                         idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                        localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
-                                        let sendMessage = document.querySelector('.btn.addComment')
-                                        sendMessage.click()
+                                        localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos))
                                     }
                                 }
                             }
-                        });
+                        })
                         addCommentMessage.addEventListener("keyup", (e) => {
                             if (e.key == 'Enter' || e.key == 'Control') {
                                 keysActiv[e.key] = false
                             }
-                        });
+                        })
                         let storage = ''
                         addCommentMessage.addEventListener("input", (e) => {
                             if ((addCommentMessage.value).length - storage.length > 5 || (addCommentMessage.value).length - storage.length < -5) {
                                 idInfos.lastComment.text = addCommentMessage.value
                                 idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos))
                             }
                         });
                         addCommentMessage.addEventListener("focusout", (e) => {

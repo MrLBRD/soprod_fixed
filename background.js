@@ -17,6 +17,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.tabs.create({ url: optionsUrl + '?reason=install' })
     } else if (details.previousVersion !== chrome.runtime.getManifest().version) {
         // L'extension a été mise à jour
-        chrome.tabs.create({ url: optionsUrl + '?reason=update' })
+        chrome.tabs.create({ url: optionsUrl + `?reason=update&old=${details.previousVersion}&now=${chrome.runtime.getManifest().version}` })
     }
 });
