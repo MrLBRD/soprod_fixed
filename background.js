@@ -10,13 +10,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {
-    let optionsUrl = chrome.runtime.getURL('options.html');
-    // if (details.previousVersion !== chrome.runtime.getManifest().version || details.reason == 'install') chrome.runtime.openOptionsPage();
+    let optionsUrl = chrome.runtime.getURL('options.html')
+    let tutorialUrl = chrome.runtime.getURL('tutoriel.html')
+
     if (details.reason == 'install') {
-        // L'extension a été installée
-        chrome.tabs.create({ url: optionsUrl + '?reason=install' })
+        chrome.storage.sync.set({processSettings: {statu: 'notStarted', step: 0}})
+        chrome.tabs.create({ url: tutorialUrl })
     } else if (details.previousVersion !== chrome.runtime.getManifest().version) {
-        // L'extension a été mise à jour
         chrome.tabs.create({ url: optionsUrl + `?reason=update&old=${details.previousVersion}&now=${chrome.runtime.getManifest().version}` })
     }
 });

@@ -3,6 +3,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     font-family: 'Space Grotesk';
 }
 
@@ -17,14 +18,46 @@ div#globalContainer {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    transition: all .4s ease-in-out;
+}
+
+div#globalContainer.demonstration {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    height: 100vh;
+    padding: 32px 48px;
+}
+
+div#globalContainer.demonstration #beeChatContainer {
+    position: absolute;
+    bottom: 8px;
+    left: 32px;
+}
+div#globalContainer.demonstration #beeChatContainer {
+    position: absolute;
+    bottom: 16px;
+    left: 32px;
+}
+
+div#beeChatContainer {
+    transition: all .4s ease-in-out;
 }
 
 div#beeChatContainer.horizontal {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 64px;
     max-width: 765px;
     width: 100%;
+}
+
+div#beeChatContainer #beeContainer {
+    transition: all .4s ease-in-out;
+}
+div#beeChatContainer #beeContainer svg {
+    transition: all .4s ease-in-out;
 }
 
 div#beeChatContainer.horizontal #beeContainer {
@@ -34,6 +67,25 @@ div#beeChatContainer.horizontal #beeContainer {
 div#beeChatContainer.horizontal #beeContainer svg {
     width: 256px;
     height: 256px;
+}
+
+div#beeChatContainer.vertical {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 24px;
+    max-width: 475px;
+    width: 100%;
+}
+
+div#beeChatContainer.vertical #beeContainer {
+    width: calc(128px + (24px * 2));
+    height: 128px;
+    padding: 0px 24px;
+}
+div#beeChatContainer.vertical #beeContainer svg {
+    width: 128px;
+    height: 128px;
 }
 
 div#beeChatContainer div#chatContainer {
@@ -49,6 +101,8 @@ div#beeChatContainer div#chatContainer {
 }
 
 div#beeChatContainer div#chatContainer .chat {
+    display: none;
+    width: 100%;
     padding: 16px 24px;
 
     background: #87E86B;
@@ -59,12 +113,30 @@ div#beeChatContainer div#chatContainer .chat {
     font-size: 24px;
 
     color: #1E1E1E;
-    display: none;
 }
 
 div.btnsContainer {
     display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap-reverse;
+    gap: 8px 16px;
+}
+
+div.userjobInput-container {
+    display: flex;
     gap: 8px;
+}
+div.userjobInput-container.unavailable::after {
+    content: 'Oups ! Cette combinaison n\'est pas encore disponible.';
+    position: absolute;
+    width: inherit;
+    
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #F3565D;
+
+    transform: translateY(48px);
 }
 
 select.selectUserJob {
@@ -81,10 +153,69 @@ select.selectUserJob {
     color: #1E1E1E;
 }
 
+div.btnNext {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    background: #6AC6FF;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    gap: 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+div.btnNext svg {
+    height: 16px;
+}
+div.btnNext.yBtn {
+    color: #1E1E1E;
+}
+div.btnNext.nBtn {
+    border: 2px #F69421 solid;
+    background-color: white;
+    color: #F69421;
+}
+
+a.changelogBtn {
+    width: 100%;
+    padding: 16px 24px;
+    margin-bottom: 8px;
+    
+    font-family: 'Space Grotesk';
+    text-align: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    color: #1E1E1E;
+    
+    background: url(icons/FlatBee.svg), #FFCC01;
+    background-position: right -2.5% bottom -32px;
+    background-repeat: no-repeat;
+    background-size: 20%;
+
+    box-shadow: 2px 8px 16px rgba(30, 30, 30, 0.25);
+    border-radius: 32px;
+
+    cursor: pointer;
+}
 
 
 div#demonstrationContainer {
     display: none;
+    width: 1420px;
+    height: 798.75px;
+    border: 4px solid #1E1E1E;
+    border-radius: 16px;
+}
+div#globalContainer.demonstration div#demonstrationContainer {
+    display: flex;
 }
 
 
