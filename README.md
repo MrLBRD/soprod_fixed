@@ -7,12 +7,6 @@ qualif: `info qualif` =>
 dans le context menu :
     - modifier manuellement les infos du local storage ?
 
-Portail ROI : #f00ece
-SLM : #00a1e1
-Acces Duda : #87a9e5
-Acces Duda (producer) :
-SOCOM : #edac06
-
 -->
 
 - ajouter selecter dans le bouton ajout commentaire de cloture pour injoignable avec et sans modif
@@ -21,3 +15,6 @@ SOCOM : #edac06
     -> proposer l'affichage col-12 (default) et col-6
 
 - faire affichage options si update ou install
+  - Il reste à faire l'affichage pour la copy pour excel
+  - Faire les vidéos
+  - Ajouter un bouton "passer tout et utiliser les paramètres par défault"

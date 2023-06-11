@@ -66,7 +66,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'Dashboard'
     },
     3: {
         type: "vertical",
@@ -85,7 +85,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'ContextMenu'
     },
     4: {
         type: 'vertical',
@@ -112,7 +112,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'ViewMC'
     },
     5: {
         type: 'vertical',
@@ -127,7 +127,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'CustomColumnMC'
     },
     6: {
         type: 'vertical',
@@ -154,7 +154,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'SchemaBtn'
     },
     7: {
         type: 'vertical',
@@ -177,10 +177,10 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'ToggleProtlet'
     },
     8: {
-        type: 'vertical',
+        type: 'horizontal',
         phylactery: {
             0: {
                 type: 'chat',
@@ -195,8 +195,7 @@ const storytelling = {
                 content: 'Découvrir',
                 action: 'goNext'
             }
-        },
-        video: 'null'
+        }
     },
     9: {
         type: 'vertical',
@@ -219,7 +218,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'SemiAutoRelaunch'
     },
     10: {
         type: 'vertical',
@@ -272,7 +271,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Si ton client est en <b>outre-mer</b>, je te donnerai l’<b>heure</b> de chez lui.'
+                content: 'Si votre client est en <b>outre-mer</b>, je vous donnerai l’<b>heure</b> de chez lui.'
             },
             1: {
                 type: 'chat',
@@ -362,12 +361,16 @@ let demonstrationContainer = null
 
 function displayPhylactery(id) {
     console.log(id)
+    console.log(storytelling[id])
     if (id > 0) {
         chatContainer.innerHTML = ""
     }
     beeChatContainer.className = storytelling[id].type
     if (storytelling[id].video) {
         globalContainer.classList.add('demonstration')
+        const videoDemo = demonstrationContainer.querySelector('video')
+        videoDemo.src = `videos/tutoriel/${storytelling[id].video}.webm`
+        videoDemo.load()
     } else {
         globalContainer.classList.remove('demonstration')
     }
@@ -375,7 +378,6 @@ function displayPhylactery(id) {
     let charCount = 0
 
     for (const [key, value] of Object.entries(storytelling[id].phylactery)) {
-        console.log(key, value)
         switch (value.type) {
             case 'chat':
                 let chatPhylactery = document.createElement('div')
