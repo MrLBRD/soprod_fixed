@@ -362,198 +362,237 @@ let demonstrationContainer = null
 function displayPhylactery(id) {
     console.log(id)
     console.log(storytelling[id])
+
     if (id > 0) {
         chatContainer.innerHTML = ""
     }
-    beeChatContainer.className = storytelling[id].type
-    if (storytelling[id].video) {
-        globalContainer.classList.add('demonstration')
-        const videoDemo = demonstrationContainer.querySelector('video')
-        videoDemo.src = `videos/tutoriel/${storytelling[id].video}.webm`
-        videoDemo.load()
-    } else {
-        globalContainer.classList.remove('demonstration')
-    }
 
-    let charCount = 0
+    if (storytelling[id].type === "horizontal" || storytelling[id].type === "vertical") {
+        if (beeChatContainer.style.display = 'none') {
+            beeChatContainer.style.display = ''
+        }
 
-    for (const [key, value] of Object.entries(storytelling[id].phylactery)) {
-        switch (value.type) {
-            case 'chat':
-                let chatPhylactery = document.createElement('div')
-                chatPhylactery.className = 'chat'
-                chatPhylactery.style.display = 'block'
-                setTimeout(() => {
-                    new Typed(chatPhylactery, {
-                        strings: [value.content],
-                        typeSpeed: 25,
-                        showCursor: false,
-                        loop: false
-                    })
-                    chatContainer.appendChild(chatPhylactery)
-                }, 1.7 * 25 * charCount + 200)
-                charCount += (value.content).length
-                break;
-            case 'selectJob':
-                let containerSelectors = document.createElement('div')
-                containerSelectors.className = 'userjobInput-container'
-                let clickable = false
+        beeChatContainer.className = storytelling[id].type
+        if (storytelling[id].video) {
+            globalContainer.classList.add('demonstration')
+            const videoDemo = demonstrationContainer.querySelector('video')
+            videoDemo.src = `videos/tutoriel/${storytelling[id].video}.webm`
+            videoDemo.load()
+        } else {
+            globalContainer.classList.remove('demonstration')
+        }
 
-                for (const [id, whichSelect] of Object.entries(value.value)) {
-                    const selecter = document.createElement("select")
-                    selecter.className = 'selectUserJob'
+        let charCount = 0
 
-                    for (const [idOpt, optionInfo] of Object.entries(whichSelect)) {
-                        const optionElement = document.createElement('option')
-                        optionElement.value = optionInfo
-                        optionElement.text = optionInfo
-                        selecter.add(optionElement, null)
+        for (const [key, value] of Object.entries(storytelling[id].phylactery)) {
+            switch (value.type) {
+                case 'chat':
+                    let chatPhylactery = document.createElement('div')
+                    chatPhylactery.className = 'chat'
+                    chatPhylactery.style.display = 'block'
+                    setTimeout(() => {
+                        new Typed(chatPhylactery, {
+                            strings: [value.content],
+                            typeSpeed: 25,
+                            showCursor: false,
+                            loop: false
+                        })
+                        chatContainer.appendChild(chatPhylactery)
+                    }, 1.7 * 25 * charCount + 200)
+                    charCount += (value.content).length
+                    break;
+                case 'selectJob':
+                    let containerSelectors = document.createElement('div')
+                    containerSelectors.className = 'userjobInput-container'
+                    let clickable = false
+
+                    for (const [id, whichSelect] of Object.entries(value.value)) {
+                        const selecter = document.createElement("select")
+                        selecter.className = 'selectUserJob'
+
+                        for (const [idOpt, optionInfo] of Object.entries(whichSelect)) {
+                            const optionElement = document.createElement('option')
+                            optionElement.value = optionInfo
+                            optionElement.text = optionInfo
+                            selecter.add(optionElement, null)
+                        }
+
+                        selecter.value = null
+
+                        selecter.addEventListener('change', () => {
+                            if (!activeSettings.hasOwnProperty('userJob')) {
+                                activeSettings.userJob = {
+                                    gamme: null,
+                                    poste: null
+                                }
+                            }
+                            activeSettings.userJob[id] = selecter.value
+                            if (!activeSettings.userJob.gamme || !activeSettings.userJob.poste) {
+                                containerSelectors.classList.remove('unavailable')
+                                clickable = false
+                            } else if (!value.availableJobs.includes(activeSettings.userJob.gamme + ' ' + activeSettings.userJob.poste)) {
+                                containerSelectors.classList.add('unavailable')
+                                clickable = true
+                            } else {
+                                containerSelectors.classList.remove('unavailable')
+                                clickable = true
+                            }
+                        })
+                        
+                        containerSelectors.appendChild(selecter)
                     }
 
-                    selecter.value = null
+                    let btnValid = document.createElement('div')
+                    btnValid.className = "btnNext"
+                    btnValid.innerHTML = '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
 
-                    selecter.addEventListener('change', () => {
-                        if (!activeSettings.hasOwnProperty('userJob')) {
-                            activeSettings.userJob = {
-                                gamme: null,
-                                poste: null
-                            }
-                        }
-                        activeSettings.userJob[id] = selecter.value
-                        if (!activeSettings.userJob.gamme || !activeSettings.userJob.poste) {
-                            containerSelectors.classList.remove('unavailable')
-                            clickable = false
-                        } else if (!value.availableJobs.includes(activeSettings.userJob.gamme + ' ' + activeSettings.userJob.poste)) {
-                            containerSelectors.classList.add('unavailable')
-                            clickable = true
-                        } else {
-                            containerSelectors.classList.remove('unavailable')
-                            clickable = true
+                    btnValid.addEventListener('click', () => {
+                        if (clickable) {
+                            chrome.storage.sync.set({userSettings: activeSettings})
+                            chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
+                            displayPhylactery(id+1)
                         }
                     })
                     
-                    containerSelectors.appendChild(selecter)
-                }
+                    containerSelectors.appendChild(btnValid)
 
-                let btnValid = document.createElement('div')
-                btnValid.className = "btnNext"
-                btnValid.innerHTML = '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
-
-                btnValid.addEventListener('click', () => {
-                    if (clickable) {
-                        chrome.storage.sync.set({userSettings: activeSettings})
-                        chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
-                        displayPhylactery(id+1)
-                    }
-                })
-                
-                containerSelectors.appendChild(btnValid)
-
-                setTimeout(() => {
-                    console.log('HALO')
-                    chatContainer.appendChild(containerSelectors)
-                }, 1.7 * 25 * charCount + 200)
-                break;
-            case 'y-btn':
-                let yBtn = document.createElement('div')
-                yBtn.className = "btnNext yBtn"
-                yBtn.innerText = value.content
-                yBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
-                yBtn.addEventListener('click', () => {
-                    console.log('GO NEXT')
-                    if (value.action == "goNext") {
-                        chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
-                        displayPhylactery(id+1)
-                    } else if (value.action == "goFinish") {
-                        chrome.storage.sync.set({processSettings: {statu: 'finished', step: id}})
-                        chrome.tabs.query({url: 'https://soprod.solocalms.fr/*'}, function(tabs) {
-                            if (tabs.length === 0) {
-                                chrome.tabs.create({ url: 'https://soprod.solocalms.fr/' })
-                            }
-                            chrome.tabs.getCurrent(function(tab) {
-                                chrome.tabs.remove(tab.id)
-                            })
-                        })
-                    }
-                })
-                setTimeout(() => {
-                    chatContainer.appendChild(yBtn)
-                }, 1.7 * 25 * charCount + 200)
-                break;
-            case 'yn-btn':
-                let btnsContainer = document.createElement('div')
-                btnsContainer.className = 'btnsContainer'
-                
-                for (const [iBtn, text] of Object.entries(value.content)) {
-                    let ynBtn = document.createElement('div')
-                    ynBtn.className = `btnNext ${iBtn}Btn`
-                    ynBtn.innerText = text
-                    if (iBtn == "y") ynBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
-                    ynBtn.addEventListener('click', () => {
-                        if (value.hasOwnProperty('setting')) {
-                            activeSettings[value.setting] = iBtn == "y" ? true : false
-                            chrome.storage.sync.set({userSettings: activeSettings})
-                        }
-                        if (typeof value.action === 'string') {
+                    setTimeout(() => {
+                        console.log('HALO')
+                        chatContainer.appendChild(containerSelectors)
+                    }, 1.7 * 25 * charCount + 200)
+                    break;
+                case 'y-btn':
+                    let yBtn = document.createElement('div')
+                    yBtn.className = "btnNext yBtn"
+                    yBtn.innerText = value.content
+                    yBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
+                    yBtn.addEventListener('click', () => {
+                        console.log('GO NEXT')
+                        if (value.action == "goNext") {
                             chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
                             displayPhylactery(id+1)
-                        } else {
-                            if (value.action[iBtn] == "goNext") {
+                        } else if (value.action == "goFinish") {
+                            chrome.storage.sync.set({processSettings: {statu: 'finished', step: id}})
+                            chrome.tabs.query({url: 'https://soprod.solocalms.fr/*'}, function(tabs) {
+                                if (tabs.length === 0) {
+                                    chrome.tabs.create({ url: 'https://soprod.solocalms.fr/' })
+                                }
+                                chrome.tabs.getCurrent(function(tab) {
+                                    chrome.tabs.remove(tab.id)
+                                })
+                            })
+                        }
+                    })
+                    setTimeout(() => {
+                        chatContainer.appendChild(yBtn)
+                    }, 1.7 * 25 * charCount + 200)
+                    break;
+                case 'yn-btn':
+                    let btnsContainer = document.createElement('div')
+                    btnsContainer.className = 'btnsContainer'
+                    
+                    for (const [iBtn, text] of Object.entries(value.content)) {
+                        let ynBtn = document.createElement('div')
+                        ynBtn.className = `btnNext ${iBtn}Btn`
+                        ynBtn.innerText = text
+                        if (iBtn == "y") ynBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
+                        ynBtn.addEventListener('click', () => {
+                            if (value.hasOwnProperty('setting')) {
+                                activeSettings[value.setting] = iBtn == "y" ? true : false
+                                chrome.storage.sync.set({userSettings: activeSettings})
+                            }
+                            if (typeof value.action === 'string') {
                                 chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
                                 displayPhylactery(id+1)
-                            } else if (value.action[iBtn].includes("goPlus")) {
-                                let howMuchMore = parseInt((value.action[iBtn]).replace('goPlus-','')) + 1
-                                chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id + howMuchMore}})
-                                displayPhylactery(id + howMuchMore)
+                            } else {
+                                if (value.action[iBtn] == "goNext") {
+                                    chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
+                                    displayPhylactery(id+1)
+                                } else if (value.action[iBtn].includes("goPlus")) {
+                                    let howMuchMore = parseInt((value.action[iBtn]).replace('goPlus-','')) + 1
+                                    chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id + howMuchMore}})
+                                    displayPhylactery(id + howMuchMore)
+                                }
                             }
+                        })
+                        if (iBtn == "y") {
+                            btnsContainer.insertBefore(ynBtn, btnsContainer.firstChild)
+                        } else {
+                            btnsContainer.appendChild(ynBtn)
                         }
-                    })
-                    if (iBtn == "y") {
-                        btnsContainer.insertBefore(ynBtn, btnsContainer.firstChild)
-                    } else {
-                        btnsContainer.appendChild(ynBtn)
                     }
-                }
-                setTimeout(() => {
-                    chatContainer.appendChild(btnsContainer)
-                }, 1.7 * 25 * charCount + 200)
-                break;
-            case 'dbl-btn':
-                let dblBtnsContainer = document.createElement('div')
-                dblBtnsContainer.className = 'btnsContainer'
-                
-                for (const [iBtn, content] of Object.entries(value.value)) {
-                    let oneBtn = document.createElement('div')
-                    oneBtn.className = `btnNext ${content.type}Btn`
-                    oneBtn.innerText = content.content
-                    oneBtn.addEventListener('click', () => {
-                        if (value.hasOwnProperty('setting')) {
-                            activeSettings[value.setting] = content.value
-                            chrome.storage.sync.set({userSettings: activeSettings})
-                        }
-                        chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
-                        displayPhylactery(id+1)
-                    })
-                    dblBtnsContainer.appendChild(oneBtn)
-                }
-                setTimeout(() => {
-                    chatContainer.appendChild(dblBtnsContainer)
-                }, 1.7 * 25 * charCount + 200)
-                break;
-            case 'changelog-btn':
-                let changelogBtn = document.createElement('a')
-                changelogBtn.className = 'changelogBtn'
-                changelogBtn.innerText = value.content
-                changelogBtn.href = value.href
-                changelogBtn.target = '_blank'
-                chrome.storage.sync.set({processSettings: {statu: 'finished', step: id}})
-                setTimeout(() => {
-                    chatContainer.appendChild(changelogBtn)
-                }, 1.7 * 25 * charCount + 200)
-                break;
-            default:
-                break;
+                    setTimeout(() => {
+                        chatContainer.appendChild(btnsContainer)
+                    }, 1.7 * 25 * charCount + 200)
+                    break;
+                case 'dbl-btn':
+                    let dblBtnsContainer = document.createElement('div')
+                    dblBtnsContainer.className = 'btnsContainer'
+                    
+                    for (const [iBtn, content] of Object.entries(value.value)) {
+                        let oneBtn = document.createElement('div')
+                        oneBtn.className = `btnNext ${content.type}Btn`
+                        oneBtn.innerText = content.content
+                        oneBtn.addEventListener('click', () => {
+                            if (value.hasOwnProperty('setting')) {
+                                activeSettings[value.setting] = content.value
+                                chrome.storage.sync.set({userSettings: activeSettings})
+                            }
+                            chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
+                            displayPhylactery(id+1)
+                        })
+                        dblBtnsContainer.appendChild(oneBtn)
+                    }
+                    setTimeout(() => {
+                        chatContainer.appendChild(dblBtnsContainer)
+                    }, 1.7 * 25 * charCount + 200)
+                    break;
+                case 'changelog-btn':
+                    let changelogBtn = document.createElement('a')
+                    changelogBtn.className = 'changelogBtn'
+                    changelogBtn.innerText = value.content
+                    changelogBtn.href = value.href
+                    changelogBtn.target = '_blank'
+                    chrome.storage.sync.set({processSettings: {statu: 'finished', step: id}})
+                    setTimeout(() => {
+                        chatContainer.appendChild(changelogBtn)
+                    }, 1.7 * 25 * charCount + 200)
+                    break;
+                default:
+                    break;
+            }
         }
+    } else if (storytelling[id].type === "selectOrdered") {
+        globalContainer.classList.remove('demonstration')
+        beeChatContainer.style.display = 'none'
+
+        const settingCopyExcelContainer = document.createElement('div')
+        settingCopyExcelContainer.id = "settingCopyExcelContainer"
+
+        const customInput = document.createElement("div")
+        customInput.className = 'custom-input'
+        customInput.id = 'customInput'
+
+        settingCopyExcelContainer.appendChild(customInput)
+
+        const excelDemoContainer = document.createElement('div')
+        excelDemoContainer.id = 'excelDemoContainer'
+        
+        settingCopyExcelContainer.appendChild(excelDemoContainer)
+
+        const validBtn = document.createElement('div')
+        validBtn.className = "btnNext yBtn"
+        validBtn.innerText = 'Valider et continuer'
+        validBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
+        validBtn.addEventListener('click', () => {
+            console.log('GO NEXT')
+            // chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
+            // displayPhylactery(id+1)
+        })
+        
+        settingCopyExcelContainer.appendChild(excelDemoContainer)
+
+        globalContainer.appendChild(settingCopyExcelContainer)
     }
 }
 
@@ -571,4 +610,52 @@ window.onload = () => {
         }
     })
 
+}
+
+function customInputFill(elements, key, infosSetting) {
+    const customInput = document.querySelector(`div[id^="item"] div[id="customInput-${key}"]`)
+    customInput.innerHTML = ''
+
+    for (const [id, value] of elements.entries()) {
+        const element = document.createElement("div")
+        element.className = 'element-custominput'
+        element.innerHTML = `<div class="id-elementcustom">${ id }</div><div class="content-elementcustom">${ value }</div><div id="deleteElement-${ id }">${ deleteIcon }</div>`
+        customInput.appendChild(element)
+    }
+
+    const addElementBtn = document.createElement("div")
+    addElementBtn.id = "addElementBtn"
+    addElementBtn.className = ""
+    addElementBtn.innerHTML = `<select class="active" id="toAddElement"></select>${ validIcon }<svg id="plusElementSelect" viewBox="0 0 17 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.30148 16.5V9.64286H0.444336V7.35714H7.30148V0.5H9.58719V7.35714H16.4443V9.64286H9.58719V16.5H7.30148Z" fill="#4581A6"/></svg>`
+    customInput.appendChild(addElementBtn)
+
+    
+    const deleteElementBtns = document.querySelectorAll('div.custom-input > div.element-custominput > div[id^="deleteElement-"]')
+    deleteElementBtns.forEach((el) => {
+        el.addEventListener('click', () => {
+            let idForRemove = parseInt((el.id).substring(14))
+            const elementsUpdate = (elements.slice(0, idForRemove)).concat(elements.slice(idForRemove+1))
+            console.log(elementsUpdate, key)
+            customInputFill(elementsUpdate, key, infosSetting)
+            activeSettings.copyForExcel = elementsUpdate
+        })
+    })
+    const btnAddElement = document.querySelector('div#addElementBtn')
+    btnAddElement.addEventListener('click', () => {
+        btnAddElement.className = "active"
+    })
+    const selectNewElement = document.querySelector('div#addElementBtn select#toAddElement')
+    for (const infoAvailable of infosSetting.value) {
+        const optionElement = document.createElement('option')
+        optionElement.value = infoAvailable
+        optionElement.text = infoAvailable
+        selectNewElement.add(optionElement, null)
+    }
+    const validElementSelect = document.querySelector('div#addElementBtn svg#validElementSelect')
+    validElementSelect.addEventListener('click', () => {
+        const elementsUpdate = elements
+        elementsUpdate.push(selectNewElement.value)
+        customInputFill(elementsUpdate, key, infosSetting)
+        activeSettings.copyForExcel = elementsUpdate
+    })
 }
