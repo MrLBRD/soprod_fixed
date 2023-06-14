@@ -612,8 +612,20 @@ window.onload = () => {
 
 }
 
-function customInputFill(elements, key, infosSetting) {
-    const customInput = document.querySelector(`div[id^="item"] div[id="customInput-${key}"]`)
+function customInputFill(elements, key) {
+    infosSetting = [
+        '',
+        'epj',
+        'companyName',
+        'receptionDate',
+        'productRange',
+        'requestId',
+        'requestDate',
+        'requestOrigin',
+        'requestComment',
+        'jetlag'
+    ]
+    const customInput = document.querySelector(`div#settingCopyExcelContainer div#customInput`)
     customInput.innerHTML = ''
 
     for (const [id, value] of elements.entries()) {
@@ -635,8 +647,8 @@ function customInputFill(elements, key, infosSetting) {
         el.addEventListener('click', () => {
             let idForRemove = parseInt((el.id).substring(14))
             const elementsUpdate = (elements.slice(0, idForRemove)).concat(elements.slice(idForRemove+1))
-            console.log(elementsUpdate, key)
-            customInputFill(elementsUpdate, key, infosSetting)
+            console.log(elementsUpdate)
+            customInputFill(elementsUpdate)
             activeSettings.copyForExcel = elementsUpdate
         })
     })
@@ -655,7 +667,7 @@ function customInputFill(elements, key, infosSetting) {
     validElementSelect.addEventListener('click', () => {
         const elementsUpdate = elements
         elementsUpdate.push(selectNewElement.value)
-        customInputFill(elementsUpdate, key, infosSetting)
+        customInputFill(elementsUpdate)
         activeSettings.copyForExcel = elementsUpdate
     })
 }

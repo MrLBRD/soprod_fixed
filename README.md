@@ -11,6 +11,8 @@ dans le context menu :
 
 - ajouter selecter dans le bouton ajout commentaire de cloture pour injoignable avec et sans modif
 
+- Si last commentaire est le tiens alors on ne l'affiche pas dans la confirm modal et on indique qu'il n'y a pas de commentaire de clôture
+
 - mise à jour affichage MC suite MEP
     -> proposer l'affichage col-12 (default) et col-6
 

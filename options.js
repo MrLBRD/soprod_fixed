@@ -20,6 +20,11 @@ const settingsInformation = {
         title: 'Correction de l’affichage des mots-clés',
         value: Boolean
     },
+    viewKeywords: {
+        typeOfInput: 'widthElement',
+        title: 'Modification de l’affichage des mots-clés',
+        value: ['fullWidth', 'halfWidth']
+    },
     schemaBtn: {
         typeOfInput: 'checkbox',
         title: 'Ajout schémas de commentaire',
@@ -66,6 +71,7 @@ const defaultSettings = {
         poste: 'cdp'
     },
     fixViewKeywords: true,
+    viewKeywords: 'fullWidth',
     schemaBtn: true,
     autoCheckModif: true,
     customDashboard: true,

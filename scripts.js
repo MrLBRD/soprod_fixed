@@ -1069,7 +1069,7 @@ const Dashboard = {
         }
         containerTableRqts.addEventListener('click', () => {
             let menu = document.querySelector("div#context-menu");
-            menu.classList.toggle("active");
+            menu.classList.remove("active");
         })
         return containerTableRqts
     },
@@ -1256,7 +1256,7 @@ function copyFolderInformations(event) {
     event.preventDefault()
     
     let menu = document.querySelector("div#context-menu");
-    menu.classList.toggle("active");
+    menu.classList.remove("active");
         
     // Ouvrir la nouvelle fenêtre et stocker la référence
     const newWindow = window.open('https://soprod.solocalms.fr/Operator/Record/'+activRequestTrForContextMenu);
