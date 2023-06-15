@@ -282,7 +282,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'ClockJetlag'
     },
     14: {
         type: 'vertical',
@@ -353,14 +353,14 @@ const storytelling = {
 
 let activeSettings = {}
 
+let progressBar = null
 let globalContainer = null
 let beeChatContainer = null
 let chatContainer = null
 let demonstrationContainer = null
 
 function displayPhylactery(id) {
-    console.log(id)
-    console.log(storytelling[id])
+    progressBar.style.width = (id+1) / Object.keys(storytelling).length * 100 + '%'
 
     if (id > 0) {
         chatContainer.innerHTML = ""
@@ -590,6 +590,7 @@ function displayPhylactery(id) {
         validBtn.innerHTML += '<svg viewBox="0 0 21 17" xmlns="http://www.w3.org/2000/svg"><path d="M7.38273 16.5L0.574219 9.69149L2.9572 7.30851L7.38273 11.734L18.6168 0.5L20.9998 2.88298L7.38273 16.5Z" fill="#4581A6"/></svg>'
         validBtn.addEventListener('click', () => {
             console.log('GO NEXT')
+            console.log(activeSettings)
             chrome.storage.sync.set({userSettings: activeSettings})
             chrome.storage.sync.set({processSettings: {statu: 'inProgress', step: id+1}})
             settingCopyExcelContainer.remove()
@@ -609,11 +610,13 @@ function displayPhylactery(id) {
             'requestOrigin',
             'requestComment'
         ],
+        activeSettings.copyForExcel = elements
         customInputFill(elements)
     }
 }
 
 window.onload = () => {
+    progressBar = document.getElementById('progressBar')
     globalContainer = document.getElementById('globalContainer')
     beeChatContainer = document.getElementById('beeChatContainer')
     chatContainer = document.getElementById('chatContainer')
@@ -621,7 +624,7 @@ window.onload = () => {
 
     chrome.storage.sync.get("processSettings", (data) => {
         if (data.processSettings.statu == "notStarted") {
-            displayPhylactery(11)
+            displayPhylactery(0)
         } else {
             displayPhylactery(data.processSettings.step)
         }

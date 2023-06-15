@@ -1,14 +1,27 @@
 const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
+let processSettings
 let userSettings
 
+console.log('HELLO WOLRD ICI BEE')
+
+function loadProcessSettings(callback) {
+    storage.sync.get("processSettings", (data) => {
+        callback(data.processSettings);
+    });
+}
 function loadSettings(callback) {
     storage.sync.get("userSettings", (data) => {
         callback(data.userSettings);
     });
 }
 
+loadProcessSettings((data) => {
+    processSettings = data
+    console.log(processSettings)
+})
 loadSettings((data) => {
     userSettings = data
+    console.log(userSettings)
 })
 
 function getLocalStorage() {
@@ -22,127 +35,139 @@ async function setLocalStorage(rqtId, value) {
 }
 
 function windowOnload() {
-    if (userSettings) {
-        const pathUrl = window.location.pathname.split('/');
-        addStyle(styles)
-        if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
-            setTimeout(() => {
-                let itemStored = getLocalStorage()
-                if (itemStored.qualif === 'notStarted') {
-                    itemStored.qualif = 'encours'
-                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
-                }
-                if(itemStored.qualif === 'doneModif') {
-                    if (userSettings.autoCheckModif) {
-                        const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                        if (checkModifBtn) {
-                            checkModifBtn.click()
-                            ConfirmModif.getModalConfirmInfo()
+    if (processSettings) {
+        if (processSettings.statu !== 'finished') {
+            console.log('run add bee badge')
+            addStyle(styles)
+            addBeeBadge('settingsInProgress')
+        } else {
+            if (userSettings) {
+                const pathUrl = window.location.pathname.split('/');
+                addStyle(styles)
+                if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
+                    setTimeout(() => {
+                        let itemStored = getLocalStorage()
+                        if (itemStored.qualif === 'notStarted') {
+                            itemStored.qualif = 'encours'
+                            localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
                         }
-                    } else {
-                        window.localStorage.removeItem('soprod-' + pathUrl[3])
-                    }
-                } else {
-                    addBeeBadge('requestFile')
+                        if(itemStored.qualif === 'doneModif') {
+                            if (userSettings.autoCheckModif) {
+                                const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                                if (checkModifBtn) {
+                                    checkModifBtn.click()
+                                    ConfirmModif.getModalConfirmInfo()
+                                }
+                            } else {
+                                window.localStorage.removeItem('soprod-' + pathUrl[3])
+                            }
+                        } else {
+                            addBeeBadge('requestFile')
 
-                    const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
-                    let liActive
-                    let lastActivated = null
+                            const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
+                            let liActive
+                            let lastActivated = null
 
-                    if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
-                        liActive = navPageContent.querySelector('li.active ul > li.active')
-                    } else {
-                        liActive = navPageContent.querySelector('li.active')
-                    }
-
-                    const statuses = [
-                        'PRODUCTION MODIFS EN COURS',
-                        'PRODUCTION MODIF GRAPH EN COURS',
-                        'PRODUCTION MODIF CONTENU EN COURS'
-                    ]
-
-                    if (statuses.some(status => liActive.innerText.includes(status))) {
-                        changeElementsInProgressModified(itemStored, liActive.innerText)
-                    }
-                    lastActivated = liActive.innerText
-                    
-                    navPageContent.addEventListener('click', () => {
-                        setTimeout(() => {
                             if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
                                 liActive = navPageContent.querySelector('li.active ul > li.active')
                             } else {
                                 liActive = navPageContent.querySelector('li.active')
                             }
+
+                            const statuses = [
+                                'PRODUCTION MODIFS EN COURS',
+                                'PRODUCTION MODIF GRAPH EN COURS',
+                                'PRODUCTION MODIF CONTENU EN COURS'
+                            ]
+
                             if (statuses.some(status => liActive.innerText.includes(status))) {
-                                setTimeout(() => {
-                                    changeElementsInProgressModified(itemStored, liActive.innerText)
-                                }, 500)
-                            }
-                            if (itemStored.gamme === 'ESSENTIEL') {
-                                if ((liActive.innerText).includes('CLIENT_CONTACT_COMMERCIAL')) {
-                                    const clockElement = document.querySelector('div#horloge')
-                                    if (!clockElement) {
-                                        addClock()
-                                    }
-                                }
+                                changeElementsInProgressModified(itemStored, liActive.innerText)
                             }
                             lastActivated = liActive.innerText
-                        }, 500)
+                            
+                            navPageContent.addEventListener('click', () => {
+                                setTimeout(() => {
+                                    if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
+                                        liActive = navPageContent.querySelector('li.active ul > li.active')
+                                    } else {
+                                        liActive = navPageContent.querySelector('li.active')
+                                    }
+                                    if (statuses.some(status => liActive.innerText.includes(status))) {
+                                        setTimeout(() => {
+                                            changeElementsInProgressModified(itemStored, liActive.innerText)
+                                        }, 500)
+                                    }
+                                    if (itemStored.gamme === 'ESSENTIEL') {
+                                        if ((liActive.innerText).includes('CLIENT_CONTACT_COMMERCIAL')) {
+                                            const clockElement = document.querySelector('div#horloge')
+                                            if (!clockElement) {
+                                                addClock()
+                                            }
+                                        }
+                                    }
+                                    lastActivated = liActive.innerText
+                                }, 500)
+                            })
+
+                            const testClock = document.querySelector('div#horloge')
+                            if (!testClock) {
+                                addClock()
+                            }
+                        }
+                    }, 800)
+                } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
+                    const elementsContextMenu = [
+                        {
+                            id: 'openInNewTab',
+                            text: 'Ouvrir nouvel onglet'
+                        }, {
+                            id: 'copyInformationsForExcel',
+                            text: 'Copier pour excel'
+                        }
+                    ]
+                    let contextMenuContainer = document.createElement('div')
+                    contextMenuContainer.id = "context-menu"
+                    let listActionsContextMenu = document.createElement('ul')
+                    listActionsContextMenu.className = "menu"
+                    elementsContextMenu.forEach((el) => {
+                        let elementListContextMenu = document.createElement('li')
+                        elementListContextMenu.className = "menu-item"
+                        elementListContextMenu.innerText = el.text
+                        elementListContextMenu.id = el.id
+                        listActionsContextMenu.appendChild(elementListContextMenu)
+                    })
+                    contextMenuContainer.appendChild(listActionsContextMenu)
+                    document.body.appendChild(contextMenuContainer)
+                    
+                    const copyLi = document.querySelector('div#context-menu ul.menu li#copyInformationsForExcel')
+                    copyLi.addEventListener('click', function(event) {
+                        copyFolderInformations(event)
+                    })
+                    const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
+                    openNewTab.addEventListener('click', function(event) {
+                        openRequestInNewTab(event)
+                    })
+                    
+                    addBeeBadge('dashboard')
+
+                    Dashboard.getFilterOfDashboard().then(filterDashboard => {
+                        if (filterDashboard === "À moi") {
+                            Dashboard.listenContainerRequestsTable()
+            
+                            clearLocalStorage()
+                        }
                     })
 
-                    const testClock = document.querySelector('div#horloge')
-                    if (!testClock) {
-                        addClock()
-                    }
+                } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
+                    // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
+                    // Réaliser check if in storage
+                    // Else faire sans
                 }
-            }, 800)
-        } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
-            const elementsContextMenu = [
-                {
-                    id: 'openInNewTab',
-                    text: 'Ouvrir nouvel onglet'
-                }, {
-                    id: 'copyInformationsForExcel',
-                    text: 'Copier pour excel'
-                }
-            ]
-            let contextMenuContainer = document.createElement('div')
-            contextMenuContainer.id = "context-menu"
-            let listActionsContextMenu = document.createElement('ul')
-            listActionsContextMenu.className = "menu"
-            elementsContextMenu.forEach((el) => {
-                let elementListContextMenu = document.createElement('li')
-                elementListContextMenu.className = "menu-item"
-                elementListContextMenu.innerText = el.text
-                elementListContextMenu.id = el.id
-                listActionsContextMenu.appendChild(elementListContextMenu)
-            })
-            contextMenuContainer.appendChild(listActionsContextMenu)
-            document.body.appendChild(contextMenuContainer)
-            
-            const copyLi = document.querySelector('div#context-menu ul.menu li#copyInformationsForExcel')
-            copyLi.addEventListener('click', function(event) {
-                copyFolderInformations(event)
-            })
-            const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
-            openNewTab.addEventListener('click', function(event) {
-                openRequestInNewTab(event)
-            })
-            
-            addBeeBadge('dashboard')
-
-            Dashboard.getFilterOfDashboard().then(filterDashboard => {
-                if (filterDashboard === "À moi") {
-                    Dashboard.listenContainerRequestsTable()
-    
-                    clearLocalStorage()
-                }
-            })
-
-        } else if (pathUrl[1] == "Consultation" && pathUrl[2] == "Record") {
-            // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
-            // Réaliser check if in storage
-            // Else faire sans
+            } else {
+                setTimeout(() => {
+                    windowOnload()
+                }, 400)
+            }
         }
     } else {
         setTimeout(() => {
@@ -162,8 +187,8 @@ window.onload = function () {
 };
 
 function changeElementsInProgressModified(itemStored, activTab) {
-    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS')) {
-        if (userSettings.fixViewKeywords) Keywords.keywordsBetterView()
+    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS') || itemStored.includes('PRIVILEGE')) {
+        if (userSettings.viewKeywords) Keywords.keywordsBetterView()
     }
     if (userSettings.schemaBtn) Commentaries.addBtnSchema()
 
@@ -253,7 +278,18 @@ const Keywords = {
         this.getAllKeywordsArea().then(keywordsGroupContainers => {
             let rqtLocalStorage = getLocalStorage()
             const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
-            if (KeywordsArea) KeywordsArea.parentNode.className = 'col-md-6'
+            if (KeywordsArea) {
+                switch (userSettings.viewKeywords) {
+                    case 'fullWidth':
+                        KeywordsArea.parentNode.classList.remove('col-md-6')
+                        KeywordsArea.parentNode.className = 'col-md-12'
+                        break;
+                    case 'halfWidth':
+                        KeywordsArea.parentNode.classList.remove('col-md-12')
+                        KeywordsArea.parentNode.className = 'col-md-6'
+                        break;
+                }
+            }
 
             for (const keywordsGroupContainer of keywordsGroupContainers) {
                 this.getAllKeywordsRows(keywordsGroupContainer).then(keywordsRows => {
@@ -677,7 +713,11 @@ var styles = [
     }, {
         modif: 'beeFloatMenu',
         configurable: false,
-        css: '#beeElementsContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; display: flex; flex-direction: column-reverse; gap: 1rem; transition: all 0.3s ease-out; } #beeMenuContainer { min-height: 64px; min-width: 64px; width: fit-content; transition: all 0.3s ease-out; } #beeMenuContainer:hover { min-height: 135px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 4px; width: fit-content; height: 64px; gap: 8px; min-width: 64px; justify-content: center; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } .btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer:hover div:nth-child(3) { left: 65px; bottom: 61px; } #beeMenuContainer:hover div:nth-child(4) { left: 89px; bottom: 7px; } #beeMenuContainer.clockActive:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(3) { left: 70px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(4) { left: 130px; bottom: 85px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #importLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
+        css: '#beeElementsContainer { position: fixed; z-index: 9999; left: 32px; bottom: 24px; display: flex; flex-direction: column-reverse; gap: 1rem; transition: all 0.3s ease-out; } #beeMenuContainer { min-height: 64px; min-width: 64px; width: fit-content; transition: all 0.3s ease-out; } #beeMenuContainer:hover { min-height: 135px; min-width: 150px; } #beeBadge { bottom: 0; left: 0; position: absolute; display: flex; flex-direction: row; align-items: center; padding: 4px; width: fit-content; height: 64px; gap: 8px; min-width: 64px; justify-content: center; background: #F1D4F3; border-radius: 248px !important; cursor: pointer !important; z-index: 3; } #beeMenuContainer:hover #beeBadge { background: #BDA7BF; } #beeBadge img { height: 48px; } div#bee-errorFlag { position: absolute; z-index: 1; right: 0; top: 0; transform: translate(10px, -2px); } div#bee-errorFlag svg { height: 32px; }'
+    }, {
+        modif: 'btnsBeeMenu',
+        configurable: false,
+        css: '.btn-badge { position: absolute; display: flex; flex-direction: row; align-items: center; width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); cursor: pointer; border-radius: 248px !important; transition: all 0.3s ease-out; } .btn-badge img { height: 100%; } #autoNextRelaunch { background: #87E86B; } #copyForExcel { background: #FFF790; } #switchContact { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; background: #6AC6FF; } #exportLocalStorage { background: #F69421; } #importLocalStorage { background: #6AC6FF; } #beeMenuContainer:hover .btn-badge { width: 48px; height: 48px; } #beeMenuContainer:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer:hover div:nth-child(3) { left: 65px; bottom: 61px; } #beeMenuContainer:hover div:nth-child(4) { left: 89px; bottom: 7px; } #beeMenuContainer.clockActive:hover div:nth-child(2) { left: 10px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(3) { left: 70px; bottom: 85px; } #beeMenuContainer.clockActive:hover div:nth-child(4) { left: 130px; bottom: 85px; } #autoNextRelaunch:hover { background: #6dbf56; } #copyForExcel:hover { background: #ccc672; } #switchContact:hover { background: #5ba9d9; } #exportLocalStorage:hover { background: #CC7B1B; } #importLocalStorage:hover { background: #5ba9d9; } #beeMenuContainer:hover #switchContact.clicked { width: 16px; height: 16px; bottom: calc(32px - 8px); left: calc(32px - 8px); } .btn-badge#switchContact img { margin-top: -6px; height: 90%; } .btn-badge#switchContact #textSwitchContact { margin-top: -9px; text-transform: uppercase; font-size: 9px; font-weight: 800; }'
     }, {
         modif: 'alerts',
         configurable: false,
@@ -695,18 +735,34 @@ var styles = [
 
 function addStyle(styles) {
     styles.forEach((el) => {
-        if (!el.configurable || userSettings[el.modif]) {
-            /* Create style document */
-            var css = document.createElement('style');
-            css.type = 'text/css';
-        
-            if (css.styleSheet)
-                css.styleSheet.cssText = el.css;
-            else
-                css.appendChild(document.createTextNode(el.css));
-        
-            /* Append style to the tag name */
-            document.getElementsByTagName("head")[0].appendChild(css);
+        if (processSettings.statu !== 'finished') {
+            if (el.modif === 'beeFloatMenu') {
+                /* Create style document */
+                var css = document.createElement('style');
+                css.type = 'text/css';
+            
+                if (css.styleSheet)
+                    css.styleSheet.cssText = el.css;
+                else
+                    css.appendChild(document.createTextNode(el.css));
+            
+                /* Append style to the tag name */
+                document.getElementsByTagName("head")[0].appendChild(css);
+            }
+        } else {
+            if (!el.configurable || userSettings[el.modif]) {
+                /* Create style document */
+                var css = document.createElement('style');
+                css.type = 'text/css';
+            
+                if (css.styleSheet)
+                    css.styleSheet.cssText = el.css;
+                else
+                    css.appendChild(document.createTextNode(el.css));
+            
+                /* Append style to the tag name */
+                document.getElementsByTagName("head")[0].appendChild(css);
+            }
         }
     })
 }
@@ -1297,6 +1353,18 @@ function addBeeBadge(type) {
     imageBee.src = svgUrl
     containerBee.appendChild(imageBee)
 
+    if (type === 'settingsInProgress') {
+        let errorFlag = document.createElement('div')
+        errorFlag.id = 'bee-errorFlag'
+        errorFlag.innerHTML = SVG.warning
+        
+        containerBee.addEventListener('click', () => {
+            chrome.runtime.sendMessage({action: "openTutorial"});
+        })
+
+        containerBee.appendChild(errorFlag)
+    }
+
     beeMenuContainer.appendChild(containerBee)
 
     switch (type) {
@@ -1423,6 +1491,10 @@ function addBeeBadge(type) {
                 inputForImportData.click()
             })
 
+            break;
+        case 'settingsInProgress':
+            beeElementsContainer.appendChild(beeMenuContainer)
+            document.body.appendChild(beeElementsContainer)
             break;
     }
 }
@@ -1897,4 +1969,8 @@ Date.prototype.getWeek = function() {
     date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
     var week1 = new Date(date.getFullYear(), 0, 4);
     return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+SVG = {
+    warning: '<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M16.268 3C17.0378 1.66666 18.9623 1.66667 19.7321 3L31.8564 24C32.6262 25.3333 31.664 27 30.1244 27H5.87564C4.33604 27 3.37379 25.3333 4.14359 24L16.268 3Z" fill="#D64635"/><path d="M16.4658 18.98V7.69995H19.5378V18.98H16.4658ZM18.0018 24.836C17.3618 24.836 16.8178 24.628 16.3698 24.212C15.9378 23.78 15.7218 23.228 15.7218 22.556C15.7218 21.884 15.9378 21.34 16.3698 20.924C16.8178 20.492 17.3618 20.276 18.0018 20.276C18.6578 20.276 19.2018 20.492 19.6338 20.924C20.0658 21.34 20.2818 21.884 20.2818 22.556C20.2818 23.228 20.0658 23.78 19.6338 24.212C19.2018 24.628 18.6578 24.836 18.0018 24.836Z" fill="white"/></svg>'
 }

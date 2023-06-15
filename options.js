@@ -15,11 +15,6 @@ const settingsInformation = {
             }
         }
     },
-    fixViewKeywords: {
-        typeOfInput: 'checkbox',
-        title: 'Correction de l’affichage des mots-clés',
-        value: Boolean
-    },
     viewKeywords: {
         typeOfInput: 'widthElement',
         title: 'Modification de l’affichage des mots-clés',
@@ -70,7 +65,6 @@ const defaultSettings = {
         gamme: 'premium',
         poste: 'cdp'
     },
-    fixViewKeywords: true,
     viewKeywords: 'fullWidth',
     schemaBtn: true,
     autoCheckModif: true,
@@ -120,7 +114,7 @@ function customInputFill(elements, key, infosSetting) {
     const customInput = document.querySelector(`div[id^="item"] div[id="customInput-${key}"]`)
     customInput.innerHTML = ''
 
-    for (const [id, value] of elements.entries()) {
+    for (const [id, value] of Object.entries(elements)) {
         const element = document.createElement("div")
         element.className = 'element-custominput'
         element.innerHTML = `<div class="id-elementcustom">${ id }</div><div class="content-elementcustom">${ value }</div><div id="deleteElement-${ id }">${ deleteIcon }</div>`
@@ -166,7 +160,7 @@ function customInputFill(elements, key, infosSetting) {
 
 function displaySettings(settings) {
     const debugDisplay = document.getElementById("debugOptions");
-    debugOptions.innerHTML = ""
+    debugOptions.innerHTML = ''
     
     for (const [key, value] of Object.entries(settingsInformation)) {
         const setting = settings[key]
@@ -243,6 +237,35 @@ function displaySettings(settings) {
                 containerSelectors.appendChild(divOfErrorMessage)
                 
                 item.appendChild(containerSelectors)
+                debugDisplay.appendChild(item)
+
+                break;
+            case 'widthElement':
+                item.className = 'widthKeywords-container'
+                item.innerHTML = `<p>${ value.title }</p>`
+
+                let containerWidthSelector = document.createElement('div')
+                containerWidthSelector.className = 'widthselectors-container'
+
+                for (const el of value.value) {
+                    let btnWidth = document.createElement('div')
+                    btnWidth.innerText = el
+                    if (activeSettings.viewKeywords === el) btnWidth.classList.add('active')
+
+                    btnWidth.addEventListener('click', () => {
+                        activeSettings.viewKeywords = el
+                        let activeButtons = containerWidthSelector.getElementsByClassName('active')
+                        while (activeButtons[0]) {
+                            activeButtons[0].classList.remove('active')
+                        }
+                        btnWidth.classList.add('active')
+                    })
+
+                    containerWidthSelector.appendChild(btnWidth)
+                }
+                
+                
+                item.appendChild(containerWidthSelector)
                 debugDisplay.appendChild(item)
 
                 break;

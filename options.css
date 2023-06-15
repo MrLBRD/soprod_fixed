@@ -321,6 +321,7 @@ div#addElementBtn {
     border-radius: 4px;
     cursor: pointer;
     gap: 4px;
+    transition: all .2s ease-in-out;
 }
 
 div#addElementBtn svg {
@@ -358,6 +359,44 @@ div#addElementBtn svg#validElementSelect {
 div#addElementBtn.active svg#validElementSelect {
     display: flex;
 }
+
+
+div.widthKeywords-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+}
+
+div.widthKeywords-container .widthselectors-container {
+    display: flex;
+    gap: 16px;
+}
+
+div.widthKeywords-container .widthselectors-container > div {
+    width: 160px;
+    height: 36px;
+    border: 2px #1E1E1E solid;
+    color: #1E1E1E;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+div.widthKeywords-container .widthselectors-container > div.active {
+    background-color: #87E86B;
+    font-weight: 500;
+    border: 2px solid #87E86B;
+}
+
 
 div#returnDefaultSettings {
     margin-top: 32px;

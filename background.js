@@ -7,6 +7,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true;
     }
+    if (request.action == "openTutorial") {
+        let tutorialUrl = chrome.runtime.getURL('tutoriel.html');
+        chrome.tabs.create({ url: tutorialUrl });
+    }
 });
 
 chrome.runtime.onInstalled.addListener(function(details) {

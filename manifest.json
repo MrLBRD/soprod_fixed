@@ -36,7 +36,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["icons/SoBee-512.svg", "icons/CopyForExcel-64.svg", "icons/AutoRelaunch-64.svg", "icons/SwitchContact-64.svg", "icons/ExportData-64.svg", "icons/ImportData-64.svg"],
+            "resources": ["icons/SoBee-512.svg", "icons/CopyForExcel-64.svg", "icons/AutoRelaunch-64.svg", "icons/SwitchContact-64.svg", "icons/ExportData-64.svg", "icons/ImportData-64.svg", "tutoriel.html"],
             "matches": ["https://soprod.solocalms.fr/*"],
             "use_dynamic_url": true
         }
