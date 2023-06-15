@@ -187,7 +187,7 @@ window.onload = function () {
 };
 
 function changeElementsInProgressModified(itemStored, activTab) {
-    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS') || itemStored.includes('PRIVILEGE')) {
+    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS') || (itemStored.gamme).includes('PRIVILEGE')) {
         if (userSettings.viewKeywords) Keywords.keywordsBetterView()
     }
     if (userSettings.schemaBtn) Commentaries.addBtnSchema()
