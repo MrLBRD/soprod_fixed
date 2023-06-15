@@ -488,6 +488,7 @@ const Commentaries = {
                                         addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
                                     }
                                     addCommentMessage.style.height = value.height
+                                    addCommentMessage.dispatchEvent(new Event('change'))
                                 }
                             })
     

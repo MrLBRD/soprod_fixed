@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "SoBee Dev",
     "description": "Amélioration afin d'optimiser l'utilisation de SoProd. Dédié aux équipes Maintenance Réactivité E.g./Premium",
-    "version": "1.8.11",
+    "version": "1.9.1",
     "icons": {
         "128": "icons/SoBee-128.png",
         "256": "icons/SoBee-256.png",
