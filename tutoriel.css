@@ -24,21 +24,9 @@ div#globalContainer {
 div#globalContainer.demonstration {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
     align-items: flex-start;
     height: 100vh;
-    padding: 32px 48px;
-}
-
-div#globalContainer.demonstration #beeChatContainer {
-    position: absolute;
-    bottom: 8px;
-    left: 32px;
-}
-div#globalContainer.demonstration #beeChatContainer {
-    position: absolute;
-    bottom: 16px;
-    left: 32px;
+    padding: 32px 48px 8px 32px;
 }
 
 div#beeChatContainer {
@@ -73,6 +61,7 @@ div#beeChatContainer.vertical {
     display: flex;
     flex-direction: column-reverse;
     align-items: flex-start;
+    align-self: flex-end;
     gap: 24px;
     max-width: 475px;
     width: 100%;
@@ -211,17 +200,166 @@ div#demonstrationContainer {
     display: none;
     justify-content: center;
     align-items: center;
-    width: 1420px;
-    height: 798.75px;
+    align-self: stretch;
+    flex-grow: 1;
+    width: 100%;
+    height: 320px;
     border: 4px solid #1E1E1E;
     border-radius: 16px;
+    overflow: hidden;
+    margin-left: -42px;
+    z-index: -1;
 }
 div#demonstrationContainer video {
-    transform: scale(1.005);
+    width: 100%;
+    height: 100%;
+    transform: scale(1.0075);
 }
 div#globalContainer.demonstration div#demonstrationContainer {
     display: flex;
 }
+
+div#settingCopyExcelContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    justify-content: center;
+    align-content: center;
+    max-width: 1024px;
+}
+
+div.custom-input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 8px 12px 12px;
+    gap: 18px;
+    border: 1px solid #1E1E1E;
+    border-radius: 8px;
+    width: 100%;
+}
+
+div.element-custominput {
+    height: calc(35px - 4px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 6px;
+    gap: 10px;
+    background: #FFF790;
+    border-radius: 4px;
+}
+
+div.id-elementcustom {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+div.content-elementcustom {
+    font-weight: 400;
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+div[id^='deleteElement'] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+div[id^='deleteElement'] svg {
+    height: 16px;
+}
+
+div#addElementBtn {
+    height: 35px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background: #6AC6FF;
+    border-radius: 4px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+div#addElementBtn svg {
+    width: 16px;
+    height: 16px;
+    margin: 0 8px;
+}
+
+div#addElementBtn select {
+    display: none;
+    min-width: 96px;
+    border: none;
+    outline: none;
+    height: 35px;
+    background: #6AC6FF;
+    border-radius: 4px;
+    font-weight: 400;
+    font-size: 18px;
+    padding: 2px 8px;
+}
+div#addElementBtn.active select {
+    display: block;
+}
+
+div#addElementBtn svg#plusElementSelect {
+    display: flex;
+}
+div#addElementBtn.active svg#plusElementSelect {
+    display: none;
+}
+
+div#addElementBtn svg#validElementSelect {
+    display: none;
+}
+div#addElementBtn.active svg#validElementSelect {
+    display: flex;
+}
+
+div#excelDemoContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+div#excelDemoContainer .cell-example {
+    border: 1px solid #1E1E1E;
+    color: #1E1E1E;
+    font-weight: 400;
+    font-size: 16px;
+    min-width: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 4px;
+    align-self: stretch;
+    flex-grow: 1;
+    text-align: center;
+}
+
+div#excelDemoContainer .cell-example#epj {
+    min-width: 75px;
+}
+div#excelDemoContainer .cell-example#companyName {
+    min-width: 120px;
+}
+div#excelDemoContainer .cell-example#productRange {
+    min-width: 80px;
+}
+div#excelDemoContainer .cell-example#requestComment {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 12px;
+    max-width: 320px;
+}
+
 
 
 /* BEE ANIMATION */
