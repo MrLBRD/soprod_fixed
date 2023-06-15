@@ -264,7 +264,6 @@ const storytelling = {
     12: {
         type: 'selectOrdered',
         phylactery: null,
-        // FAIRE LA MAQUETTE POUR SAVOIR LA PRESENTATION
     },
     13: {
         type: 'vertical',
@@ -306,7 +305,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'SemiAutoCheckModif'
     },
     15: {
         type: 'vertical',
@@ -325,7 +324,7 @@ const storytelling = {
                 action: 'goNext'
             }
         },
-        video: 'null'
+        video: 'FloatBeeBtnDashboard'
     },
     16: {
         type: 'horizontal',
