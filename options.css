@@ -465,3 +465,100 @@ div#updateContainer a {
 div#updateContainer a:hover {
     text-decoration: underline;
 }
+
+
+/* TUTORIEL ELEMENT */
+
+
+div#tutorielContainer {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 24px 24px;
+    margin-bottom: 32px;
+    
+    font-family: 'Space Grotesk';
+    color: #1E1E1E;
+    
+    background-color: #D64635;
+    box-shadow: 2px 8px 16px rgba(30, 30, 30, 0.25);
+    border-radius: 8px;
+}
+
+
+div#tutorielContainer h2 {
+    width: 100%;
+    font-weight: 700;
+    font-size: 32px;
+    text-align: center;
+}
+
+div#tutorielContainer .text {
+    padding: 8px 16px 12px;
+    font-size: 16px;
+}
+
+div#goTutoriel {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px 8px 12px;
+    background-color: #6AC6FF;
+    border-radius: 4px;
+    font-family: 'Space Grotesk';
+    width: fit-content;
+    cursor: pointer;
+    align-self: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 24px;
+}
+
+div#goTutoriel #imageBee {
+    height: 36px;
+    position: absolute;
+    background-color: #6AC6FF;
+    display: flex;
+    justify-content: flex-end;
+    width: 20px;
+}
+
+div#goTutoriel.clicked #imageBee {
+    animation: runOpenTutoriel .8s ease-in 0s normal forwards;
+}
+
+div#goTutoriel #imageBee img {
+    height: 100%;
+    transform: translateX(20px);
+}
+
+div#goTutoriel #textBtn {
+    margin-left: 48px;
+}
+
+@keyframes runOpenTutoriel {
+    to {
+        width: 320px;
+    }
+}
+
+div#tutorielContainer div#newBadge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 8px;
+
+    position: absolute;
+    transform: translate(16px, -32px);
+
+    background: #FFCC01;
+    box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    color: #1E1E1E;
+}
