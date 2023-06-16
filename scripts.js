@@ -36,8 +36,7 @@ async function setLocalStorage(rqtId, value) {
 
 function windowOnload() {
     if (processSettings) {
-        if (processSettings.statu !== 'finished') {
-            console.log('run add bee badge')
+        if (processSettings.statu !== 'finished' || processSettings.statu !== 'oldUser') {
             addStyle(styles)
             addBeeBadge('settingsInProgress')
         } else {
