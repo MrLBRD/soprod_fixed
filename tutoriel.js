@@ -623,7 +623,7 @@ window.onload = () => {
     demonstrationContainer = document.getElementById('demonstrationContainer')
 
     chrome.storage.sync.get("processSettings", (data) => {
-        if (data.processSettings.statu == "notStarted") {
+        if (data.processSettings.statu !== "inProgress" || data.processSettings.statu !== "finished") {
             displayPhylactery(0)
         } else {
             displayPhylactery(data.processSettings.step)

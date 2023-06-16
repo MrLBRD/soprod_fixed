@@ -82,6 +82,7 @@ const defaultSettings = {
 }
 
 let activeSettings
+let processTutoriel
 let timeAtLastAction
 
 function saveSettings(settings, callback) {
@@ -280,6 +281,15 @@ document.addEventListener("DOMContentLoaded", () => {
         activeSettings = settings
         displaySettings(settings);
     });
+    storage.sync.get("processSettings", (data) => {
+        if (!data.processSettings) {
+            processTutoriel = { statu: 'oldUser', step: 0 }
+            chrome.storage.sync.set({processSettings: { statu: 'oldUser', step: 0 }})
+        } else if (data.processSettings.statu === 'notStarted' || data.processSettings.statu === 'inProgress') {
+            processTutoriel = { statu: 'defaultSetting', step: 0 }
+            chrome.storage.sync.set({processSettings: { statu: 'defaultSetting', step: 0 }})
+        }
+    })
 
 
 
@@ -294,44 +304,36 @@ document.addEventListener("DOMContentLoaded", () => {
         titlePage.innerText = 'Mise à jour effectuée'
         const versionChangeContainer = principalContainer.querySelector('div#updateContainer h2 span#js-switchversion')
         versionChangeContainer.innerText = `${params.get('old')} → ${params.get('now')}`
-
-        storage.sync.get("processSettings", (data) => {
-            console.log('1', data)
-            if (!data.processSettings) chrome.storage.sync.set({processSettings: {statu: 'oldUser', step: 0}})
-        })
     }
 
-    storage.sync.get("processSettings", (data) => {
-        console.log('2', data)
-        if (data.processSettings.statu !== 'finished') {
-            console.log('its ok')
-            const tutorielContainer = document.getElementById('tutorielContainer')
-            tutorielContainer.style.display = 'flex'
-            
-            const goTutoriel = document.getElementById("goTutoriel")
-            const imgBeeTutoContainer = goTutoriel.querySelector('#imageBee > img')
-            let tutorialUrl = chrome.runtime.getURL('tutoriel.html');
-            
-            goTutoriel.addEventListener('click', (event) => {
-                event.preventDefault()
-                timeAtLastAction = (new Date()).getTime()
-                goTutoriel.classList.add('clicked')
+    if (processTutoriel.statu !== 'finished') {
+        console.log('its ok')
+        const tutorielContainer = document.getElementById('tutorielContainer')
+        tutorielContainer.style.display = 'flex'
+        
+        const goTutoriel = document.getElementById("goTutoriel")
+        const imgBeeTutoContainer = goTutoriel.querySelector('#imageBee > img')
+        let tutorialUrl = chrome.runtime.getURL('tutoriel.html');
+        
+        goTutoriel.addEventListener('click', (event) => {
+            event.preventDefault()
+            timeAtLastAction = (new Date()).getTime()
+            goTutoriel.classList.add('clicked')
 
-                setTimeout(() => {
-                    chrome.tabs.create({ url: tutorialUrl })
-                }, 900 )
-            })
-            goTutoriel.addEventListener('mouseenter', () => {
-                console.log('hover btn')
-                imgBeeTutoContainer.src = "icons/SoBee_flight.svg"
-            })
-            goTutoriel.addEventListener('mouseleave', () => {
-                if (!goTutoriel.classList.contains('clicked')) {
-                    imgBeeTutoContainer.src = "icons/SoBee_static.svg"
-                }
-            })
-        }
-    })
+            setTimeout(() => {
+                chrome.tabs.create({ url: tutorialUrl })
+            }, 900 )
+        })
+        goTutoriel.addEventListener('mouseenter', () => {
+            console.log('hover btn')
+            imgBeeTutoContainer.src = "icons/SoBee_flight.svg"
+        })
+        goTutoriel.addEventListener('mouseleave', () => {
+            if (!goTutoriel.classList.contains('clicked')) {
+                imgBeeTutoContainer.src = "icons/SoBee_static.svg"
+            }
+        })
+    }
 
 
     

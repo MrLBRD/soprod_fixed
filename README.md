@@ -13,10 +13,5 @@ dans le context menu :
 
 - Si last commentaire est le tiens alors on ne l'affiche pas dans la confirm modal et on indique qu'il n'y a pas de commentaire de clôture
 
-- mise à jour affichage MC suite MEP
-    -> proposer l'affichage col-12 (default) et col-6
-
 - faire affichage options si update ou install
-  - Il reste à faire l'affichage pour la copy pour excel
-  - Faire les vidéos
   - Ajouter un bouton "passer tout et utiliser les paramètres par défault"

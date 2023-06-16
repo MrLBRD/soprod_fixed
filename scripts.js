@@ -36,7 +36,8 @@ async function setLocalStorage(rqtId, value) {
 
 function windowOnload() {
     if (processSettings) {
-        if (processSettings.statu !== 'finished' || processSettings.statu !== 'oldUser') {
+        if (processSettings.statu !== 'finished' && processSettings.statu !== 'oldUser' && processSettings.statu !== 'defaultSetting') {
+            console.log(processSettings)
             addStyle(styles)
             addBeeBadge('settingsInProgress')
         } else {
@@ -122,6 +123,9 @@ function windowOnload() {
                         }, {
                             id: 'copyInformationsForExcel',
                             text: 'Copier pour excel'
+                        }, {
+                            id: 'setNotStarted',
+                            text: 'Définir Non commencé'
                         }
                     ]
                     let contextMenuContainer = document.createElement('div')
@@ -145,6 +149,10 @@ function windowOnload() {
                     const openNewTab = document.querySelector('div#context-menu ul.menu li#openInNewTab')
                     openNewTab.addEventListener('click', function(event) {
                         openRequestInNewTab(event)
+                    })
+                    const setNotStarted = document.querySelector('div#context-menu ul.menu li#setNotStarted')
+                    setNotStarted.addEventListener('click', function(event) {
+                        defineQualifNotStarted(event)
                     })
                     
                     addBeeBadge('dashboard')
@@ -735,7 +743,7 @@ var styles = [
 
 function addStyle(styles) {
     styles.forEach((el) => {
-        if (processSettings.statu !== 'finished') {
+        if (processSettings.statu !== 'finished' && processSettings.statu !== 'oldUser' && processSettings.statu !== 'defaultSetting') {
             if (el.modif === 'beeFloatMenu') {
                 /* Create style document */
                 var css = document.createElement('style');
@@ -1328,9 +1336,23 @@ function openRequestInNewTab(event) {
     event.preventDefault()
     
     let menu = document.querySelector("div#context-menu");
-    menu.classList.toggle("active");
+    menu.classList.remove("active");
     
     window.open("https://soprod.solocalms.fr/Operator/Record/"+activRequestTrForContextMenu, '_blank')
+}
+
+function defineQualifNotStarted(event) {
+    event.preventDefault()
+    
+    let menu = document.querySelector("div#context-menu");
+    menu.classList.remove("active");
+    
+    let storageValue = JSON.parse(window.localStorage.getItem('soprod-' + activRequestTrForContextMenu))
+    storageValue.qualif = 'notStarted'
+
+    setLocalStorage(activRequestTrForContextMenu, storageValue).then(() => {
+        windowOnload()
+    })
 }
 
 function addBeeBadge(type) {
