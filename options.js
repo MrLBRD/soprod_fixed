@@ -289,9 +289,34 @@ document.addEventListener("DOMContentLoaded", () => {
             processTutoriel = { statu: 'defaultSetting', step: 0 }
             chrome.storage.sync.set({processSettings: { statu: 'defaultSetting', step: 0 }})
         }
+
+        if (processTutoriel.statu !== 'finished') {
+            const tutorielContainer = document.getElementById('tutorielContainer')
+            tutorielContainer.style.display = 'flex'
+            
+            const goTutoriel = document.getElementById("goTutoriel")
+            const imgBeeTutoContainer = goTutoriel.querySelector('#imageBee > img')
+            let tutorialUrl = chrome.runtime.getURL('tutoriel.html');
+            
+            goTutoriel.addEventListener('click', (event) => {
+                event.preventDefault()
+                timeAtLastAction = (new Date()).getTime()
+                goTutoriel.classList.add('clicked')
+    
+                setTimeout(() => {
+                    chrome.tabs.create({ url: tutorialUrl })
+                }, 900 )
+            })
+            goTutoriel.addEventListener('mouseenter', () => {
+                imgBeeTutoContainer.src = "icons/SoBee_flight.svg"
+            })
+            goTutoriel.addEventListener('mouseleave', () => {
+                if (!goTutoriel.classList.contains('clicked')) {
+                    imgBeeTutoContainer.src = "icons/SoBee_static.svg"
+                }
+            })
+        }
     })
-
-
 
     let params = new URLSearchParams(window.location.search);
     let installReason = params.get('reason');
@@ -305,37 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const versionChangeContainer = principalContainer.querySelector('div#updateContainer h2 span#js-switchversion')
         versionChangeContainer.innerText = `${params.get('old')} → ${params.get('now')}`
     }
-
-    if (processTutoriel.statu !== 'finished') {
-        console.log('its ok')
-        const tutorielContainer = document.getElementById('tutorielContainer')
-        tutorielContainer.style.display = 'flex'
-        
-        const goTutoriel = document.getElementById("goTutoriel")
-        const imgBeeTutoContainer = goTutoriel.querySelector('#imageBee > img')
-        let tutorialUrl = chrome.runtime.getURL('tutoriel.html');
-        
-        goTutoriel.addEventListener('click', (event) => {
-            event.preventDefault()
-            timeAtLastAction = (new Date()).getTime()
-            goTutoriel.classList.add('clicked')
-
-            setTimeout(() => {
-                chrome.tabs.create({ url: tutorialUrl })
-            }, 900 )
-        })
-        goTutoriel.addEventListener('mouseenter', () => {
-            console.log('hover btn')
-            imgBeeTutoContainer.src = "icons/SoBee_flight.svg"
-        })
-        goTutoriel.addEventListener('mouseleave', () => {
-            if (!goTutoriel.classList.contains('clicked')) {
-                imgBeeTutoContainer.src = "icons/SoBee_static.svg"
-            }
-        })
-    }
-
-
     
     const debugDisplay = document.getElementById("debugOptions")
     
