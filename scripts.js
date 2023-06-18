@@ -791,7 +791,7 @@ const ConfirmModif = {
     displayConfirmOkModal(lastComment) {
         let newDiv = document.createElement('div')
         newDiv.className = "modifOk-comment"
-        newDiv.appendChild(lastComment.cloneNode(true))
+        newDiv.appendChild(lastComment)
         setTimeout(() => {
             const pathUrl = window.location.pathname.split('/');
             this.getConfirmModal().then(confirmModal => {
@@ -815,11 +815,32 @@ const ConfirmModif = {
         }
         return lastAllComments
     },
+    async getUserTag() {
+        let userTag = document.querySelector("div.page-header.navbar.navbar-fixed-top > div > div.top-menu > ul > li.dropdown.dropdown-user > a > span")
+        while (!userTag) {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            userTag = document.querySelector("div.page-header.navbar div.top-menu > ul > li.dropdown.dropdown-user > a > span.username")
+        }
+        return userTag.innerText.trim().replace('SOL\\', '')
+    },
     getModalConfirmInfo() {
         this.getAllComments().then(lastAllComments => {
-            let lastComment = lastAllComments.querySelector('div')
+            let lastComment = lastAllComments.querySelector('div').cloneNode(true)
             if (lastComment) {
-                this.displayConfirmOkModal(lastComment)
+                this.getUserTag().then(userTag => {
+                    let nameSplit = lastComment.querySelector('a.name').innerText.trim().toLowerCase().split(' ')
+                    
+                    if (userTag == (nameSplit[0].substring(0,1) + nameSplit[nameSplit.length-1])) {
+                        let divMessage = document.createElement('div')
+                        divMessage.className = 'message'
+                        divMessage.innerHTML = '<div class="body">PAS DE MESSAGE DE CONTRÔLE</div>'
+
+                        this.displayConfirmOkModal(divMessage)
+                    } else {
+                        this.displayConfirmOkModal(lastComment)
+                    }
+
+                })
             } else {
                 setTimeout(() => {
                     this.getModalConfirmInfo()
