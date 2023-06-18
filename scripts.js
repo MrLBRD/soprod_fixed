@@ -1,8 +1,10 @@
 const storage = typeof chrome !== 'undefined' ? chrome.storage : browser.storage;
-let processSettings
-let userSettings
 
-console.log('HELLO WOLRD ICI BEE')
+const Global = {
+    processSettings: undefined,
+    userSettings: undefined,
+    dataStored: undefined,
+}
 
 function loadProcessSettings(callback) {
     storage.sync.get("processSettings", (data) => {
@@ -16,17 +18,15 @@ function loadSettings(callback) {
 }
 
 loadProcessSettings((data) => {
-    processSettings = data
-    console.log(processSettings)
+    Global.processSettings = data
 })
 loadSettings((data) => {
-    userSettings = data
-    console.log(userSettings)
+    Global.userSettings = data
 })
 
-function getLocalStorage() {
+async function getLocalStorage() {
     var pathArray = window.location.pathname.split('/');
-    return JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
+    Global.dataStored = JSON.parse(window.localStorage.getItem('soprod-' + pathArray[3]))
 }
 
 async function setLocalStorage(rqtId, value) {
@@ -35,85 +35,85 @@ async function setLocalStorage(rqtId, value) {
 }
 
 function windowOnload() {
-    if (processSettings) {
-        if (processSettings.statu !== 'finished' && processSettings.statu !== 'oldUser' && processSettings.statu !== 'defaultSetting') {
-            console.log(processSettings)
+    if (Global.processSettings) {
+        if (Global.processSettings.statu !== 'finished' && Global.processSettings.statu !== 'oldUser' && Global.processSettings.statu !== 'defaultSetting') {
             addStyle(styles)
             addBeeBadge('settingsInProgress')
         } else {
-            if (userSettings) {
+            if (Global.userSettings) {
                 const pathUrl = window.location.pathname.split('/');
                 addStyle(styles)
                 if ((pathUrl[1] == "Operator" && pathUrl[2] == "Record")) {
                     setTimeout(() => {
-                        let itemStored = getLocalStorage()
-                        if (itemStored.qualif === 'notStarted') {
-                            itemStored.qualif = 'encours'
-                            localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
-                        }
-                        if(itemStored.qualif === 'doneModif') {
-                            if (userSettings.autoCheckModif) {
-                                const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
-                                if (checkModifBtn) {
-                                    checkModifBtn.click()
-                                    ConfirmModif.getModalConfirmInfo()
+                        getLocalStorage().then(() => {
+                            if (Global.dataStored.qualif === 'notStarted') {
+                                Global.dataStored.qualif = 'encours'
+                                window.localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(Global.dataStored));
+                            }
+                            if(Global.dataStored.qualif === 'doneModif') {
+                                if (Global.userSettings.autoCheckModif) {
+                                    const checkModifBtn = document.querySelector("a[id^='qualificationElement'][data-name='CHECK MODIF TRAITEE OK']")
+                                    if (checkModifBtn) {
+                                        checkModifBtn.click()
+                                        ConfirmModif.getModalConfirmInfo()
+                                    }
+                                } else {
+                                    window.window.localStorage.removeItem('soprod-' + pathUrl[3])
                                 }
                             } else {
-                                window.localStorage.removeItem('soprod-' + pathUrl[3])
-                            }
-                        } else {
-                            addBeeBadge('requestFile')
+                                addBeeBadge('requestFile')
 
-                            const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
-                            let liActive
-                            let lastActivated = null
+                                const navPageContent = document.querySelector('div#masterWebGroupPortlet div ul.nav')
+                                let liActive
+                                let lastActivated = null
 
-                            if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
-                                liActive = navPageContent.querySelector('li.active ul > li.active')
-                            } else {
-                                liActive = navPageContent.querySelector('li.active')
-                            }
+                                if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
+                                    liActive = navPageContent.querySelector('li.active ul > li.active')
+                                } else {
+                                    liActive = navPageContent.querySelector('li.active')
+                                }
 
-                            const statuses = [
-                                'PRODUCTION MODIFS EN COURS',
-                                'PRODUCTION MODIF GRAPH EN COURS',
-                                'PRODUCTION MODIF CONTENU EN COURS'
-                            ]
+                                const statuses = [
+                                    'PRODUCTION MODIFS EN COURS',
+                                    'PRODUCTION MODIF GRAPH EN COURS',
+                                    'PRODUCTION MODIF CONTENU EN COURS'
+                                ]
 
-                            if (statuses.some(status => liActive.innerText.includes(status))) {
-                                changeElementsInProgressModified(itemStored, liActive.innerText)
-                            }
-                            lastActivated = liActive.innerText
-                            
-                            navPageContent.addEventListener('click', () => {
-                                setTimeout(() => {
-                                    if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
-                                        liActive = navPageContent.querySelector('li.active ul > li.active')
-                                    } else {
-                                        liActive = navPageContent.querySelector('li.active')
-                                    }
-                                    if (statuses.some(status => liActive.innerText.includes(status))) {
-                                        setTimeout(() => {
-                                            changeElementsInProgressModified(itemStored, liActive.innerText)
-                                        }, 500)
-                                    }
-                                    if (itemStored.gamme === 'ESSENTIEL') {
-                                        if ((liActive.innerText).includes('CLIENT_CONTACT_COMMERCIAL')) {
-                                            const clockElement = document.querySelector('div#horloge')
-                                            if (!clockElement) {
-                                                addClock()
+                                if (statuses.some(status => liActive.innerText.includes(status))) {
+                                    changeElementsInProgressModified(liActive.innerText)
+                                }
+                                lastActivated = liActive.innerText
+                                
+                                navPageContent.addEventListener('click', () => {
+                                    setTimeout(() => {
+                                        if (((navPageContent.querySelector('li.active')).className).includes('dropdown')) {
+                                            liActive = navPageContent.querySelector('li.active ul > li.active')
+                                        } else {
+                                            liActive = navPageContent.querySelector('li.active')
+                                        }
+                                        if (statuses.some(status => liActive.innerText.includes(status))) {
+                                            setTimeout(() => {
+                                                changeElementsInProgressModified(liActive.innerText)
+                                            }, 500)
+                                        }
+                                        if (Global.dataStored.gamme === 'ESSENTIEL') {
+                                            if ((liActive.innerText).includes('CLIENT_CONTACT_COMMERCIAL')) {
+                                                const clockElement = document.querySelector('div#horloge')
+                                                if (!clockElement) {
+                                                    addClock()
+                                                }
                                             }
                                         }
-                                    }
-                                    lastActivated = liActive.innerText
-                                }, 500)
-                            })
+                                        lastActivated = liActive.innerText
+                                    }, 500)
+                                })
 
-                            const testClock = document.querySelector('div#horloge')
-                            if (!testClock) {
-                                addClock()
+                                const testClock = document.querySelector('div#horloge')
+                                if (!testClock) {
+                                    addClock()
+                                }
                             }
-                        }
+                        })
                     }, 800)
                 } else if (pathUrl[1] == "Operator" && pathUrl[2] == "Dashboard") {
                     const elementsContextMenu = [
@@ -193,13 +193,13 @@ window.onload = function () {
     }
 };
 
-function changeElementsInProgressModified(itemStored, activTab) {
-    if (itemStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS') || (itemStored.gamme).includes('PRIVILEGE')) {
-        if (userSettings.viewKeywords) Keywords.keywordsBetterView()
+function changeElementsInProgressModified(activTab) {
+    if (Global.dataStored.gamme === 'PREMIUM' || activTab.includes('PRODUCTION MODIF CONTENU EN COURS') || (Global.dataStored.gamme).includes('PRIVILEGE')) {
+        if (Global.userSettings.viewKeywords) Keywords.keywordsBetterView()
     }
-    if (userSettings.schemaBtn) Commentaries.addBtnSchema()
+    if (Global.userSettings.schemaBtn) Commentaries.addBtnSchema()
 
-    if (userSettings.togglePortletBlock) {
+    if (Global.userSettings.togglePortletBlock) {
         let portletsToHidden = null
         switch (true) {
             case activTab.includes('PRODUCTION MODIFS EN COURS'):
@@ -283,10 +283,9 @@ const Keywords = {
     },
     keywordsBetterView() {
         this.getAllKeywordsArea().then(keywordsGroupContainers => {
-            let rqtLocalStorage = getLocalStorage()
             const KeywordsArea = document.querySelector('div > div.portlet.box[id^="KeywordsArea_"]')
             if (KeywordsArea) {
-                switch (userSettings.viewKeywords) {
+                switch (Global.userSettings.viewKeywords) {
                     case 'fullWidth':
                         KeywordsArea.parentNode.classList.remove('col-md-6')
                         KeywordsArea.parentNode.className = 'col-md-12'
@@ -347,18 +346,17 @@ const Keywords = {
 
                         document.addEventListener('mouseup', () => {
                             isResizing = false
-                            rqtLocalStorage.modifier.inputKeywordsWidth = keywordInput.offsetWidth / keywordRow.offsetWidth * 100
-                            console.log(rqtLocalStorage.modifier.inputKeywordsWidth)
+                            Global.dataStored.modifier.inputKeywordsWidth = keywordInput.offsetWidth / keywordRow.offsetWidth * 100
 
                             const pathUrl = window.location.pathname.split('/');
-                            setLocalStorage(pathUrl[3], rqtLocalStorage).then(() => {
+                            setLocalStorage(pathUrl[3], Global.dataStored).then(() => {
                                 let styleElement = document.getElementById('inputKeywords-style')
                                 if (!styleElement) {
                                     styleElement = document.createElement('style')
                                     styleElement.id = 'inputKeywords-style'
                                     document.head.appendChild(styleElement)
                                 }
-                                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${rqtLocalStorage.modifier.inputKeywordsWidth}%; }`
+                                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${Global.dataStored.modifier.inputKeywordsWidth}%; }`
                             })
                         })
                     }
@@ -366,14 +364,14 @@ const Keywords = {
             }
 
             // ici si j'ai déjà une valeur enregistré alors on l'appliquera
-            if (rqtLocalStorage.modifier.inputKeywordsWidth) {
+            if (Global.dataStored.modifier.inputKeywordsWidth) {
                 let styleElement = document.getElementById('inputKeywords-style')
                 if (!styleElement) {
                     styleElement = document.createElement('style')
                     styleElement.id = 'inputKeywords-style'
                     document.head.appendChild(styleElement)
                 }
-                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${rqtLocalStorage.modifier.inputKeywordsWidth}%; }`
+                styleElement.textContent = `.DMSKeywordsPortlet .portlet-body .KeywordsFormGroup .input-group input.keywords { width: ${Global.dataStored.modifier.inputKeywordsWidth}%; }`
             }
         })
     }
@@ -460,7 +458,6 @@ const Commentaries = {
     addBtnSchema() {
         var pathArray = window.location.pathname.split('/');
         let idPath = pathArray.reverse()[0]
-        let idInfos = getLocalStorage()
     
         this.getAllCommentsArea().then(commentsAreaDivs => {
             commentsAreaDivs.forEach((commentsAreaDiv) => {
@@ -474,7 +471,7 @@ const Commentaries = {
                         let newBtnsContainer = document.createElement('div')
                         newBtnsContainer.className = 'ext--btns-container'
     
-                        let btnsListToUse = this.schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
+                        let btnsListToUse = this.schemaComments.find(item => item.gamme === Global.userSettings.userJob.gamme && item.poste === Global.userSettings.userJob.poste)?.btnsList;
     
                         for (const [key, value] of Object.entries(btnsListToUse)) {
                             // Création d'une nouvelle div avec la classe 'btn'
@@ -488,11 +485,10 @@ const Commentaries = {
     
                             newBtnDiv.addEventListener('click', () => {
                                 if (addCommentMessage.value == '') {
-                                    let rqtInfos = getLocalStorage()
                                     if (value.id === 'addUnreachableSchemaBtn') {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact) + this.howNextDayToCall()
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
                                     } else {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', rqtInfos.contact)
+                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
                                     }
                                     addCommentMessage.style.height = value.height
                                     addCommentMessage.dispatchEvent(new Event('change'))
@@ -503,7 +499,7 @@ const Commentaries = {
                             newBtnsContainer.appendChild(newBtnDiv)
                         }
     
-                        if (idInfos.lastComment.text) {
+                        if (Global.dataStored.lastComment.text) {
                             var newBtnDiv = document.createElement('div');
                             newBtnDiv.className = 'btn btn-outline icon-custombtn';
                             newBtnDiv.id = 'getAddStoredMessage';
@@ -512,8 +508,8 @@ const Commentaries = {
     
                             newBtnDiv.addEventListener('click', () => {
                                 if (addCommentMessage.value == '') {
-                                    addCommentMessage.value = idInfos.lastComment.text
-                                    addCommentMessage.style.height = idInfos.lastComment.height
+                                    addCommentMessage.value = Global.dataStored.lastComment.text
+                                    addCommentMessage.style.height = Global.dataStored.lastComment.height
                                 }
                             })
     
@@ -532,9 +528,12 @@ const Commentaries = {
                                 if (e.key == 'Enter' || e.key == 'Control') {
                                     keysActiv[e.key] = true
                                     if (keysActiv.Enter && keysActiv.Control) {
-                                        idInfos.lastComment.text = addCommentMessage.value
-                                        idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                        localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos))
+                                        if (addCommentMessage.value !== '') {
+                                            Global.dataStored.lastComment.text = addCommentMessage.value
+                                            Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                            localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                            addCommentMessage.style.height = '32px'
+                                        }
                                     }
                                 }
                             }
@@ -544,19 +543,21 @@ const Commentaries = {
                                 keysActiv[e.key] = false
                             }
                         })
-                        let storage = ''
+                        let storage = Global.dataStored.lastComment.text
                         addCommentMessage.addEventListener("input", (e) => {
-                            if ((addCommentMessage.value).length - storage.length > 5 || (addCommentMessage.value).length - storage.length < -5) {
-                                idInfos.lastComment.text = addCommentMessage.value
-                                idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos))
+                            if ((addCommentMessage.value).length - storage.length > 2 || (addCommentMessage.value).length - storage.length < -2) {
+                                storage = addCommentMessage.value
+                                Global.dataStored.lastComment.text = addCommentMessage.value
+                                Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
                             }
                         });
                         addCommentMessage.addEventListener("focusout", (e) => {
+                            console.log(addCommentMessage.value)
                             if (addCommentMessage.value !== '') {
-                                idInfos.lastComment.text = addCommentMessage.value
-                                idInfos.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                localStorage.setItem('soprod-' + idPath, JSON.stringify(idInfos));
+                                Global.dataStored.lastComment.text = addCommentMessage.value
+                                Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored));
                             }
                         });
                     } else {
@@ -572,10 +573,9 @@ const Commentaries = {
         })
     },
     howNextDayToCall() {
-        let idInfos = getLocalStorage()
         let choosenDate = new Date()
         let dayDelay
-        switch (idInfos.qualif) {
+        switch (Global.dataStored.qualif) {
             case 'afterRdvModif':
             case 'encours':
                 dayDelay = 1
@@ -743,7 +743,7 @@ var styles = [
 
 function addStyle(styles) {
     styles.forEach((el) => {
-        if (processSettings.statu !== 'finished' && processSettings.statu !== 'oldUser' && processSettings.statu !== 'defaultSetting') {
+        if (Global.processSettings.statu !== 'finished' && Global.processSettings.statu !== 'oldUser' && Global.processSettings.statu !== 'defaultSetting') {
             if (el.modif === 'beeFloatMenu') {
                 /* Create style document */
                 var css = document.createElement('style');
@@ -758,7 +758,7 @@ function addStyle(styles) {
                 document.getElementsByTagName("head")[0].appendChild(css);
             }
         } else {
-            if (!el.configurable || userSettings[el.modif]) {
+            if (!el.configurable || Global.userSettings[el.modif]) {
                 /* Create style document */
                 var css = document.createElement('style');
                 css.type = 'text/css';
@@ -829,7 +829,7 @@ const ConfirmModif = {
             if (lastComment) {
                 this.getUserTag().then(userTag => {
                     let nameSplit = lastComment.querySelector('a.name').innerText.trim().toLowerCase().split(' ')
-                    
+
                     if (userTag == (nameSplit[0].substring(0,1) + nameSplit[nameSplit.length-1])) {
                         let divMessage = document.createElement('div')
                         divMessage.className = 'message'
@@ -877,14 +877,13 @@ window.addEventListener('message', function (event) {
 
 function generateCopyClipboard(event = null) {
     let contentForClipboard = ''
-    let itemStored = getLocalStorage()
-    for (const [id, element] of (userSettings.copyForExcel).entries()) {
+    for (const [id, element] of (Global.userSettings.copyForExcel).entries()) {
         switch (element) {
             case 'epj':
-                contentForClipboard += `${ itemStored.epj }\t`
+                contentForClipboard += `${ Global.dataStored.epj }\t`
                 break
             case 'companyName':
-                contentForClipboard += `${ itemStored.name }\t`
+                contentForClipboard += `${ Global.dataStored.name }\t`
                 break
             case 'receptionDate':
                 let today = new Date()
@@ -892,23 +891,23 @@ function generateCopyClipboard(event = null) {
                 contentForClipboard += `${ dateOfToday }\t`
                 break
             case 'productRange':
-                contentForClipboard += `${ itemStored.gamme }\t`
+                contentForClipboard += `${ Global.dataStored.gamme }\t`
                 break
             case 'requestId':
                 const pathUrl = window.location.pathname.split('/');
                 contentForClipboard += `${ pathUrl[3] }\t`
                 break
             case 'requestDate':
-                contentForClipboard += `${ itemStored.request.date }\t`
+                contentForClipboard += `${ Global.dataStored.request.date }\t`
                 break
             case 'requestOrigin':
-                contentForClipboard += `${ itemStored.request.origin }\t`
+                contentForClipboard += `${ Global.dataStored.request.origin }\t`
                 break
             case 'requestComment':
-                contentForClipboard += `"${ itemStored.request.comment }"\t`
+                contentForClipboard += `"${ Global.dataStored.request.comment }"\t`
                 break
             case 'jetlag':
-                contentForClipboard += `"${ itemStored.jetlag.statu ? itemStored.jetlag.diff : itemStored.jetlag.statu }"\t`
+                contentForClipboard += `"${ Global.dataStored.jetlag.statu ? Global.dataStored.jetlag.diff : Global.dataStored.jetlag.statu }"\t`
                 break
             default:
                 contentForClipboard += `\t`
@@ -929,13 +928,11 @@ function getRequestComment(event = null) {
 
         const pathUrl = window.location.pathname.split('/');
         
-        let itemStored = getLocalStorage()
-
-        itemStored.request.date = dateRequest
-        itemStored.request.origin = originRequest
-        itemStored.request.comment = commentRequest
-        itemStored.contact = originRequest === 'COMMERCIAL' ? 'ccial' : 'client'
-        localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
+        Global.dataStored.request.date = dateRequest
+        Global.dataStored.request.origin = originRequest
+        Global.dataStored.request.comment = commentRequest
+        Global.dataStored.contact = originRequest === 'COMMERCIAL' ? 'ccial' : 'client'
+        localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(Global.dataStored))
         
         generateCopyClipboard(event)
     } else {
@@ -1023,9 +1020,8 @@ function getValueInputPostalCode(parentElement) {
 
 function addClock() {
     const pathUrl = window.location.pathname.split('/');
-    let itemStored = getLocalStorage()
 
-    if (itemStored.jetlag.statu) {
+    if (Global.dataStored.jetlag.statu) {
         let horlogeDiv = document.createElement('div')
         horlogeDiv.id = "horloge";
 
@@ -1038,8 +1034,8 @@ function addClock() {
         const beeMenuContainer = document.querySelector("div#beeMenuContainer")
         beeMenuContainer.classList.add('clockActive')
 
-        updateClock(horlogeContainer, itemStored.jetlag.diff);
-    } else if (itemStored.jetlag.statu === false) {
+        updateClock(horlogeContainer, Global.dataStored.jetlag.diff);
+    } else if (Global.dataStored.jetlag.statu === false) {
         console.log('no jet lag')
     } else {
         const labels = document.querySelectorAll('label.control-label');
@@ -1061,17 +1057,17 @@ function addClock() {
             
                     const horlogeContainer = document.querySelector('div#beeBadge div#horloge')
         
-                    itemStored.jetlag.statu = true
-                    itemStored.jetlag.diff = timeZoneOffsets[x]
-                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                    Global.dataStored.jetlag.statu = true
+                    Global.dataStored.jetlag.diff = timeZoneOffsets[x]
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(Global.dataStored));
                     
                     const beeMenuContainer = document.querySelector("div#beeMenuContainer")
                     beeMenuContainer.classList.add('clockActive')
             
                     updateClock(horlogeContainer, timeZoneOffsets[x]);
                 } else {
-                    itemStored.jetlag.statu = false
-                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(itemStored));
+                    Global.dataStored.jetlag.statu = false
+                    localStorage.setItem('soprod-' + pathUrl[3], JSON.stringify(Global.dataStored));
                 }
             }
         }
@@ -1080,7 +1076,7 @@ function addClock() {
 
 function qualifInfo(qualCell, trTarget, qualInfo) {
     if (qualInfo === "notStarted" && qualCell.innerText !== "MODIFICATION TRAITEE") {
-        if (userSettings.customDashboard) trTarget.style.border = "solid #EC2B3B"
+        if (Global.userSettings.customDashboard) trTarget.style.border = "solid #EC2B3B"
         return 'notStarted'
     } else {
         switch (qualCell.innerText) {
@@ -1095,17 +1091,17 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
             case 'RELANCE POUR MODIFICATION':
                 labelEvent = trTarget.querySelector('td span.eventType')
                 if (labelEvent) {
-                    if (userSettings.customDashboard) labelEvent.style.backgroundColor = "#824ac9"
+                    if (Global.userSettings.customDashboard) labelEvent.style.backgroundColor = "#824ac9"
                     return 'relaunchModif'
                 } else {
                     return 'encours'
                 }
             case 'RELANCE INJOIGNABLE MODIF':
                 labelEvent = trTarget.querySelector('td span.eventType')
-                if (userSettings.customDashboard) labelEvent.style.backgroundColor = "#a49cc7"
+                if (Global.userSettings.customDashboard) labelEvent.style.backgroundColor = "#a49cc7"
                 return 'lastRelaunchModif'
             case 'MODIFICATION TRAITEE':
-                if (userSettings.customDashboard) {
+                if (Global.userSettings.customDashboard) {
                     let allTdChildren = trTarget.querySelectorAll('td')
                     let lastChild = allTdChildren[allTdChildren.length - 1]
                     lastChild.style.backgroundColor = "#e96c1b"
@@ -1118,10 +1114,10 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
                 }
                 return 'doneModif'
             case 'MODIF FAITE ENVOI EN CONTROLE FINAL':
-                if (userSettings.customDashboard) trTarget.style.opacity = 0.2
+                if (Global.userSettings.customDashboard) trTarget.style.opacity = 0.2
                 return 'controlInProgress'
             case 'INJOIGNABLE AVEC MODIF':
-                if (userSettings.customDashboard) {
+                if (Global.userSettings.customDashboard) {
                     trTarget.style.opacity = 0.2
                     trTarget.classList.add('unreachable')
                 }
@@ -1129,7 +1125,7 @@ function qualifInfo(qualCell, trTarget, qualInfo) {
             case 'RETOUR EN MODIFICATION':
             case 'RETOUR EN MODIF GRAPHIQUE':
             case 'RETOUR EN MODIF CONTENU':
-                if (userSettings.customDashboard) trTarget.style.border = 'solid #9f65eb'
+                if (Global.userSettings.customDashboard) trTarget.style.border = 'solid #9f65eb'
                 return 'modifReturn'
             default:
                 return 'encours'
@@ -1199,7 +1195,7 @@ const Dashboard = {
         return tableRqtContainer
     },
     checkTableRequests() {
-        if (userSettings.customDashboard) {
+        if (Global.userSettings.customDashboard) {
             this.addRefreshCustomTableRequests()
         }
 
@@ -1412,8 +1408,6 @@ function addBeeBadge(type) {
 
     switch (type) {
         case 'requestFile':
-            let itemStored = getLocalStorage()
-
             let containerAutoRelaunch = document.createElement('div')
             containerAutoRelaunch.id = 'autoNextRelaunch'
             containerAutoRelaunch.className = "btn-badge"
@@ -1426,13 +1420,13 @@ function addBeeBadge(type) {
             let containerSwitchContact = document.createElement('div')
             containerSwitchContact.id = 'switchContact'
             containerSwitchContact.className = "btn-badge"
-            containerSwitchContact.title = itemStored.contact
+            containerSwitchContact.title = Global.dataStored.contact
             imageBtn = document.createElement('img')
             imageBtn.src = svgUrlSwitchContact
             containerSwitchContact.appendChild(imageBtn)
             const textSwitchContact = document.createElement("div")
             textSwitchContact.id = "textSwitchContact"
-            textSwitchContact.innerText = itemStored.contact
+            textSwitchContact.innerText = Global.dataStored.contact
             containerSwitchContact.appendChild(textSwitchContact)
 
             containerSwitchContact.addEventListener('click', (event) => {
@@ -1458,9 +1452,8 @@ function addBeeBadge(type) {
 
             const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
             copyForExcel.addEventListener('click', () => {
-                let itemStored = getLocalStorage()
-                if (itemStored.request) {
-                    if (itemStored.request.origin && itemStored.request.comment && itemStored.request.date) {
+                if (Global.dataStored.request) {
+                    if (Global.dataStored.request.origin && Global.dataStored.request.comment && Global.dataStored.request.date) {
                         generateCopyClipboard()
                     } else {
                         copyForExcelInRequest()
@@ -1718,11 +1711,9 @@ async function getBtnPreviousWeek() {
 function openCalendarAddRelaunch() {
     const btnsQualificationsContainer = document.querySelector('div.tab-content div[id^="qualifications_"] div.portlet-body > div > div')
     if (btnsQualificationsContainer) {
-        let idInfos = getLocalStorage()
-        console.log(idInfos)
         let choosenDate = new Date()
         let dayDelay
-        switch (idInfos.qualif) {
+        switch (Global.dataStored.qualif) {
             case 'afterRdvModif':
             case 'encours':
                 dayDelay = 1
@@ -1840,12 +1831,11 @@ const calendarObserver = {
 }
 
 function addCommentAuto() {
-    let rqtInfos = getLocalStorage()
     const textArea = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.input-cont > textarea.addCommentMessage")
     
-    let btnsListToUse = Commentaries.schemaComments.find(item => item.gamme === userSettings.userJob.gamme && item.poste === userSettings.userJob.poste)?.btnsList;
+    let btnsListToUse = Commentaries.schemaComments.find(item => item.gamme === Global.userSettings.userJob.gamme && item.poste === Global.userSettings.userJob.poste)?.btnsList;
     
-    textArea.value = (btnsListToUse.unreachable.message).replaceAll('${contactTarget}', rqtInfos.contact) + Commentaries.howNextDayToCall()
+    textArea.value = (btnsListToUse.unreachable.message).replaceAll('${contactTarget}', Global.dataStored.contact) + Commentaries.howNextDayToCall()
     let sendMessage = document.querySelector("div.portlet.commentsAreaDiv[id^='comments_'] > div.portlet-body.chats > div.chat-form > div.btn-cont a.btn.addComment")
     sendMessage.click()
     setTimeout(() => {
@@ -1897,24 +1887,22 @@ function addAutoCompleteUnreachable() {
 }
 
 const Contact = {
-    itemStoredForSwitch: undefined,
     idRequest: undefined,
     switchContactForRequest: (domElement) => {
         self = this
         if (!self.idRequest) self.idRequest = window.location.pathname.split('/')[3]
-        if (!self.itemStoredForSwitch) self.itemStoredForSwitch = JSON.parse(window.localStorage.getItem('soprod-' + self.idRequest))
     
-        if (self.itemStoredForSwitch.contact === 'client') {
-            self.itemStoredForSwitch.contact = 'ccial';
+        if (Global.dataStored.contact === 'client') {
+            Global.dataStored.contact = 'ccial';
         } else {
-            self.itemStoredForSwitch.contact = 'client';
+            Global.dataStored.contact = 'client';
         }
     
-        window.localStorage.setItem('soprod-' + self.idRequest, JSON.stringify(self.itemStoredForSwitch));
+        window.localStorage.setItem('soprod-' + self.idRequest, JSON.stringify(Global.dataStored));
     
         const textSwitchContact = domElement.querySelector('div#textSwitchContact');
-        textSwitchContact.innerText = self.itemStoredForSwitch.contact;
-        domElement.title = self.itemStoredForSwitch.contact;
+        textSwitchContact.innerText = Global.dataStored.contact;
+        domElement.title = Global.dataStored.contact;
     
         setTimeout(() => {
             domElement.classList.remove('clicked');
