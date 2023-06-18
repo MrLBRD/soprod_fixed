@@ -1413,6 +1413,12 @@ function addBeeBadge(type) {
             textSwitchContact.id = "textSwitchContact"
             textSwitchContact.innerText = itemStored.contact
             containerSwitchContact.appendChild(textSwitchContact)
+
+            containerSwitchContact.addEventListener('click', (event) => {
+                event.preventDefault()
+                switchContact.classList.add("clicked")
+                Contact.switchContactForRequest(switchContact)
+            })
             
             beeMenuContainer.appendChild(containerSwitchContact)
             
@@ -1429,10 +1435,6 @@ function addBeeBadge(type) {
             beeElementsContainer.appendChild(beeMenuContainer)
             document.body.appendChild(beeElementsContainer)
 
-            const switchContact = document.querySelector('body div#beeMenuContainer div#switchContact')
-            switchContact.addEventListener('click', () => {
-                switchContactForRequest(switchContact)
-            })
             const copyForExcel = document.querySelector('body div#beeMenuContainer div#copyForExcel')
             copyForExcel.addEventListener('click', () => {
                 let itemStored = getLocalStorage()
@@ -1873,17 +1875,30 @@ function addAutoCompleteUnreachable() {
     })
 }
 
-function switchContactForRequest(domElement) {
-    const pathUrl = window.location.pathname.split('/');
-    let itemStored = getLocalStorage()
-    itemStored.contact === 'client' ? itemStored.contact = 'ccial' : itemStored.contact = 'client'
-    const textSwitchContact = domElement.querySelector('div#textSwitchContact')
-    textSwitchContact.innerText = itemStored.contact
-    domElement.title = itemStored.contact
-    localStorage.setItem('soprod-'+pathUrl[3], JSON.stringify(itemStored))
-    setTimeout(() => {
-        domElement.classList.remove("clicked")
-    }, 400)
+const Contact = {
+    itemStoredForSwitch: undefined,
+    idRequest: undefined,
+    switchContactForRequest: (domElement) => {
+        self = this
+        if (!self.idRequest) self.idRequest = window.location.pathname.split('/')[3]
+        if (!self.itemStoredForSwitch) self.itemStoredForSwitch = JSON.parse(window.localStorage.getItem('soprod-' + self.idRequest))
+    
+        if (self.itemStoredForSwitch.contact === 'client') {
+            self.itemStoredForSwitch.contact = 'ccial';
+        } else {
+            self.itemStoredForSwitch.contact = 'client';
+        }
+    
+        window.localStorage.setItem('soprod-' + self.idRequest, JSON.stringify(self.itemStoredForSwitch));
+    
+        const textSwitchContact = domElement.querySelector('div#textSwitchContact');
+        textSwitchContact.innerText = self.itemStoredForSwitch.contact;
+        domElement.title = self.itemStoredForSwitch.contact;
+    
+        setTimeout(() => {
+            domElement.classList.remove('clicked');
+        }, 400);
+    }
 }
 
 const Alerts = {
