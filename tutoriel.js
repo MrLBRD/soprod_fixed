@@ -4,11 +4,11 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Bonjour et bienvenue !<br> Moi c’est <b>Bee</b> et je vais t’accompagner au quotidien sur SoProd.'
+                content: 'Bonjour et bienvenue !<br> Moi c’est <b>Bee</b> et je vais vous accompagner au quotidien sur SoProd.'
             },
             1: {
                 type: 'chat',
-                content: 'Pour commencer, dis moi quel est ton <b>job</b> :'
+                content: 'Pour commencer, dites-moi quel est votre <b>job</b> :'
             },
             2: {
                 type: 'selectJob',
@@ -32,7 +32,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Super ! Je vais te présenter les fonctionnalités disponibles, tu pourra les laisser activés ou non.'
+                content: 'Super ! Je vais vous présenter les fonctionnalités disponibles, vous pourrez les laisser activés ou non.'
             },
             1: {
                 type: 'chat',
@@ -119,7 +119,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Si la taille disponible pour les mots-clés et la localité ne vous conviens pas vous pouvez l’ajuster pour chaque fiche.'
+                content: 'Si la taille disponible pour les mots-clés et la localité ne vous convient pas vous pouvez l’ajuster pour chaque fiche.'
             },
             1: {
                 type: 'y-btn',
@@ -134,7 +134,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Pour gagner du temps dans la rédaction de vos <b>commentaires</b>, découvrez les <b>modèles</b> prédéfini.'
+                content: 'Pour gagner du temps dans la rédaction de vos <b>commentaires</b>, découvrez les <b>modèles</b> prédéfinis.'
             },
             1: {
                 type: 'chat',
@@ -161,7 +161,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Pour une meilleur visibilité sur la fiche on s’est dit que ça serait bien de <b>masquer</b> des blocs peu ou <b>pas utilisé</b>.'
+                content: 'Pour une meilleure visibilité sur la fiche on s’est dit que ça serait bien de <b>masquer</b> des blocs peu ou <b>pas utilisé</b>.'
             },
             1: {
                 type: 'chat',
@@ -210,7 +210,7 @@ const storytelling = {
             },
             2: {
                 type: 'chat',
-                content: 'La fiche est clôturé avec la bonne qualification et le calendrier ouvert à ce jour.'
+                content: 'La fiche est clôturée avec la bonne qualification et le calendrier ouvert à ce jour.'
             },
             2: {
                 type: 'y-btn',
@@ -244,7 +244,7 @@ const storytelling = {
             },
             1: {
                 type: 'chat',
-                content: 'Toutes les informations sont récupéré <b>automatiquement</b> et vous n’aurez plus qu’à coller la ligne directement sur votre Excel.'
+                content: 'Toutes les informations sont récupérées <b>automatiquement</b> et vous n’aurez plus qu’à coller la ligne directement sur votre Excel.'
             },
             2: {
                 type: 'yn-btn',
@@ -289,11 +289,11 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Pour vous faire gagner du temps je vous assite dans la <b>clôture des fiches</b>.'
+                content: 'Pour vous faire gagner du temps je vous assiste dans la <b>clôture des fiches</b>.'
             },
             1: {
                 type: 'chat',
-                content: 'Vous avez juste a cliquer comme pour l’ouvrir. Ensuite vous validez et c’est tout.'
+                content: 'Vous avez juste à cliquer comme pour l’ouvrir. Ensuite vous validez et c’est tout.'
             },
             2: {
                 type: 'yn-btn',
@@ -331,7 +331,7 @@ const storytelling = {
         phylactery: {
             0: {
                 type: 'chat',
-                content: 'Je te souhaite une bonne utilisation de l\'extension. Tu peux suivre les mise à jour et report un bug depuis la page notion.'
+                content: 'Je te souhaite une bonne utilisation de l\'extension. Tu peux suivre les mises à jour et report un bug depuis la page notion.'
             },
             1: {
                 type: 'changelog-btn',
@@ -340,7 +340,7 @@ const storytelling = {
             },
             2: {
                 type: 'chat',
-                content: 'Tu pourra modifier à tous moment tes réglagles sur la page "options" de l\'extension.'
+                content: 'Tu pourras modifier à tous moments tes réglages sur la page "options" de l\'extension.'
             },
             3: {
                 type: 'y-btn',
