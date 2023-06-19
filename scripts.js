@@ -484,7 +484,18 @@ const Commentaries = {
                             newBtnDiv.appendChild(textNode)
     
                             newBtnDiv.addEventListener('click', () => {
+                                let valueIsDeletable = false
                                 if (addCommentMessage.value == '') {
+                                    valueIsDeletable = true
+                                } else {
+                                    for (var value in Object.entries(btnsListToUse)) {
+                                        if (addCommentMessage.value == value.message) {
+                                            valueIsDeletable = true
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (valueIsDeletable) {
                                     if (value.id === 'addUnreachableSchemaBtn') {
                                         addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
                                     } else {
