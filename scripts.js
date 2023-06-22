@@ -489,7 +489,7 @@ const Commentaries = {
                                     valueIsDeletable = true
                                 } else {
                                     for (var value in Object.entries(btnsListToUse)) {
-                                        if (addCommentMessage.value == value.message) {
+                                        if (addCommentMessage.value == value.message.replaceAll('/client|ccial/g', '${contactTarget}')) {
                                             valueIsDeletable = true
                                             break;
                                         }
