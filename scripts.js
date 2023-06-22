@@ -488,8 +488,10 @@ const Commentaries = {
                                 if (addCommentMessage.value == '') {
                                     valueIsDeletable = true
                                 } else {
-                                    for (var btnInfo in Object.entries(btnsListToUse)) {
-                                        if (addCommentMessage.value == btnInfo.message.replaceAll('/client|ccial/g', '${contactTarget}')) {
+                                    let writeComment = (addCommentMessage.value).replaceAll(/client|ccial/g, '${contactTarget}').trim().replace(/\b\d{2}\/\d{2}\b/g, '').trim().replace(/[\r\n]/g, '').trim()
+                                    for (var [idBtn, btnInfo] of Object.entries(btnsListToUse)) {
+                                        let btnInfoComment = (btnInfo.message).trim().replace(/[\r\n]/g, '').trim()
+                                        if (writeComment == btnInfoComment) {
                                             valueIsDeletable = true
                                             break;
                                         }
