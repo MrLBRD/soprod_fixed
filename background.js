@@ -25,7 +25,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
             if (!data.processSettings) chrome.storage.sync.set({processSettings: {statu: 'oldUser', step: 0}})
         });
         if (details.previousVersion !== chrome.runtime.getManifest().version) {
-            chrome.tabs.create({ url: optionsUrl + `?reason=update&old=${details.previousVersion}&now=${chrome.runtime.getManifest().version}` })
+            if (details.previousVersion) {
+                chrome.tabs.create({ url: optionsUrl + `?reason=update&old=${details.previousVersion}&now=${chrome.runtime.getManifest().version}` })
+            }
         }
     }
 });
