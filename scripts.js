@@ -387,7 +387,7 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui non    → Numéro de Tél :\r\n\r\nInterlocuteur :\r\n\r\nDurée de l\'appel :\r\n\r\nModifications effectuées :\r\n\r\nModifications non effectuées :\r\n\r\nModifications supplémentaires :\r\n\r\nLiens et erreurs 404 : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\nEnvoi mail : auto oui non → si oui : client / ccial\r\n\r\nFichiers dans le MI : oui non\r\n\r\nEnvoi demandes services tierces : Oui Non → si oui, n° rqt :\r\n\r\nN° ticket (Jira) :\r\n\r\nCommentaire / Verbatim ${contactTarget} :\r\n\r\n- Envoi en contrôle final',
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui    →  Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :">oui</button> <button value="non">non</button></div><br><br>Modifications effectuées :<br><br>Modifications non effectuées :<br><br>Modifications supplémentaires :<br><br>Liens et erreurs 404 : OK 404<br><br>Note SoOptimo : XX > XX<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui → client / ccial">oui</button> <button value="non">non</button></div><br><br>Fichiers dans le MI : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Commentaire / Verbatim ${contactTarget} :<br><br>- Envoi en contrôle final',
                     'height': '552px'
                 },
                 'unreachable': {
@@ -401,15 +401,8 @@ const Commentaries = {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :\r\n\r\nInterlocuteur :\r\n\r\nDurée de l\'appel :\r\n\r\nCommentaire / Verbatim : \r\n\r\nEnvoi demandes services tierces : Oui Non → si oui, n° rqt :\r\n\r\nN° ticket (Jira) :\r\n\r\nRelance/RDV ',
+                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV ',
                     'height': '272px'
-                },
-                'sendViewLink': {
-                    'text': 'Envoi lien',
-                    'class': 'btn purple',
-                    'id' : 'addSendViewLinkSchemaBtn',
-                    'message': 'Envoi lien de prévisualisation',
-                    'height': '36px'
                 }
             },
         }, {
@@ -500,8 +493,58 @@ const Commentaries = {
                                 if (valueIsDeletable) {
                                     if (value.id === 'addUnreachableSchemaBtn') {
                                         addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
-                                    } else {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
+                                    } else {                                        
+                                        let divEditable = document.createElement('div')
+                                        divEditable.className = "form-control addCommentMessage input ui-autocomplete-input"
+                                        divEditable.style = "overflow-y: hidden; height: auto; background-color: transparent; position: absolute; top: 0;"
+                                        divEditable.setAttribute("contenteditable", "true")
+
+                                        if (value.id === 'addBasicSchemaBtn') {
+                                            divEditable.innerHTML = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
+                                        } else {
+                                            divEditable.innerHTML = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
+                                        }
+
+                                        
+                                        addCommentMessage.value = divEditable.innerText
+                                        addCommentMessage.style.visibility = "hidden"
+                                        addCommentMessage.style.height = divEditable.offsetHeight + "px"
+
+                                        function divAction() {
+                                            if (divEditable.innerText === '') {
+                                                divEditable.parentNode.removeChild(divEditable)
+                                                addCommentMessage.value = ""
+                                                addCommentMessage.style.visibility = ""
+                                                addCommentMessage.style.height = '32px'
+                                                addCommentMessage.focus()
+                                            } else {
+                                                console.log(divEditable.innerText, divEditable.offsetHeight)
+                                                addCommentMessage.style.height = divEditable.offsetHeight + "px"
+                                                addCommentMessage.value = divEditable.innerText
+                                                addCommentMessage.dispatchEvent(new Event('change'))
+                                            }
+                                        }
+
+                                        divEditable.addEventListener('input', () =>  {
+                                            divAction()
+                                        })
+                                        
+                                        divEditable.addEventListener('click', () =>  {
+                                            divAction()
+                                        })
+
+                                        let ynChoises = divEditable.querySelectorAll('div.ynChoise')
+                                        ynChoises.forEach(ynContainer => {
+                                            let btns = ynContainer.querySelectorAll('button')
+                                            btns.forEach(btn => {
+                                                btn.addEventListener('click', () => {
+                                                    ynContainer.outerHTML = btn.value
+                                                })
+                                            })
+                                        })
+
+                                        addCommentMessage.insertAdjacentElement("afterend", divEditable);
+                                        console.log(divEditable)
                                     }
                                     addCommentMessage.style.height = value.height
                                     addCommentMessage.dispatchEvent(new Event('change'))
@@ -714,7 +757,7 @@ var styles = [
     }, {
         modif: 'schemaBtn',
         configurable: true,
-        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; }',
+        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div.ynChoise { display: inline-block; }',
     }, {
         modif: 'horloge',
         configurable: false,
