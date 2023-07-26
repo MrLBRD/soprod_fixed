@@ -388,7 +388,7 @@ const Commentaries = {
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
                     'message': 'Appel ${contactTarget} : oui non    → Numéro de Tél :\r\n\r\nInterlocuteur :\r\n\r\nDurée de l\'appel :\r\n\r\nModifications effectuées :\r\n\r\nModifications non effectuées :\r\n\r\nModifications supplémentaires :\r\n\r\nLiens et erreurs 404 : OK 404\r\n\r\nNote SoOptimo : XX > XX\r\n\r\nEnvoi mail : auto oui non → si oui : client / ccial\r\n\r\nFichiers dans le MI : oui non\r\n\r\nEnvoi demandes services tierces : Oui Non → si oui, n° rqt :\r\n\r\nN° ticket (Jira) :\r\n\r\nCommentaire / Verbatim ${contactTarget} :\r\n\r\n- Envoi en contrôle final',
-                    'height': '324px'
+                    'height': '552px'
                 },
                 'unreachable': {
                     'text': 'Injoignable schema',
@@ -402,7 +402,7 @@ const Commentaries = {
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
                     'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :\r\n\r\nInterlocuteur :\r\n\r\nDurée de l\'appel :\r\n\r\nCommentaire / Verbatim : \r\n\r\nEnvoi demandes services tierces : Oui Non → si oui, n° rqt :\r\n\r\nN° ticket (Jira) :\r\n\r\nRelance/RDV ',
-                    'height': '114px'
+                    'height': '272px'
                 },
                 'sendViewLink': {
                     'text': 'Envoi lien',
