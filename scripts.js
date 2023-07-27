@@ -413,7 +413,7 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui non\r\n\r\nVerbatim ${contactTarget} :\r\n\r\nModifications effectuées :\r\n\r\nEnvoi mail : auto oui\r\n\r\nFichiers dans le MI : oui non\r\n\r\nLiens SoOptimo : OK 404\r\nNote SoOptimo : XX > XX\r\n\r\nModif Graph faite - Envoi en contrôle final',
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Verbatim ${contactTarget} :<br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → Client Ccial">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
                     'height': '292px'
                 },
                 'unreachable': {
@@ -427,7 +427,7 @@ const Commentaries = {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui\r\n\r\nVerbatim : \r\n\r\nRelance/RDV ',
+                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV ',
                     'height': '114px'
                 },
                 'sendViewLink': {
@@ -499,16 +499,23 @@ const Commentaries = {
                                         divEditable.style = "overflow-y: hidden; height: auto; background-color: transparent; position: absolute; top: 0;"
                                         divEditable.setAttribute("contenteditable", "true")
 
+                                        let contentDiv = []
+
                                         if (value.id === 'addBasicSchemaBtn') {
-                                            divEditable.innerHTML = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
+                                            let htmlValue = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
+                                            divEditable.innerHTML = htmlValue
+                                            contentDiv.push(htmlValue)
                                         } else {
-                                            divEditable.innerHTML = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
+                                            let htmlValue = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
+                                            divEditable.innerHTML = htmlValue
+                                            contentDiv.push(htmlValue)
                                         }
 
                                         
                                         addCommentMessage.value = divEditable.innerText
                                         addCommentMessage.style.visibility = "hidden"
                                         addCommentMessage.style.height = divEditable.offsetHeight + "px"
+
 
                                         function divAction() {
                                             if (divEditable.innerText === '') {
@@ -518,10 +525,15 @@ const Commentaries = {
                                                 addCommentMessage.style.height = '32px'
                                                 addCommentMessage.focus()
                                             } else {
-                                                console.log(divEditable.innerText, divEditable.offsetHeight)
-                                                addCommentMessage.style.height = divEditable.offsetHeight + "px"
+                                                console.log(divEditable.innerText, divEditable.clientHeight)
+                                                addCommentMessage.style.height = divEditable.clientHeight + "px"
                                                 addCommentMessage.value = divEditable.innerText
                                                 addCommentMessage.dispatchEvent(new Event('change'))
+                                                Global.dataStored.lastComment.text = addCommentMessage.value
+                                                Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                                localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+
+                                                if (contentDiv[0] !== divEditable.innerHTML) contentDiv.unshift(divEditable.innerHTML)
                                             }
                                         }
 
@@ -532,6 +544,48 @@ const Commentaries = {
                                         divEditable.addEventListener('click', () =>  {
                                             divAction()
                                         })
+                                        
+                                        let keysActivOnDiv = {
+                                            'Enter': false,
+                                            'Control': false,
+                                            'Z': false,
+                                            'z': false
+                                        }
+
+                                        divEditable.addEventListener("keydown", (e) => {
+                                            if (!e.repeat) {
+                                                if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
+                                                    keysActivOnDiv[e.key] = true
+                                                    if (keysActivOnDiv.Enter && keysActivOnDiv.Control) {
+                                                        if (addCommentMessage.value !== '') {
+                                                            Global.dataStored.lastComment.text = addCommentMessage.value
+                                                            Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                                            localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                                            addCommentMessage.style.height = '32px'
+                                                            
+                                                            const sendCommentBtn = portletBody.querySelector('div.chat-form div.btn-cont a.addComment.btn')
+                                                            sendCommentBtn.click()
+                                                        }
+                                                    } else if (keysActivOnDiv.Control && (keysActivOnDiv.z || keysActivOnDiv.Z)) {
+                                                        contentDiv.shift()
+                                                        divEditable.innerHTML = contentDiv[0]
+                                                        addCommentMessage.style.height = divEditable.clientHeight + "px"
+                                                        addCommentMessage.value = divEditable.innerText
+                                                        addCommentMessage.dispatchEvent(new Event('change'))
+                                                        Global.dataStored.lastComment.text = addCommentMessage.value
+                                                        Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                                        localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                                    }
+                                                }
+                                            }
+                                        })
+                                        divEditable.addEventListener("keyup", (e) => {
+                                            console.log(e)
+                                            if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
+                                                keysActivOnDiv[e.key] = false
+                                            }
+                                        })
+
 
                                         let ynChoises = divEditable.querySelectorAll('div.ynChoise')
                                         ynChoises.forEach(ynContainer => {
@@ -616,13 +670,6 @@ const Commentaries = {
                                 localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored));
                             }
                         });
-                    } else {
-                        if (containersBtns.length > 1) {
-                            containersBtns.forEach((el, id) => {
-                                console.log(id, el)
-                                // el.parentNode.removeChild(el)
-                            })
-                        }
                     }
                 }
             })
