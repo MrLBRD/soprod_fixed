@@ -169,7 +169,24 @@ function windowOnload() {
                     // A voir comment procèder car si vue fiche en consultation, probable qu'elle ne soit pas dans les encours donc pas de storage
                     // Réaliser check if in storage
                     // Else faire sans
-                }
+                } /* else if (pathUrl[1] == "Phone" && pathUrl[2] == "Dialer") {
+                    const iframeDiabolo = document.querySelector('div.page-content iframe#diabolocomFrame').contentWindow
+                    const callStatuContainer = iframeDiabolo.body.querySelector('div.agent-widget-container.voice-interaction-container div.cti-container > div.cti-container-header > div.cti-container-header__status > span.cti-container-header__conference-status')
+                    const callTimeContainer = iframeDiabolo.body.querySelector('div.agent-widget-container.voice-interaction-container div.cti-container > div.cti-container-header > div.cti-container-header__status > span.cti-container-header__time-tag')
+                    callStatuContainer.addEventListener('change', () => {
+                        console.log(callStatuContainer.innerText.trim())
+                        let intervalID = setInterval(function() {
+                            console.log(callStatuContainer, callTimeContainer)
+                            if (callStatuContainer.innerText.trim() === 'CONVERSATION') {
+                                console.log(callTimeContainer.innerText.trim())
+                                Calls.saveTimeCall(callTimeContainer.innerText.trim())
+                            } else {
+                                clearInterval(intervalID);
+                            }
+                        }, 1000);
+                    })
+                    const endCallBtn = document.querySelector('div.agent-widget-container.voice-interaction-buttons-container > div.call-interaction-buttons > button.btn.btn-danger')
+                } */
             } else {
                 setTimeout(() => {
                     windowOnload()
@@ -227,6 +244,12 @@ function changeElementsInProgressModified(activTab) {
                 Portlets.createTogglePortlet(portletsToHidden)
                 break;
         }
+    }
+}
+
+const Calls = {
+    saveTimeCall(time) {
+        sessionStorage.setItem('lastCallDuration', time);
     }
 }
 
@@ -565,6 +588,8 @@ const Commentaries = {
                                                             
                                                             const sendCommentBtn = portletBody.querySelector('div.chat-form div.btn-cont a.addComment.btn')
                                                             sendCommentBtn.click()
+                                                            
+                                                            divEditable.parentNode.removeChild(divEditable)
                                                         }
                                                     } else if (keysActivOnDiv.Control && (keysActivOnDiv.z || keysActivOnDiv.Z)) {
                                                         contentDiv.shift()
