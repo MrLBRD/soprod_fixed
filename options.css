@@ -406,7 +406,7 @@ div#returnDefaultSettings {
 }
 
 div#updateContainer {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 16px 24px;
@@ -423,18 +423,19 @@ div#updateContainer {
     border-radius: 8px;
 }
 
-div#principalContainer.update div#updateContainer {
-    display: flex;
-}
-
 div#updateContainer h2 {
     font-weight: 500;
     font-size: 24px;
 }
 
 div#updateContainer h2 span {
+    display: none;
     font-weight: 300;
     font-size: 21px;
+}
+
+div#principalContainer.update div#updateContainer h2 span {
+    display: flex;
 }
 
 div#updateContainer .text {

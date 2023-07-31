@@ -320,9 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let params = new URLSearchParams(window.location.search);
     let installReason = params.get('reason');
-    if (installReason === 'install') {
-        // Afficher un message pour une installation
-    } else if (installReason === 'update') {
+    if (installReason === 'update') {
         const principalContainer = document.getElementById('principalContainer')
         principalContainer.classList.add('update')
         const titlePage = principalContainer.querySelector('div#headContainer div#head-title h1')

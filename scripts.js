@@ -410,21 +410,21 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui    →  Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :">oui</button> <button value="non">non</button></div><br><br>Modifications effectuées :<br><br>Modifications non effectuées :<br><br>Modifications supplémentaires :<br><br>Liens et erreurs 404 : OK 404<br><br>Note SoOptimo : XX > XX<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui → client / ccial">oui</button> <button value="non">non</button></div><br><br>Fichiers dans le MI : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Commentaire / Verbatim ${contactTarget} :<br><br>- Envoi en contrôle final',
-                    'height': '552px'
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui    →  Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :">oui</button> <button value="non">non</button></div><br><br>Modifications effectuées :<br><br>Modifications non effectuées :<br><br>Modifications supplémentaires :<br><br>Liens et erreurs 404 : OK 404<br><br>Note SoOptimo : XX > XX<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui → client / ccial">oui</button> <button value="non">non</button></div><br><br>Fichiers dans le MI : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Commentaire / Verbatim ${contactTarget} :<br><br><div class="ynChoise" contenteditable="false"><button value="- Envoi en contrôle final">Contrôle final</button> <button value="- Envoi en injoignable avec modif">Injoignable Avec modif</button> <button value="- Envoi en injoignable sans modif">Injoignable Sans modif</button></div>',
+                    'height': '504px'
                 },
                 'unreachable': {
                     'text': 'Injoignable schema',
                     'class': 'btn yellow',
                     'id': 'addUnreachableSchemaBtn',
-                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
                     'height': '76px'
                 },
                 'basic': {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV ',
+                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
                     'height': '272px'
                 }
             },
@@ -436,21 +436,21 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Verbatim ${contactTarget} :<br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → Client Ccial">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
-                    'height': '292px'
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui<br><br>Verbatim ${contactTarget} :">oui</button> <button value="non, injoignable, message laissé sur le répondeur">non</button></div><br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → <div class=\'ynChoise\' contenteditable=\'false\'><button value=\'client\'>client</button> <button value=\'ccial\'>ccial</button> <button value=\'client & ccial\'>les deux</button></div>">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
+                    'height': '166px'
                 },
                 'unreachable': {
                     'text': 'Injoignable schema',
                     'class': 'btn yellow',
                     'id': 'addUnreachableSchemaBtn',
-                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur\r\n\r\nRelance ',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
                     'height': '76px'
                 },
                 'basic': {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV ',
+                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
                     'height': '114px'
                 },
                 'sendViewLink': {
@@ -513,118 +513,177 @@ const Commentaries = {
                                         }
                                     }
                                 }
-                                if (valueIsDeletable) {
-                                    if (value.id === 'addUnreachableSchemaBtn') {
-                                        addCommentMessage.value = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
-                                    } else {                                        
-                                        let divEditable = document.createElement('div')
-                                        divEditable.className = "form-control addCommentMessage input ui-autocomplete-input"
-                                        divEditable.style = "overflow-y: hidden; height: auto; background-color: transparent; position: absolute; top: 0;"
-                                        divEditable.setAttribute("contenteditable", "true")
+                                if (valueIsDeletable) {                              
+                                    let divEditable = document.createElement('div')
+                                    divEditable.className = "form-control addCommentMessage input ui-autocomplete-input"
+                                    divEditable.style = "overflow-y: hidden; height: auto; background-color: transparent; position: absolute; top: 0;"
+                                    divEditable.setAttribute("contenteditable", "true")
 
-                                        let contentDiv = []
+                                    let contentDiv = []
 
-                                        if (value.id === 'addBasicSchemaBtn') {
-                                            let htmlValue = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact) + this.howNextDayToCall()
-                                            divEditable.innerHTML = htmlValue
-                                            contentDiv.push(htmlValue)
+                                    let htmlValue = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
+                                    divEditable.innerHTML = htmlValue
+                                    contentDiv.push(htmlValue)
+
+                                    
+                                    addCommentMessage.value = divEditable.innerText
+                                    addCommentMessage.style.visibility = "hidden"
+                                    addCommentMessage.style.height = divEditable.offsetHeight + "px"
+
+
+                                    function divAction() {
+                                        if ((divEditable.innerText).trim() === '') {
+                                            divEditable.parentNode.removeChild(divEditable)
+                                            addCommentMessage.value = ""
+                                            addCommentMessage.style.visibility = ""
+                                            addCommentMessage.style.height = '32px'
+                                            addCommentMessage.focus()
                                         } else {
-                                            let htmlValue = (value.message).replaceAll('${contactTarget}', Global.dataStored.contact)
-                                            divEditable.innerHTML = htmlValue
-                                            contentDiv.push(htmlValue)
+                                            console.log(divEditable.innerText, divEditable.clientHeight)
+                                            addCommentMessage.style.height = divEditable.clientHeight + "px"
+                                            addCommentMessage.value = divEditable.innerText
+                                            addCommentMessage.dispatchEvent(new Event('change'))
+                                            Global.dataStored.lastComment.text = addCommentMessage.value
+                                            Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                            localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+
+                                            if (contentDiv[0] !== divEditable.innerHTML) contentDiv.unshift(divEditable.innerHTML)
                                         }
+                                    }
 
-                                        
-                                        addCommentMessage.value = divEditable.innerText
-                                        addCommentMessage.style.visibility = "hidden"
-                                        addCommentMessage.style.height = divEditable.offsetHeight + "px"
+                                    divEditable.addEventListener('input', () =>  {
+                                        divAction()
+                                    })
+                                    
+                                    divEditable.addEventListener('click', () =>  {
+                                        divAction()
+                                    })
+                                    
+                                    let keysActivOnDiv = {
+                                        'Enter': false,
+                                        'Control': false,
+                                        'Z': false,
+                                        'z': false
+                                    }
 
+                                    const sendCommentBtn = portletBody.querySelector('div.chat-form div.btn-cont a.addComment.btn')
 
-                                        function divAction() {
-                                            if (divEditable.innerText === '') {
-                                                divEditable.parentNode.removeChild(divEditable)
-                                                addCommentMessage.value = ""
-                                                addCommentMessage.style.visibility = ""
-                                                addCommentMessage.style.height = '32px'
-                                                addCommentMessage.focus()
-                                            } else {
-                                                console.log(divEditable.innerText, divEditable.clientHeight)
-                                                addCommentMessage.style.height = divEditable.clientHeight + "px"
-                                                addCommentMessage.value = divEditable.innerText
-                                                addCommentMessage.dispatchEvent(new Event('change'))
-                                                Global.dataStored.lastComment.text = addCommentMessage.value
-                                                Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                                localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
-
-                                                if (contentDiv[0] !== divEditable.innerHTML) contentDiv.unshift(divEditable.innerHTML)
-                                            }
-                                        }
-
-                                        divEditable.addEventListener('input', () =>  {
-                                            divAction()
-                                        })
-                                        
-                                        divEditable.addEventListener('click', () =>  {
-                                            divAction()
-                                        })
-                                        
-                                        let keysActivOnDiv = {
-                                            'Enter': false,
-                                            'Control': false,
-                                            'Z': false,
-                                            'z': false
-                                        }
-
-                                        divEditable.addEventListener("keydown", (e) => {
-                                            if (!e.repeat) {
-                                                if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
-                                                    keysActivOnDiv[e.key] = true
-                                                    if (keysActivOnDiv.Enter && keysActivOnDiv.Control) {
-                                                        if (addCommentMessage.value !== '') {
-                                                            Global.dataStored.lastComment.text = addCommentMessage.value
-                                                            Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
-                                                            localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
-                                                            addCommentMessage.style.height = '32px'
-                                                            
-                                                            const sendCommentBtn = portletBody.querySelector('div.chat-form div.btn-cont a.addComment.btn')
-                                                            sendCommentBtn.click()
-                                                            
-                                                            divEditable.parentNode.removeChild(divEditable)
-                                                        }
-                                                    } else if (keysActivOnDiv.Control && (keysActivOnDiv.z || keysActivOnDiv.Z)) {
-                                                        contentDiv.shift()
-                                                        divEditable.innerHTML = contentDiv[0]
-                                                        addCommentMessage.style.height = divEditable.clientHeight + "px"
-                                                        addCommentMessage.value = divEditable.innerText
-                                                        addCommentMessage.dispatchEvent(new Event('change'))
+                                    divEditable.addEventListener("keydown", (e) => {
+                                        if (!e.repeat) {
+                                            if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
+                                                keysActivOnDiv[e.key] = true
+                                                if (keysActivOnDiv.Enter && keysActivOnDiv.Control) {
+                                                    if (addCommentMessage.value !== '') {
                                                         Global.dataStored.lastComment.text = addCommentMessage.value
                                                         Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
                                                         localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                                        addCommentMessage.style.height = '32px'
+                                                        addCommentMessage.style.visibility = ''
+                                                        
+                                                        sendCommentBtn.click()
+                                                        
+                                                        divEditable.parentNode.removeChild(divEditable)
                                                     }
+                                                } else if (keysActivOnDiv.Control && (keysActivOnDiv.z || keysActivOnDiv.Z)) {
+                                                    contentDiv.shift()
+                                                    divEditable.innerHTML = contentDiv[0]
+                                                    addCommentMessage.style.height = divEditable.clientHeight + "px"
+                                                    addCommentMessage.value = divEditable.innerText
+                                                    addCommentMessage.dispatchEvent(new Event('change'))
+                                                    Global.dataStored.lastComment.text = addCommentMessage.value
+                                                    Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                                    localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                                    actionsBtnsInlineText()
                                                 }
                                             }
-                                        })
-                                        divEditable.addEventListener("keyup", (e) => {
-                                            console.log(e)
-                                            if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
-                                                keysActivOnDiv[e.key] = false
-                                            }
-                                        })
+                                        }
+                                    })
+                                    divEditable.addEventListener("keyup", (e) => {
+                                        console.log(e)
+                                        if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
+                                            keysActivOnDiv[e.key] = false
+                                        }
+                                    })
 
+                                    sendCommentBtn.addEventListener('click', () => {
+                                        if (addCommentMessage.value !== '') {
+                                            Global.dataStored.lastComment.text = addCommentMessage.value
+                                            Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
+                                            localStorage.setItem('soprod-' + idPath, JSON.stringify(Global.dataStored))
+                                            addCommentMessage.style.height = '32px'
+                                            addCommentMessage.style.visibility = ''
+                                                                                            
+                                            divEditable.parentNode.removeChild(divEditable)
+                                        }
+                                    })
 
+                                    function actionsBtnsInlineText() {
                                         let ynChoises = divEditable.querySelectorAll('div.ynChoise')
                                         ynChoises.forEach(ynContainer => {
                                             let btns = ynContainer.querySelectorAll('button')
                                             btns.forEach(btn => {
                                                 btn.addEventListener('click', () => {
                                                     ynContainer.outerHTML = btn.value
+                                                    divEditable.focus()
+                                                    actionsBtnsInlineText()
                                                 })
                                             })
                                         })
-
-                                        addCommentMessage.insertAdjacentElement("afterend", divEditable);
-                                        console.log(divEditable)
+                                        
+                                        let nextCalls = divEditable.querySelectorAll('div.nextRelaunch')
+                                        nextCalls.forEach(nextCall => {
+                                            let btns = nextCall.querySelectorAll('button')
+                                            btns.forEach(btn => {
+                                                btn.addEventListener('click', () => {
+                                                    if (btn.value === "auto") {
+                                                        nextCall.outerHTML = Commentaries.howNextDayToCall()
+                                                    } else {
+                                                        nextCall.outerHTML = Commentaries.setupNextDayToCall(btn.value)
+                                                    }
+                                                    divEditable.focus()
+                                                })
+                                            })
+                                            let divFakeInput = nextCall.querySelector('div.textEditable')
+                                            divFakeInput.addEventListener('focus', () => {
+                                                divFakeInput.classList.add("onEditing")
+                                                divFakeInput.addEventListener("keyup", (e) => {
+                                                    if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
+                                                        keysActivOnDiv[e.key] = false
+                                                    }
+                                                    let textToCheck = divFakeInput.innerText.trim()
+                                                    console.log(textToCheck)
+                                                    switch (textToCheck) {
+                                                        case 'auto':
+                                                            nextCall.outerHTML = Commentaries.howNextDayToCall()
+                                                            divEditable.focus()
+                                                            break;
+                                                        case '24h':
+                                                        case 24:
+                                                        case '24':
+                                                            nextCall.outerHTML = Commentaries.setupNextDayToCall(1)
+                                                            divEditable.focus()
+                                                            break;
+                                                        case '48h':
+                                                        case 48:
+                                                        case '48':
+                                                            nextCall.outerHTML = Commentaries.setupNextDayToCall(2)
+                                                            divEditable.focus()
+                                                            break;
+                                                    }
+                                                })
+                                            })
+                                            divFakeInput.addEventListener('blur', () => {
+                                                divFakeInput.classList.remove("onEditing")
+                                            })
+                                        })
                                     }
+
+                                    actionsBtnsInlineText()
+                                    
+
+                                    addCommentMessage.insertAdjacentElement("afterend", divEditable);
+                                    console.log(divEditable)
+                                    
                                     addCommentMessage.style.height = value.height
                                     addCommentMessage.dispatchEvent(new Event('change'))
                                 }
@@ -715,6 +774,13 @@ const Commentaries = {
                 break;
         }
         let newDate = this.AddDaTor.calcul(choosenDate, dayDelay);
+        return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
+    },
+    setupNextDayToCall(dayDelay) {
+        console.log('run setup next day to call')
+        let choosenDate = new Date()
+        let newDate = this.AddDaTor.calcul(choosenDate, dayDelay);
+        console.log(newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' }))
         return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
     },
     AddDaTor: {
@@ -829,7 +895,7 @@ var styles = [
     }, {
         modif: 'schemaBtn',
         configurable: true,
-        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div.ynChoise { display: inline-block; }',
+        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div.ynChoise, div.nextRelaunch, div.nextRelaunch div { display: inline-block; } div.nextRelaunch > div.textEditable.onEditing { background-color: rgba(240, 20, 20, .6); }',
     }, {
         modif: 'horloge',
         configurable: false,
