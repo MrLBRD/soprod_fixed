@@ -159,9 +159,9 @@ function windowOnload() {
 
                     Dashboard.getFilterOfDashboard().then(filterDashboard => {
                         if (filterDashboard === "À moi") {
-                            Dashboard.listenContainerRequestsTable()
-            
-                            clearLocalStorage()
+                            Dashboard.listenContainerRequestsTable().then((valueReturn) => {
+                                if(valueReturn) clearLocalStorage()
+                            })
                         }
                     })
 
@@ -410,21 +410,21 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui    →  Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :">oui</button> <button value="non">non</button></div><br><br>Modifications effectuées :<br><br>Modifications non effectuées :<br><br>Modifications supplémentaires :<br><br>Liens et erreurs 404 : OK 404<br><br>Note SoOptimo : XX > XX<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui → client / ccial">oui</button> <button value="non">non</button></div><br><br>Fichiers dans le MI : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Commentaire / Verbatim ${contactTarget} :<br><br><div class="ynChoise" contenteditable="false"><button value="- Envoi en contrôle final">Contrôle final</button> <button value="- Envoi en injoignable avec modif">Injoignable Avec modif</button> <button value="- Envoi en injoignable sans modif">Injoignable Sans modif</button></div>',
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui    →  Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :">oui</button> <button value="non">non</button> <button value="non, injoignable, message laissé sur le répondeur">injoignable</button></div><br><br>Modifications effectuées :<br><br>Modifications non effectuées :<br><br>Modifications supplémentaires :<br><br>Liens et erreurs 404 : OK 404<br><br>Note SoOptimo : XX > XX<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui → client / ccial">oui</button> <button value="non">non</button></div><br><br>Fichiers dans le MI : <div class="ynChoise" contenteditable="false"><button value="oui">oui</button> <button value="non">non</button></div><br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Commentaire / Verbatim ${contactTarget} :<br><br><div class="ynChoise" contenteditable="false"><button value="- Envoi en contrôle final">Contrôle final</button> <button value="- Envoi en injoignable avec modif">Injoignable Avec modif</button> <button value="- Envoi en injoignable sans modif">Injoignable Sans modif</button></div>',
                     'height': '504px'
                 },
                 'unreachable': {
                     'text': 'Injoignable schema',
                     'class': 'btn yellow',
                     'id': 'addUnreachableSchemaBtn',
-                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '76px'
                 },
                 'basic': {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
+                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '272px'
                 }
             },
@@ -436,21 +436,21 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui<br><br>Verbatim ${contactTarget} :">oui</button> <button value="non, injoignable, message laissé sur le répondeur">non</button></div><br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → <div class=\'ynChoise\' contenteditable=\'false\'><button value=\'client\'>client</button> <button value=\'ccial\'>ccial</button> <button value=\'client & ccial\'>les deux</button></div>">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui<br><br>Verbatim ${contactTarget} :">oui</button> <button value="non">non</button><button value="non, injoignable, message laissé sur le répondeur">injoignable</button></div><br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → <div class=\'ynChoise\' contenteditable=\'false\'><button value=\'client\'>client</button> <button value=\'ccial\'>ccial</button> <button value=\'client & ccial\'>les deux</button></div>">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
                     'height': '166px'
                 },
                 'unreachable': {
                     'text': 'Injoignable schema',
                     'class': 'btn yellow',
                     'id': 'addUnreachableSchemaBtn',
-                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
+                    'message': 'Appel ${contactTarget} : non, injoignable, message laissé sur le répondeur<br><br>Relance <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '76px'
                 },
                 'basic': {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false">&nbsp; &nbsp;</div></div>',
+                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '114px'
                 },
                 'sendViewLink': {
@@ -539,7 +539,6 @@ const Commentaries = {
                                             addCommentMessage.style.height = '32px'
                                             addCommentMessage.focus()
                                         } else {
-                                            console.log(divEditable.innerText, divEditable.clientHeight)
                                             addCommentMessage.style.height = divEditable.clientHeight + "px"
                                             addCommentMessage.value = divEditable.innerText
                                             addCommentMessage.dispatchEvent(new Event('change'))
@@ -599,7 +598,6 @@ const Commentaries = {
                                         }
                                     })
                                     divEditable.addEventListener("keyup", (e) => {
-                                        console.log(e)
                                         if (e.key == 'Enter' || e.key == 'Control' || e.key == 'z' || e.key == 'Z') {
                                             keysActivOnDiv[e.key] = false
                                         }
@@ -644,6 +642,9 @@ const Commentaries = {
                                                 })
                                             })
                                             let divFakeInput = nextCall.querySelector('div.textEditable')
+                                            if(divFakeInput.innerText !== '') {
+                                                divFakeInput.innerText = ''
+                                            }
                                             divFakeInput.addEventListener('focus', () => {
                                                 divFakeInput.classList.add("onEditing")
                                                 divFakeInput.addEventListener("keyup", (e) => {
@@ -651,15 +652,12 @@ const Commentaries = {
                                                         keysActivOnDiv[e.key] = false
                                                     }
                                                     let textToCheck = divFakeInput.innerText.trim()
-                                                    console.log(textToCheck)
                                                     switch (textToCheck) {
                                                         case 'auto':
                                                             nextCall.outerHTML = Commentaries.howNextDayToCall()
                                                             divEditable.focus()
                                                             break;
                                                         case '24h':
-                                                        case 24:
-                                                        case '24':
                                                             nextCall.outerHTML = Commentaries.setupNextDayToCall(1)
                                                             divEditable.focus()
                                                             break;
@@ -669,6 +667,11 @@ const Commentaries = {
                                                             nextCall.outerHTML = Commentaries.setupNextDayToCall(2)
                                                             divEditable.focus()
                                                             break;
+                                                        default:
+                                                            if (Commentaries.isDatePatternValid(textToCheck)) {
+                                                                nextCall.outerHTML = textToCheck
+                                                                divEditable.focus()
+                                                            }
                                                     }
                                                 })
                                             })
@@ -682,7 +685,6 @@ const Commentaries = {
                                     
 
                                     addCommentMessage.insertAdjacentElement("afterend", divEditable);
-                                    console.log(divEditable)
                                     
                                     addCommentMessage.style.height = value.height
                                     addCommentMessage.dispatchEvent(new Event('change'))
@@ -747,7 +749,6 @@ const Commentaries = {
                             }
                         });
                         addCommentMessage.addEventListener("focusout", (e) => {
-                            console.log(addCommentMessage.value)
                             if (addCommentMessage.value !== '') {
                                 Global.dataStored.lastComment.text = addCommentMessage.value
                                 Global.dataStored.lastComment.height = addCommentMessage.clientHeight + 'px'
@@ -777,10 +778,8 @@ const Commentaries = {
         return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
     },
     setupNextDayToCall(dayDelay) {
-        console.log('run setup next day to call')
         let choosenDate = new Date()
         let newDate = this.AddDaTor.calcul(choosenDate, dayDelay);
-        console.log(newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' }))
         return newDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'numeric' })
     },
     AddDaTor: {
@@ -862,7 +861,12 @@ const Commentaries = {
                 LundiPentecote = new Date(an, MoisPaques - 1, JourPaques + 50);
             return [JourAn, VendrediSaint, Paques, LundiPaques, FeteTravail, Victoire1945, Ascension, Pentecote, LundiPentecote, FeteNationale, Assomption, Toussaint, Armistice, Noel, SaintEtienne];
         }
+    },
+    isDatePatternValid(dateString) {
+        const regex = /^(0?[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])$/;
+        return regex.test(dateString);
     }
+      
 }
 
 
@@ -895,7 +899,7 @@ var styles = [
     }, {
         modif: 'schemaBtn',
         configurable: true,
-        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div.ynChoise, div.nextRelaunch, div.nextRelaunch div { display: inline-block; } div.nextRelaunch > div.textEditable.onEditing { background-color: rgba(240, 20, 20, .6); }',
+        css: '.ext--btns-container { width: 100%; display: flex; gap: 8px; margin-top: 8px; } .btn-outline {border-width: 0.25rem; border-color: #545454; } #getAddStoredMessage svg { height: 16px; } .icon-custombtn { padding: 7px 12px } div.commentsAreaDiv div.portlet-body.scrollable-content { max-height: none; } div.ynChoise, div.nextRelaunch, div.nextRelaunch div { display: inline-block; } div.nextRelaunch > div.textEditable { min-width: 3rem; outline: none; text-align: center; } div.nextRelaunch > div.textEditable.onEditing { background-color: rgba(240, 20, 20, .6); } div.nextRelaunch > div.textEditable:hover { background-color: rgba(240, 20, 20, .6); min-width: 5rem; }',
     }, {
         modif: 'horloge',
         configurable: false,
@@ -1348,7 +1352,7 @@ const Dashboard = {
         })
         return containerTableRqts
     },
-    listenContainerRequestsTable() {
+    async listenContainerRequestsTable() {
         this.getQueryContainerTableRequests().then(containerTableRqts => {
             let finishLoadTimeout;
         
@@ -1357,7 +1361,9 @@ const Dashboard = {
                     clearTimeout(finishLoadTimeout);
                 }
                 finishLoadTimeout = setTimeout(() => {
-                    this.checkTableRequests()
+                    this.checkTableRequests().then((valueReturn) => {
+                        return valueReturn
+                    })
                 }, 500);
             };
         
@@ -1388,7 +1394,7 @@ const Dashboard = {
         }
         return tableRqtContainer
     },
-    checkTableRequests() {
+    async checkTableRequests() {
         if (Global.userSettings.customDashboard) {
             this.addRefreshCustomTableRequests()
         }
@@ -1401,7 +1407,9 @@ const Dashboard = {
                     clearTimeout(finishLoadTimeout);
                 }
                 finishLoadTimeout = setTimeout(() => {
-                    this.changeEventTagDashboard()
+                    this.changeEventTagDashboard().then((valueReturn) => {
+                        return valueReturn
+                    })
                 }, 500);
             };
         
@@ -1421,45 +1429,51 @@ const Dashboard = {
             observer.observe(tableRqtContainer, config)
         })
     },
-    changeEventTagDashboard() {
-        const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
-
-        const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
-        allTrTableRqts.forEach((tr) => {
-            const tdInTrTableRqts = tr.querySelectorAll('td')
-            
-            let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
-
-            const rqtInformations = {
-                epj: tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
-                gamme: tdInTrTableRqts[5].innerText.substr(6),
-                name: tdInTrTableRqts[2].innerText,
-                lastComment: {
-                    text: !itemStored ? null : itemStored.lastComment.text,
-                    height: !itemStored ? undefined : itemStored.lastComment.height
-                },
-                jetlag: {
-                    statu: itemStored ? itemStored.jetlag.statu : null,
-                    diff: itemStored ? itemStored.jetlag.diff : undefined
-                },
-                qualif: qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
-                request: {
-                    date: itemStored ? itemStored.request ? itemStored.request.date ? itemStored.request.date : null : null : null,
-                    origin: itemStored ? itemStored.request ? itemStored.request.origin ? itemStored.request.origin : null : null : null,
-                    comment: itemStored ? itemStored.request ? itemStored.request.comment ? itemStored.request.comment : null : null : null
-                },
-                contact: itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client',
-                modifier: {
-                    inputKeywordsWidth: itemStored ? itemStored.modifier ? itemStored.modifier.inputKeywordsWidth ? itemStored.modifier.inputKeywordsWidth : null : null : null,
-                },
-                lastDate: new Date()
-            }
-            localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
-
-            tr.addEventListener("contextmenu", function(event) {
-                addListenerDisplayContextMenu(event)
+    async changeEventTagDashboard() {
+        try {
+            const tableRqtContainer = document.querySelector('div#tableRecordsList>div#recordsList_wrapper table#recordsList tbody')
+    
+            const allTrTableRqts = tableRqtContainer.querySelectorAll('tr')
+            allTrTableRqts.forEach((tr) => {
+                const tdInTrTableRqts = tr.querySelectorAll('td')
+                
+                let itemStored = JSON.parse(window.localStorage.getItem('soprod-' + tdInTrTableRqts[0].innerText))
+    
+                const rqtInformations = {
+                    epj: tdInTrTableRqts[1].innerText.substr(tdInTrTableRqts[1].innerText.length - 8),
+                    gamme: tdInTrTableRqts[5].innerText.substr(6),
+                    name: tdInTrTableRqts[2].innerText,
+                    lastComment: {
+                        text: !itemStored ? null : itemStored.lastComment.text,
+                        height: !itemStored ? undefined : itemStored.lastComment.height
+                    },
+                    jetlag: {
+                        statu: itemStored ? itemStored.jetlag.statu : null,
+                        diff: itemStored ? itemStored.jetlag.diff : undefined
+                    },
+                    qualif: qualifInfo(tdInTrTableRqts[7], tr, itemStored ? itemStored.qualif : 'notStarted'),
+                    request: {
+                        date: itemStored ? itemStored.request ? itemStored.request.date ? itemStored.request.date : null : null : null,
+                        origin: itemStored ? itemStored.request ? itemStored.request.origin ? itemStored.request.origin : null : null : null,
+                        comment: itemStored ? itemStored.request ? itemStored.request.comment ? itemStored.request.comment : null : null : null
+                    },
+                    contact: itemStored ? itemStored.contact ? itemStored.contact : 'client' : 'client',
+                    modifier: {
+                        inputKeywordsWidth: itemStored ? itemStored.modifier ? itemStored.modifier.inputKeywordsWidth ? itemStored.modifier.inputKeywordsWidth : null : null : null,
+                    },
+                    lastDate: new Date()
+                }
+                localStorage.setItem('soprod-' + tdInTrTableRqts[0].innerText, JSON.stringify(rqtInformations));
+    
+                tr.addEventListener("contextmenu", function(event) {
+                    addListenerDisplayContextMenu(event)
+                })
             })
-        })
+            return true
+        } catch (error) {
+            Alerts.createAlert('error', 'Nous avons rencontré une erreur dans l\'analyse des requêtes et leur mise en forme.')
+            return 'error'
+        }
     },
     async getTopBarTableRqts() {
         let topBarTableRqtsContainer = document.querySelector('div.page-content-wrapper>div.page-content div.recordsPortlet div.portlet.box>div.portlet-title')
@@ -1835,7 +1849,6 @@ async function getTheadDayTarget(newDate) {
         await new Promise(resolve => setTimeout(resolve, 400))
         theadDayTarget = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div[data-day="' + dataDay + '"]')
     }
-    console.log(theadDayTarget)
     return theadDayTarget
 }
 
@@ -1880,11 +1893,9 @@ async function getSelectCalendarWeek() {
 
 async function getBtnNextWeek() {
     let btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
-    console.log('Go next btn', btnNextWeek)
     while (!btnNextWeek) {
         await new Promise(resolve => setTimeout(resolve, 400))
         btnNextWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_next')
-        console.log(btnNextWeek)
     }
     btnNextWeek.click()
     return true
@@ -1892,11 +1903,9 @@ async function getBtnNextWeek() {
 
 async function getBtnPreviousWeek() {
     let btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
-    console.log('Back btn', btnPreviousWeek)
     while (!btnPreviousWeek) {
         await new Promise(resolve => setTimeout(resolve, 400))
         btnPreviousWeek = document.querySelector('div#calendarSetEventModal div.modal-dialog div.modal-body table thead tr th div.rdv_calendar_action > div.rdv_calendar_previous')
-        console.log(btnPreviousWeek)
     }
     btnPreviousWeek.click()
     return true
@@ -1929,12 +1938,10 @@ function openCalendarAddRelaunch() {
 
             // On vérifie si la semaine active du calendar correspond
             getWeekSelect(selectCalendarWeek).then(weekSelected => {
-                console.log('weekSelected', weekSelected)
                 if (weekSelected) {
                     // On récupére le numéro de la semaine de newDate
                     let weekNumber = newDate.getWeek()
                     let textSearch = 'Semaine ' + weekNumber.toString()
-                    console.log(textSearch)
                     if ((weekSelected.innerText).includes(textSearch)) {
                         console.log('Nous avons la bonne semaine de sélectionné')
                         getTheadDayTarget(newDate).then(element => {
@@ -1945,10 +1952,7 @@ function openCalendarAddRelaunch() {
                         // Si non on fait un next, on check la semaine, si c'est bon on affiche le jour, sinon on reviens en arrière et on affiche une erreur
                         setTimeout(() => {
                             getBtnNextWeek().then(() => {
-                                console.log(weekSelected)
-                                console.log(weekSelected.innerText)
                                 if ((weekSelected.innerText).includes(textSearch)) {
-                                    console.log('Maintenant, nous avons la bonne semaine')
                                     getTheadDayTarget(newDate).then(element => {
                                         // changeTargetDateOfCalendar(element)
                                         calendarObserver.runObservation(element)
