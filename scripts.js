@@ -424,7 +424,7 @@ const Commentaries = {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
+                    'message': 'Appel ${contactTarget} : oui    → Numéro de Tél :<br><br>Interlocuteur :<br><br>Durée de l\'appel :<br><br>Commentaire / Verbatim : <br><br>Envoi demandes services tiers : <div class="ynChoise" contenteditable="false"><button value="oui → n° rqt : ">oui</button> <button value="non">non</button></div><br><br>N° ticket (Jira) :<br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><button value="non">non</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '272px'
                 }
             },
@@ -436,7 +436,7 @@ const Commentaries = {
                     'text': 'Clôture schema',
                     'class': 'btn green',
                     'id': 'addCloseSchemaBtn',
-                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui<br><br>Verbatim ${contactTarget} :">oui</button> <button value="non">non</button><button value="non, injoignable, message laissé sur le répondeur">injoignable</button></div><br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → <div class=\'ynChoise\' contenteditable=\'false\'><button value=\'client\'>client</button> <button value=\'ccial\'>ccial</button> <button value=\'client & ccial\'>les deux</button></div>">oui</button></div><br><br>Modif Graph faite - Envoi en contrôle final',
+                    'message': 'Appel ${contactTarget} : <div class="ynChoise" contenteditable="false"><button value="oui<br><br>Verbatim ${contactTarget} :">oui</button> <button value="non">non</button><button value="non, injoignable, message laissé sur le répondeur">injoignable</button></div><br><br>Modifications effectuées :<br><br>Envoi mail : <div class="ynChoise" contenteditable="false"><button value="auto">auto</button> <button value="oui, manuel → <div class=\'ynChoise\' contenteditable=\'false\'><button value=\'client\'>client</button> <button value=\'ccial\'>ccial</button> <button value=\'client & ccial\'>les deux</button></div>">oui</button></div><br><br><div class="ynChoise" contenteditable="false"><button value="Modif Graph faite - Envoi en contrôle final">Contrôle final</button> <button value="Modif Graph faite - Envoi en injoignable avec modif">Injoignable Avec modif</button> <button value="- Envoi en injoignable sans modif">Injoignable Sans modif</button></div>',
                     'height': '166px'
                 },
                 'unreachable': {
@@ -450,7 +450,7 @@ const Commentaries = {
                     'text': 'Appel Basique schema',
                     'class': 'btn blue',
                     'id': 'addBasicSchemaBtn',
-                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
+                    'message': 'Appel ${contactTarget} : oui<br><br>Verbatim : <br><br>Relance/RDV <div class="nextRelaunch" contenteditable="false"><button value="1">24h</button><button value="2">48h</button><button value="auto">auto</button><button value="non">non</button><div class="textEditable" contenteditable="true" spellchecked="false"></div></div>',
                     'height': '114px'
                 },
                 'sendViewLink': {
@@ -916,6 +916,10 @@ var styles = [
         modif: 'customDashboard',
         configurable: true,
         css: '#tableRecordsList table tr.unreachable>td { background-color: rgba(219, 178, 130, .65); }'
+    }, {
+        modif: 'smallCalendar',
+        configurable: false,
+        css: '@media screen and (max-width: 1380px) { div.userCalendarLayout { width: 45%; height: calc(100% - 45px - 35px); overflow: hidden; } div.userCalendarLayout > #userCalendarWrapper { height: 100%; display: flex; flex-direction: column; } div.userCalendarLayout > #userCalendarWrapper div.portlet-body { flex-grow: 1; align-self: stretch; } #userCalendarWrapper div.portlet-body > div.row { height: 100%; } #userCalendarWrapper div.portlet-body div.row > div { height: 100%; } #userCalendarWrapper div.portlet-body div#userCalendar { height: 100%; display: flex; flex-direction: column; } div#userCalendar > div.fc-toolbar { margin-bottom: 0; } div#userCalendar > div.fc-view-container { flex-grow: 1; align-self: stretch; max-height: calc(100% - 46px); } div#userCalendar > div.fc-view-container > div { height: 100%; } div#userCalendar > div.fc-view-container > div > table { height: 100%; display: flex; flex-direction: column; } div#userCalendar > div.fc-view-container > div > table > tbody { flex-grow: 1; align-self: stretch; max-height: calc(100% - 19px); overflow: hidden auto; } div#userCalendar > div.fc-view-container > div > table > tbody > tr > td.fc-widget-content div.fc-time-grid-container { height: auto !important; } }'
     }, {
         modif: 'beeFloatMenu',
         configurable: false,
