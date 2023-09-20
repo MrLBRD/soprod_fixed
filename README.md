@@ -16,3 +16,5 @@
 ### 1.9.7 :
   - Modification affichage calendar pour les petits écrans
   - Amélioration/fix bug commentaires
+### 1.9.8 :
+  - Ajout fonctionnalité bouton "non" relance/rdv
