@@ -635,6 +635,19 @@ const Commentaries = {
                                                 btn.addEventListener('click', () => {
                                                     if (btn.value === "auto") {
                                                         nextCall.outerHTML = Commentaries.howNextDayToCall()
+                                                    } else if (btn.value === "non") {
+                                                        let commentContent = divEditable.innerHTML
+                                                        let positionRelaunch = commentContent.indexOf("Relance")
+
+                                                        if (positionRelaunch !== -1) {
+                                                            let nouveauContenu = commentContent.substring(0, positionRelaunch)
+                                                            
+                                                            while (nouveauContenu.endsWith('<br>')) {
+                                                                nouveauContenu = nouveauContenu.substring(0, nouveauContenu.length - 4)
+                                                            }
+
+                                                            divEditable.innerHTML = nouveauContenu
+                                                        }
                                                     } else {
                                                         nextCall.outerHTML = Commentaries.setupNextDayToCall(btn.value)
                                                     }
